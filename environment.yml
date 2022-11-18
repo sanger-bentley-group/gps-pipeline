@@ -1,0 +1,17 @@
+name: pipeline
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+  - r
+dependencies:
+  - seroba=1.0.2
+  - ariba=2.14.6
+  - bcftools=1.12
+  - biopython=1.77
+  - kmc=3.1.0
+  - tbb=2021.7.0
+  - "mummer=3.23=*_11"
+  - python=3.6
+  - nextflow=22.10.1
+  - git
