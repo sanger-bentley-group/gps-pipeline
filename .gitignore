@@ -1,6 +1,12 @@
+# MacOS system files
 .DS_Store
+
+# Nextflow files and directories
 work
-data
-seroba
 .nextflow
 .nextflow.log*
+
+# Seroba repo, test data, output
+seroba
+data
+results
