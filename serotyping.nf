@@ -5,8 +5,9 @@ params.seroba_remote = "https://github.com/sanger-pathogens/seroba.git"
 params.seroba_local = "${projectDir}/seroba"
 
 
+// Return Seroba databases path
 // Pull to check if seroba database is up-to-date. If outdated or does not exist: clean, clone and re-create kmc and ariba databases
-process UPDATE_SEROBA {
+process GET_SEROBA_DB {
     input:
     val remote
     val local
@@ -24,6 +25,7 @@ process UPDATE_SEROBA {
     """
 }
 
+// Run Seroba to serotype samples
 process SEROTYPING {
     input:
     path database
@@ -38,6 +40,7 @@ process SEROTYPING {
     """
 }
 
+// Concatenate Seroba results
 process SEROTYPE_SUMMARY {
     publishDir "results", mode: 'link'
 
@@ -55,9 +58,10 @@ process SEROTYPE_SUMMARY {
 
 
 workflow {
-    seroba_db = UPDATE_SEROBA(params.seroba_remote, params.seroba_local)
-
+    seroba_db = GET_SEROBA_DB(params.seroba_remote, params.seroba_local)
     read_pairs_ch = Channel.fromFilePairs( "$params.reads/*_{1,2}.fastq.gz", checkIfExists: true )
+    
     serotype_ch = SEROTYPING(seroba_db, read_pairs_ch)
+    
     SEROTYPE_SUMMARY(serotype_ch.collect())
 }
