@@ -2,7 +2,7 @@
 
 params.reads = "${projectDir}/data"
 params.seroba_remote = "https://github.com/sanger-pathogens/seroba.git"
-params.seroba_local = "${projectDir}/seroba"
+params.seroba_local = "${projectDir}/bin/seroba"
 
 
 // Return Seroba databases path

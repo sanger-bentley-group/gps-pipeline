@@ -6,7 +6,7 @@ work
 .nextflow
 .nextflow.log*
 
-# Seroba repo, test data, output
-seroba
+# program binaries, test data, output
+bin
 data
 results
