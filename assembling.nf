@@ -33,18 +33,19 @@ process GET_SPADES {
 }
 
 process ASSEMBLING {
-    publishDir "results", mode: "link", saveAs: { filename -> "${sample_id}_${filename}"}
+    publishDir "results", mode: "link"
 
     input:
     val spades
     tuple val(sample_id), path(reads)
 
     output:
-    path "contigs.fasta"
+    path "${sample_id}_contigs.fasta"
 
     script:
     """
     $spades -1 ${reads[0]} -2 ${reads[1]} -o results
+    mv results/contigs.fasta ${sample_id}_contigs.fasta
     """
 }
 
