@@ -1,9 +1,3 @@
-#!/usr/bin/env nextflow 
-
-params.reads = "${projectDir}/data"
-params.spades_local = "${projectDir}/bin/spades"
-params.os = System.properties['os.name']
-
 process GET_SPADES {
     input:
     val os
@@ -34,22 +28,18 @@ process GET_SPADES {
 }
 
 process ASSEMBLING {
+    publishDir "results", mode: 'link'
+
     input:
     val spades
-    tuple val(sample_id), path(reads)
+    tuple val(sample_id), path(read1), path(read2), path(unpaired)
 
     output:
-    stdout
+    path "${sample_id}.contigs.fasta"
 
     script:
     """
-    unicycler -1 ${reads[0]} -2 ${reads[1]} -s ${projectDir}/${params.reads}/${sample_id}_unpaired.fastq.gz -o results --no_correct --no_pilon --spades_path $spades
+    unicycler -1 $read1 -2 $read2 -s $unpaired -o results --no_correct --no_pilon --spades_path $spades
+    mv results/assembly.fasta ${sample_id}.contigs.fasta
     """
-}
-
-workflow {
-    spades_py = GET_SPADES(params.os, params.spades_local)
-    read_pairs_ch = Channel.fromFilePairs( "$params.reads/*_{1,2}.fastq.gz", checkIfExists: true )
-
-    ASSEMBLING(spades_py, read_pairs_ch)
 }

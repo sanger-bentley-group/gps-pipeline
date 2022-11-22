@@ -1,10 +1,3 @@
-#!/usr/bin/env nextflow 
-
-params.reads = "${projectDir}/data"
-params.seroba_remote = "https://github.com/sanger-pathogens/seroba.git"
-params.seroba_local = "${projectDir}/bin/seroba"
-
-
 // Return Seroba databases path
 // Pull to check if seroba database is up-to-date. If outdated or does not exist: clean, clone and re-create kmc and ariba databases
 process GET_SEROBA_DB {
@@ -29,14 +22,14 @@ process GET_SEROBA_DB {
 process SEROTYPING {
     input:
     path database
-    tuple val(sample_id), path(reads)
+    tuple val(sample_id), path(read1), path(read2), path(unpaired)
 
     output:
     path "$sample_id/pred.tsv"
 
     script:
     """
-    seroba runSerotyping $database ${reads[0]} ${reads[1]} $sample_id
+    seroba runSerotyping $database $read1 $read2 $sample_id
     """
 }
 
@@ -54,14 +47,4 @@ process SEROTYPE_SUMMARY {
     """
     cat * >> serotype_summary.tsv
     """
-}
-
-
-workflow {
-    seroba_db = GET_SEROBA_DB(params.seroba_remote, params.seroba_local)
-    read_pairs_ch = Channel.fromFilePairs( "$params.reads/*_{1,2}.fastq.gz", checkIfExists: true )
-    
-    serotype_ch = SEROTYPING(seroba_db, read_pairs_ch)
-    
-    SEROTYPE_SUMMARY(serotype_ch.collect())
 }
