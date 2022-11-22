@@ -9,11 +9,11 @@ process PREPROCESSING {
     tuple val(sample_id), path(reads)
 
     output:
-    tuple path("preprocessed-${sample_id}_1.fastq.gz"), path("preprocessed-${sample_id}_2.fastq.gz")
+    tuple path("preprocessed-${sample_id}_1.fastq.gz"), path("preprocessed-${sample_id}_2.fastq.gz"), path("preprocessed-${sample_id}_unpaired.fastq.gz")
 
     script:
     """
-    fastp --in1 ${reads[0]} --in2 ${reads[1]} --out1 preprocessed-${sample_id}_1.fastq.gz --out2 preprocessed-${sample_id}_2.fastq.gz
+    fastp --in1 ${reads[0]} --in2 ${reads[1]} --out1 preprocessed-${sample_id}_1.fastq.gz --out2 preprocessed-${sample_id}_2.fastq.gz --unpaired1 preprocessed-${sample_id}_unpaired.fastq.gz --unpaired2 preprocessed-${sample_id}_unpaired.fastq.gz
     """
 }
 
