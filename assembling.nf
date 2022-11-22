@@ -2,6 +2,7 @@
 
 params.reads = "${projectDir}/data"
 params.spades_local = "${projectDir}/bin/spades"
+params.os = System.properties['os.name']
 
 process GET_SPADES {
     input:
@@ -33,24 +34,21 @@ process GET_SPADES {
 }
 
 process ASSEMBLING {
-    publishDir "results", mode: "link"
-
     input:
     val spades
     tuple val(sample_id), path(reads)
 
     output:
-    path "${sample_id}_contigs.fasta"
+    stdout
 
     script:
     """
-    $spades -1 ${reads[0]} -2 ${reads[1]} -o results
-    mv results/contigs.fasta ${sample_id}_contigs.fasta
+    unicycler -1 ${reads[0]} -2 ${reads[1]} -s ${projectDir}/${params.reads}/${sample_id}_unpaired.fastq.gz -o results --no_correct --no_pilon --spades_path $spades
     """
 }
 
 workflow {
-    spades_py = GET_SPADES(System.properties['os.name'], params.spades_local)
+    spades_py = GET_SPADES(params.os, params.spades_local)
     read_pairs_ch = Channel.fromFilePairs( "$params.reads/*_{1,2}.fastq.gz", checkIfExists: true )
 
     ASSEMBLING(spades_py, read_pairs_ch)
