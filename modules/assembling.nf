@@ -1,3 +1,5 @@
+// Return SPAdes executable path
+// Check if SPAdes executable is v3.15.5. If not: clean, download (process is OS-specific), unzip and move content to params.spades_local
 process GET_SPADES {
     input:
     val os
@@ -27,6 +29,8 @@ process GET_SPADES {
     """
 }
 
+// Run Unicycler to get assemblies using specific SPAdes executable
+// Hardlink the assemblies to results directory
 process ASSEMBLING {
     publishDir "results", mode: 'link'
 
