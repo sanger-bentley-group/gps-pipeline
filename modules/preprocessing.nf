@@ -1,6 +1,4 @@
 process PREPROCESSING {
-    publishDir "results", mode: "link"
-
     input:
     tuple val(sample_id), path(reads)
 
