@@ -21,14 +21,29 @@ GPS Unified Pipeline is a Nextflow Pipeline for processing Streptococcus pneumon
     cd gps-unified-pipeline
     ```
 3. Setup Conda Environment (If using Mamba, replace `conda` with `mamba` in the following commands)
-   - MacOS (Intel CPU) & Linux
+   - MacOS (Intel CPU)
      ```
-     conda env create -f environment.yml
+     conda env create -f environment_mac.yml
      conda activate pipeline
      ```
    - MacOS (Apple Silicon)
      ```
-     CONDA_SUBDIR=osx-64 conda env create -f environment.yml
+     CONDA_SUBDIR=osx-64 conda env create -f environment_mac.yml
      conda activate pipeline
      conda config --env --set subdir osx-64
      ```
+   - Linux
+     ```
+     conda env create -f environment_linux.yml
+     conda activate pipeline
+     ```
+
+### Run
+- You can run the pipeline without arguments/parameters. It will attempt to get the raw reads from the default location (`data` directory inside the `gps-unified-pipeline` local repository)
+  ```
+  nextflow run main.nf
+  ```
+- You can also specific the location of the raw reads by adding argument `--reads`
+  ```
+  nextflow run main.nf --reads /path/to/raw-reads-directory
+  ```
