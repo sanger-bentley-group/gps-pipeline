@@ -51,7 +51,13 @@ process GET_UNICYCLER {
         mv Unicycler-0.5.0/* $local/
 
         cd $local
-        arch -x86_64 make
+
+        if [[ "$os" == "Linux" ]]; then
+            make
+        elif [[ "$os" == "Mac OS X" ]]; then
+            arch -x86_64 make
+        fi
+        
     fi 
     """
 }
