@@ -7,7 +7,6 @@ channels:
 dependencies:
   - seroba=1.0.2
   - fastp=0.23.2
-  - blast
   - ariba=2.14.6
   - bcftools=1.12
   - biopython=1.77
@@ -16,3 +15,5 @@ dependencies:
   - "mummer=3.23=*_11"
   - nextflow
   - git
+  # MacOS specific packages below
+  - blast=2.12.0
