@@ -1,8 +1,8 @@
+// MacOS Specific
 // Return SPAdes executable path
 // Check if SPAdes executable is v3.15.5. If not: clean, download (process is OS-specific), unzip and move content to params.spades_local
 process GET_SPADES {
     input:
-    val os
     val local
 
     output:
@@ -11,12 +11,7 @@ process GET_SPADES {
     script:
     """
     if [[ ! -f $local/bin/spades.py ]] || ! $local/bin/spades.py --version | grep -q 'v3.15.5' ; then
-        if [[ "$os" == "Linux" ]]; then
-            wget https://github.com/ablab/spades/releases/download/v3.15.5/SPAdes-3.15.5-Linux.tar.gz
-        elif [[ "$os" == "Mac OS X" ]]; then
-            curl -L https://github.com/ablab/spades/releases/download/v3.15.5/SPAdes-3.15.5-Darwin.tar.gz > SPAdes-3.15.5-Darwin.tar.gz
-        fi
-
+        curl -L https://github.com/ablab/spades/releases/download/v3.15.5/SPAdes-3.15.5-Darwin.tar.gz > SPAdes-3.15.5-Darwin.tar.gz
         tar -xzf SPAdes-3.15.5-*.tar.gz
 
         rm -rf $local
@@ -26,9 +21,11 @@ process GET_SPADES {
     """
 }
 
+// MacOS Specific
+// Return Unicycler executable path
+// Check if Unicycler executable is v0.5.0. If not: clean, download, unzip, move content to params.unicycler_local and compile
 process GET_UNICYCLER {
     input:
-    val os
     val local
 
     output:
@@ -37,12 +34,7 @@ process GET_UNICYCLER {
     script:
     """
     if [[ ! -f $local/unicycler-runner.py ]] || ! $local/unicycler-runner.py --version | grep -q 'v0.5.0' ; then
-        
-        if [[ "$os" == "Linux" ]]; then
-            wget https://github.com/rrwick/Unicycler/archive/refs/tags/v0.5.0.tar.gz
-        elif [[ "$os" == "Mac OS X" ]]; then
-            curl -L https://github.com/rrwick/Unicycler/archive/refs/tags/v0.5.0.tar.gz > v0.5.0.tar.gz
-        fi
+        curl -L https://github.com/rrwick/Unicycler/archive/refs/tags/v0.5.0.tar.gz > v0.5.0.tar.gz
         
         tar -xzf v0.5.0.tar.gz
 
@@ -51,13 +43,7 @@ process GET_UNICYCLER {
         mv Unicycler-0.5.0/* $local/
 
         cd $local
-
-        if [[ "$os" == "Linux" ]]; then
-            make
-        elif [[ "$os" == "Mac OS X" ]]; then
-            arch -x86_64 make
-        fi
-        
+        arch -x86_64 make
     fi 
     """
 }

@@ -25,14 +25,14 @@ workflow {
     
     // Currently SPAdes v3.15.5 and Unicycler v0.5.0 are not available in Conda of MacOS, 
     // and older versions yield suboptimal assemblies or lead to critical errors
-    // therefore separate download / compiling is required for now
-    // might remove this part and update environment.yml when the pipeline is dockerised in a Linux environment
+    // therefore separate download / compiling for MacOS is required for now
+    // might update this part and merge environment_*.yml when the pipeline is dockerised in a Linux environment
     
     // Get path to SPAdes executable, download if necessary
-    spades_py = GET_SPADES(params.os, params.spades_local)
+    spades_py = ( params.os == "Mac OS X" ) ? GET_SPADES(params.spades_local) : "spades.py"
     
     // Get path to Unicycler executable, download if necessary
-    unicycler_runner_py = GET_UNICYCLER(params.os, params.unicycler_local)
+    unicycler_runner_py = ( params.os == "Mac OS X" ) ? GET_UNICYCLER(params.unicycler_local) : "unicycler"
     
     // ===============
 

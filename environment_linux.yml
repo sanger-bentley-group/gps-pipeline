@@ -1,0 +1,19 @@
+name: pipeline
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+  - r
+dependencies:
+  - seroba=1.0.2
+  - fastp=0.23.2
+  - unicycler=0.5.0
+  - spades=3.15.5
+  - ariba=2.14.6
+  - bcftools=1.12
+  - biopython=1.77
+  - kmc=3.1.0
+  - tbb=2021.7.0
+  - "mummer=3.23=*_11"
+  - nextflow
+  - git

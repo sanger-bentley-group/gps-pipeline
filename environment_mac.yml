@@ -6,7 +6,7 @@ channels:
   - r
 dependencies:
   - seroba=1.0.2
-  - fastp
+  - fastp=0.23.2
   - blast
   - ariba=2.14.6
   - bcftools=1.12
