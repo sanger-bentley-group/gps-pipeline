@@ -3,20 +3,20 @@
 // Get host OS type
 params.os = System.properties['os.name']
 // Default directory for input reads
-params.reads = "${projectDir}/data"
+params.reads = "$projectDir/data"
 // Default directory for SPAdes 
-params.spades_local = "${projectDir}/bin/spades"
+params.spades_local = "$projectDir/bin/spades"
 // Default directory for Unicycler
-params.unicycler_local = "${projectDir}/bin/unicycler"
+params.unicycler_local = "$projectDir/bin/unicycler"
 // Default git and local directory for SeroBA 
 params.seroba_remote = "https://github.com/sanger-pathogens/seroba.git"
-params.seroba_local = "${projectDir}/bin/seroba"
+params.seroba_local = "$projectDir/bin/seroba"
 
 
 // Import modules
-include { PREPROCESSING } from './modules/preprocessing'
-include { GET_SPADES; GET_UNICYCLER; ASSEMBLING } from './modules/assembling'
-include { GET_SEROBA_DB; SEROTYPING; SEROTYPE_SUMMARY } from './modules/serotyping'
+include { PREPROCESSING } from "$projectDir/modules/preprocessing"
+include { GET_SPADES; GET_UNICYCLER; ASSEMBLING } from "$projectDir/modules/assembling"
+include { GET_SEROBA_DB; SEROTYPING; SEROTYPE_SUMMARY } from "$projectDir/modules/serotyping"
 
 
 // Main workflow
