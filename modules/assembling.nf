@@ -51,7 +51,7 @@ process GET_UNICYCLER {
 // Run Unicycler to get assemblies using specific SPAdes executable
 // Hardlink the assemblies to results directory
 process ASSEMBLING {
-    publishDir "results", mode: 'link'
+    publishDir "$params.output", mode: 'link'
 
     input:
     val unicycler_runner
