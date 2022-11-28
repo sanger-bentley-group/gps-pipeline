@@ -11,12 +11,14 @@ params.unicycler_local = "$projectDir/bin/unicycler"
 // Default git and local directory for SeroBA 
 params.seroba_remote = "https://github.com/sanger-pathogens/seroba.git"
 params.seroba_local = "$projectDir/bin/seroba"
+// Default output directory
+params.output = "$projectDir/results"
 
 
 // Import modules
 include { PREPROCESSING } from "$projectDir/modules/preprocessing"
 include { GET_SPADES; GET_UNICYCLER; ASSEMBLING } from "$projectDir/modules/assembling"
-include { GET_SEROBA_DB; SEROTYPING; SEROTYPE_SUMMARY } from "$projectDir/modules/serotyping"
+include { GET_SEROBA_DB; SEROTYPING } from "$projectDir/modules/serotyping"
 
 
 // Main workflow
@@ -48,7 +50,7 @@ workflow {
     // From the Channel prcoessed_reads_ch, assemble the preprocess read pairs 
     ASSEMBLING(unicycler_runner_py, spades_py, prcoessed_reads_ch)
 
-    // From the Channel prcoessed_reads_ch, serotype the preprocess read pairs, then summarise the results
-    serotype_ch = SEROTYPING(seroba_db, prcoessed_reads_ch)
-    SEROTYPE_SUMMARY(serotype_ch.collect())
+    // From the Channel prcoessed_reads_ch, serotype the preprocess read pairs, then gather the results and save as serotype_summary.tsv
+    SEROTYPING(seroba_db, prcoessed_reads_ch)
+        .collectFile(name: 'serotype_summary.tsv', storeDir: "$params.output")
 }

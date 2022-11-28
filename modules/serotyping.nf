@@ -32,19 +32,3 @@ process SEROTYPING {
     seroba runSerotyping $database $read1 $read2 $sample_id
     """
 }
-
-// Concatenate Seroba results
-process SEROTYPE_SUMMARY {
-    publishDir "results", mode: 'link'
-
-    input:
-    path "*.tsv"
-
-    output:
-    path "serotype_summary.tsv"
-
-    script:
-    """
-    cat * >> serotype_summary.tsv
-    """
-}
