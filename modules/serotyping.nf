@@ -8,14 +8,14 @@ process GET_SEROBA_DB {
     output:
     val "$local/database"
 
-    script:
-    """
-    if !(git -C $local pull | grep -q 'Already up to date'); then
-        rm -rf $local
-        git clone $remote $local
-        seroba createDBs $local/database/ 71
+    shell:
+    '''
+    if !(git -C !{local} pull | grep -q 'Already up to date'); then
+        rm -rf !{local}
+        git clone !{remote} !{local}
+        seroba createDBs !{local}/database/ 71
     fi
-    """
+    '''
 }
 
 // Run Seroba to serotype samples
@@ -27,8 +27,8 @@ process SEROTYPING {
     output:
     path "$sample_id/pred.tsv"
 
-    script:
-    """
-    seroba runSerotyping $database $read1 $read2 $sample_id
-    """
+    shell:
+    '''
+    seroba runSerotyping !{database} !{read1} !{read2} !{sample_id}
+    '''
 }
