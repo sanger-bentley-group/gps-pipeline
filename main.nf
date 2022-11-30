@@ -19,6 +19,7 @@ params.output = "$projectDir/results"
 include { PREPROCESSING } from "$projectDir/modules/preprocessing"
 include { GET_SPADES; GET_UNICYCLER; ASSEMBLING } from "$projectDir/modules/assembling"
 include { GET_SEROBA_DB; SEROTYPING } from "$projectDir/modules/serotyping"
+include { ASSEMBLY_QC } from "$projectDir/modules/assembly_qc"
 
 
 // Main workflow
@@ -45,14 +46,21 @@ workflow {
     raw_read_pairs_ch = Channel.fromFilePairs( "$params.reads/*_{1,2}.fastq.gz", checkIfExists: true )
 
     // Preprocess read pairs
-    // Output into Channel PREPROCESSING.out.processed_reads
+    // Output into Channel PREPROCESSING.out.processed_reads and Channel PREPROCESSING.out.base_count
     PREPROCESSING(raw_read_pairs_ch)
 
-    // From channel PREPROCESSING.out.processed_reads, assemble the preprocess read pairs
+    // From Channel PREPROCESSING.out.processed_reads, assemble the preprocess read pairs
     // Output into Channel ASSEMBLING.out.assembly, and hardlink the assemblies to $params.output directory
     ASSEMBLING(unicycler_runner_py, spades_py, PREPROCESSING.out.processed_reads)
 
-    // From channel PREPROCESSING.out.processed_reads, serotype the preprocess read pairs, then gather the results
+
+    // From Channel ASSEMBLING.out.assembly and Channel PREPROCESSING.out.base_count, assess assembly quality
+    // Output into Channel ASSEMBLY_QC.out.results
+    ASSEMBLY_QC(
+        ASSEMBLING.out.assembly.join(PREPROCESSING.out.base_count, by: 0, failOnDuplicate: true, failOnMismatch: true)
+    ).view()
+
+    // From Channel PREPROCESSING.out.processed_reads, serotype the preprocess read pairs, then gather the results
     // Save as serotype_summary.tsv
     SEROTYPING(seroba_db, PREPROCESSING.out.processed_reads)
         .collectFile(name: 'serotype_summary.tsv', storeDir: "$params.output")
