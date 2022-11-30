@@ -48,8 +48,8 @@ process GET_UNICYCLER {
     """
 }
 
-// Run Unicycler to get assemblies using specific SPAdes executable
-// Hardlink the assemblies to results directory
+// Run Unicycler to get assembly using specific SPAdes executable
+// Return sample_id and assembly, and hardlink the assembly to $params.output directory
 process ASSEMBLING {
     publishDir "$params.output", mode: 'link'
 
@@ -59,7 +59,7 @@ process ASSEMBLING {
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
 
     output:
-    path "${sample_id}.contigs.fasta"
+    tuple val(sample_id), path("${sample_id}.contigs.fasta"), emit: assembly
 
     script:
     """

@@ -44,13 +44,16 @@ workflow {
     // Get read pairs into Channel raw_read_pairs_ch
     raw_read_pairs_ch = Channel.fromFilePairs( "$params.reads/*_{1,2}.fastq.gz", checkIfExists: true )
 
-    // Preprocess read pairs, and output into Channel prcoessed_reads_ch
-    prcoessed_reads_ch = PREPROCESSING(raw_read_pairs_ch)
+    // Preprocess read pairs
+    // Output into Channel PREPROCESSING.out.processed_reads
+    PREPROCESSING(raw_read_pairs_ch)
 
-    // From the Channel prcoessed_reads_ch, assemble the preprocess read pairs 
-    ASSEMBLING(unicycler_runner_py, spades_py, prcoessed_reads_ch)
+    // From channel PREPROCESSING.out.processed_reads, assemble the preprocess read pairs
+    // Output into Channel ASSEMBLING.out.assembly, and hardlink the assemblies to $params.output directory
+    ASSEMBLING(unicycler_runner_py, spades_py, PREPROCESSING.out.processed_reads)
 
-    // From the Channel prcoessed_reads_ch, serotype the preprocess read pairs, then gather the results and save as serotype_summary.tsv
-    SEROTYPING(seroba_db, prcoessed_reads_ch)
+    // From channel PREPROCESSING.out.processed_reads, serotype the preprocess read pairs, then gather the results
+    // Save as serotype_summary.tsv
+    SEROTYPING(seroba_db, PREPROCESSING.out.processed_reads)
         .collectFile(name: 'serotype_summary.tsv', storeDir: "$params.output")
 }
