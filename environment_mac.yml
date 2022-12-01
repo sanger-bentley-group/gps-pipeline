@@ -7,13 +7,14 @@ channels:
 dependencies:
   - seroba=1.0.2
   - fastp=0.23.2
+  - quast=5.2.0
   - ariba=2.14.6
   - bcftools=1.12
   - biopython=1.77
   - kmc=3.1.0
   - tbb=2021.7.0
-  - "mummer=3.23=*_11"
-  - nextflow
+  - mummer=3.23=*_11 # MacOS needs to use build-specific mummer 3.23, as the default build causes fatal error
+  - nextflow>=22.10
   - git
   # MacOS specific packages below
   - blast=2.12.0

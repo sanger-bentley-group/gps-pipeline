@@ -19,6 +19,7 @@ params.output = "$projectDir/results"
 include { PREPROCESSING } from "$projectDir/modules/preprocessing"
 include { GET_SPADES; GET_UNICYCLER; ASSEMBLING } from "$projectDir/modules/assembling"
 include { GET_SEROBA_DB; SEROTYPING } from "$projectDir/modules/serotyping"
+include { ASSEMBLY_QC } from "$projectDir/modules/assembly_qc"
 
 
 // Main workflow
@@ -44,13 +45,35 @@ workflow {
     // Get read pairs into Channel raw_read_pairs_ch
     raw_read_pairs_ch = Channel.fromFilePairs( "$params.reads/*_{1,2}.fastq.gz", checkIfExists: true )
 
-    // Preprocess read pairs, and output into Channel prcoessed_reads_ch
-    prcoessed_reads_ch = PREPROCESSING(raw_read_pairs_ch)
+    // Preprocess read pairs
+    // Output into Channels PREPROCESSING.out.processed_reads & PREPROCESSING.out.base_count
+    PREPROCESSING(raw_read_pairs_ch)
 
-    // From the Channel prcoessed_reads_ch, assemble the preprocess read pairs 
-    ASSEMBLING(unicycler_runner_py, spades_py, prcoessed_reads_ch)
+    // From Channel PREPROCESSING.out.processed_reads, assemble the preprocess read pairs
+    // Output into Channel ASSEMBLING.out.assembly, and hardlink the assemblies to $params.output directory
+    ASSEMBLING(unicycler_runner_py, spades_py, PREPROCESSING.out.processed_reads)
 
-    // From the Channel prcoessed_reads_ch, serotype the preprocess read pairs, then gather the results and save as serotype_summary.tsv
-    SEROTYPING(seroba_db, prcoessed_reads_ch)
-        .collectFile(name: 'serotype_summary.tsv', storeDir: "$params.output")
+
+    // From Channel ASSEMBLING.out.assembly and Channel PREPROCESSING.out.base_count, assess assembly quality
+    // Output into Channels ASSEMBLY_QC.out.detailed_result & ASSEMBLY_QC.out.result
+    ASSEMBLY_QC(
+        ASSEMBLING.out.assembly
+        .join(PREPROCESSING.out.base_count, failOnDuplicate: true, failOnMismatch: true)
+    )
+
+    // From Channel PREPROCESSING.out.processed_reads, serotype the preprocess read pairs, then gather the results
+    // Output into Channels SEROTYPING.out.result
+    SEROTYPING(seroba_db, PREPROCESSING.out.processed_reads)
+
+    // Generate summary.csv by sorted sample_id based on merged Channels ASSEMBLY_QC.out.detailed_result & SEROTYPING.out.result
+    ASSEMBLY_QC.out.detailed_result
+    .join(SEROTYPING.out.result, failOnDuplicate: true)
+        .map { it.join',' }
+        .collectFile(
+            name: "summary.csv",
+            storeDir: "$params.output",
+            seed: ["Sample_ID", "No_of_Contigs" , "Assembly_Length", "Seq_Depth", "Assembly_QC", "Serotype", "SeroBA_Comment"].join(","),
+            sort: { it -> it.split(",")[0] },
+            newLine: true
+        )
 }

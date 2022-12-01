@@ -8,17 +8,17 @@ process GET_SPADES {
     output:
     val "$local/bin/spades.py"
 
-    script:
-    """
-    if [[ ! -f $local/bin/spades.py ]] || ! $local/bin/spades.py --version | grep -q 'v3.15.5' ; then
+    shell:
+    '''
+    if [[ ! -f !{local}/bin/spades.py ]] || ! !{local}/bin/spades.py --version | grep -q 'v3.15.5' ; then
         curl -L https://github.com/ablab/spades/releases/download/v3.15.5/SPAdes-3.15.5-Darwin.tar.gz > SPAdes-3.15.5-Darwin.tar.gz
         tar -xzf SPAdes-3.15.5-*.tar.gz
 
-        rm -rf $local
-        mkdir -p $local
-        mv SPAdes*/* $local/
+        rm -rf !{local}
+        mkdir -p !{local}
+        mv SPAdes*/* !{local}/
     fi 
-    """
+    '''
 }
 
 // MacOS Specific
@@ -31,27 +31,27 @@ process GET_UNICYCLER {
     output:
     val "$local/unicycler-runner.py"
 
-    script:
-    """
-    if [[ ! -f $local/unicycler-runner.py ]] || ! $local/unicycler-runner.py --version | grep -q 'v0.5.0' ; then
+    shell:
+    '''
+    if [[ ! -f !{local}/unicycler-runner.py ]] || ! !{local}/unicycler-runner.py --version | grep -q 'v0.5.0' ; then
         curl -L https://github.com/rrwick/Unicycler/archive/refs/tags/v0.5.0.tar.gz > v0.5.0.tar.gz
         
         tar -xzf v0.5.0.tar.gz
 
-        rm -rf $local
-        mkdir -p $local
-        mv Unicycler-0.5.0/* $local/
+        rm -rf !{local}
+        mkdir -p !{local}
+        mv Unicycler-0.5.0/* !{local}/
 
-        cd $local
+        cd !{local}
         arch -x86_64 make
     fi 
-    """
+    '''
 }
 
-// Run Unicycler to get assemblies using specific SPAdes executable
-// Hardlink the assemblies to results directory
+// Run Unicycler to get assembly using specific SPAdes executable
+// Return sample_id and assembly, and hardlink the assembly to $params.output directory
 process ASSEMBLING {
-    publishDir "$params.output", mode: 'link'
+    publishDir "$params.output/assemblies", mode: 'link'
 
     input:
     val unicycler_runner
@@ -59,11 +59,12 @@ process ASSEMBLING {
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
 
     output:
-    path "${sample_id}.contigs.fasta"
+    tuple val(sample_id), path("${sample_id}.contigs.fasta"), emit: assembly
 
-    script:
-    """
-    $unicycler_runner -1 $read1 -2 $read2 -s $unpaired -o results --spades_path $spades
-    mv results/assembly.fasta ${sample_id}.contigs.fasta
-    """
+    shell:
+    '''
+    !{unicycler_runner} -1 !{read1} -2 !{read2} -s !{unpaired} -o results --spades_path !{spades}
+    
+    mv results/assembly.fasta !{sample_id}.contigs.fasta
+    '''
 }
