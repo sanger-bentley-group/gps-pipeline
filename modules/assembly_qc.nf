@@ -3,7 +3,8 @@ process ASSEMBLY_QC {
     tuple val(sample_id), path(assembly), val(bases)
 
     output:
-    tuple val(sample_id), env(CONTIGS), env(LENGTH), env(DEPTH), env(ASSEMBLY_QC), emit: results
+    tuple val(sample_id), env(CONTIGS), env(LENGTH), env(DEPTH), env(ASSEMBLY_QC), emit: detailed_result
+    tuple val(sample_id), env(ASSEMBLY_QC), emit: result
 
     shell:
     '''

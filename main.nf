@@ -55,10 +55,10 @@ workflow {
 
 
     // From Channel ASSEMBLING.out.assembly and Channel PREPROCESSING.out.base_count, assess assembly quality
-    // Output into Channel ASSEMBLY_QC.out.results
+    // Output into Channels ASSEMBLY_QC.out.detailed_result & ASSEMBLY_QC.out.result for all QC metrics or PASS/FAIL only respectively
     ASSEMBLY_QC(
         ASSEMBLING.out.assembly.join(PREPROCESSING.out.base_count, by: 0, failOnDuplicate: true, failOnMismatch: true)
-    ).view()
+    )
 
     // From Channel PREPROCESSING.out.processed_reads, serotype the preprocess read pairs, then gather the results
     // Save as serotype_summary.tsv
