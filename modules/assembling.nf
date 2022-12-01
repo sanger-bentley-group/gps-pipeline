@@ -51,7 +51,7 @@ process GET_UNICYCLER {
 // Run Unicycler to get assembly using specific SPAdes executable
 // Return sample_id and assembly, and hardlink the assembly to $params.output directory
 process ASSEMBLING {
-    publishDir "$params.output", mode: 'link'
+    publishDir "$params.output/assemblies", mode: 'link'
 
     input:
     val unicycler_runner
