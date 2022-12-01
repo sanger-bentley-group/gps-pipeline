@@ -1,3 +1,4 @@
+// Run quast to assess assembly quality
 process ASSEMBLY_QC {
     input:
     tuple val(sample_id), path(assembly), val(bases)
