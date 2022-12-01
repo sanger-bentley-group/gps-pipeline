@@ -46,7 +46,7 @@ workflow {
     raw_read_pairs_ch = Channel.fromFilePairs( "$params.reads/*_{1,2}.fastq.gz", checkIfExists: true )
 
     // Preprocess read pairs
-    // Output into Channel PREPROCESSING.out.processed_reads and Channel PREPROCESSING.out.base_count
+    // Output into Channels PREPROCESSING.out.processed_reads & PREPROCESSING.out.base_count
     PREPROCESSING(raw_read_pairs_ch)
 
     // From Channel PREPROCESSING.out.processed_reads, assemble the preprocess read pairs
@@ -55,13 +55,21 @@ workflow {
 
 
     // From Channel ASSEMBLING.out.assembly and Channel PREPROCESSING.out.base_count, assess assembly quality
-    // Output into Channels ASSEMBLY_QC.out.detailed_result & ASSEMBLY_QC.out.result for all QC metrics or PASS/FAIL only respectively
+    // Output into Channels ASSEMBLY_QC.out.detailed_result & ASSEMBLY_QC.out.result
     ASSEMBLY_QC(
-        ASSEMBLING.out.assembly.join(PREPROCESSING.out.base_count, by: 0, failOnDuplicate: true, failOnMismatch: true)
+        ASSEMBLING.out.assembly
+        .join(PREPROCESSING.out.base_count, failOnDuplicate: true, failOnMismatch: true)
     )
 
     // From Channel PREPROCESSING.out.processed_reads, serotype the preprocess read pairs, then gather the results
-    // Save as serotype_summary.tsv
+    // Output into Channels SEROTYPING.out.result
     SEROTYPING(seroba_db, PREPROCESSING.out.processed_reads)
-        .collectFile(name: 'serotype_summary.tsv', storeDir: "$params.output")
+
+    // By sample_id, merge Channels ASSEMBLY_QC.out.detailed_result & SEROTYPING.out.result
+    // Sort and emit each sample_id
+    ASSEMBLY_QC.out.detailed_result
+    .join(SEROTYPING.out.result, failOnDuplicate: true)
+        .toSortedList( { a, b -> a[0] <=> b[0] } )
+        .flatMap()
+        .view()
 }
