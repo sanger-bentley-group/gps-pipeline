@@ -1,4 +1,4 @@
-// Preprocess the FASTQs with fastp
+// Run fastp to preprocess the FASTQs 
 process PREPROCESSING {
     input:
     tuple val(sample_id), path(reads)
