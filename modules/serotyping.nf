@@ -25,10 +25,13 @@ process SEROTYPING {
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
 
     output:
-    path "$sample_id/pred.tsv"
+    tuple val(sample_id), env(SEROTYPE), env(SEROBA_COMMENT), emit: result
 
     shell:
     '''
     seroba runSerotyping !{database} !{read1} !{read2} !{sample_id}
+
+    SEROTYPE=$(awk -F'\t' '{ print $2 }' !{sample_id}/pred.tsv)
+    SEROBA_COMMENT=$(awk -F'\t' '$3!=""{ print $3 } $3==""{ print "_" }' !{sample_id}/pred.tsv)
     '''
 }
