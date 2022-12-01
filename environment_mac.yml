@@ -16,6 +16,5 @@ dependencies:
   - mummer=3.23=*_11 # MacOS needs to use build-specific mummer 3.23, as the default build causes fatal error
   - nextflow>=22.10
   - git
-  - pandas=1.3.5
   # MacOS specific packages below
   - blast=2.12.0

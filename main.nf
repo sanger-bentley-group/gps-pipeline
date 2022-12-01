@@ -20,7 +20,6 @@ include { PREPROCESSING } from "$projectDir/modules/preprocessing"
 include { GET_SPADES; GET_UNICYCLER; ASSEMBLING } from "$projectDir/modules/assembling"
 include { GET_SEROBA_DB; SEROTYPING } from "$projectDir/modules/serotyping"
 include { ASSEMBLY_QC } from "$projectDir/modules/assembly_qc"
-include { CLEAN_SUMMARY; SUMMARY } from "$projectDir/modules/summary"
 
 
 // Main workflow
@@ -66,14 +65,15 @@ workflow {
     // Output into Channels SEROTYPING.out.result
     SEROTYPING(seroba_db, PREPROCESSING.out.processed_reads)
 
-
-    // Remove any pre-existing summary.csv in the ouput directory
-    // Once ready, generate summary.csv by sorted sample_id based on merged Channels ASSEMBLY_QC.out.detailed_result & SEROTYPING.out.result
-    CLEAN_SUMMARY("$params.output/summary.csv")
-    SUMMARY(CLEAN_SUMMARY.out.ready, "$params.output/summary.csv",
-        ASSEMBLY_QC.out.detailed_result
-        .join(SEROTYPING.out.result, failOnDuplicate: true)
-            .toSortedList( { a, b -> a[0] <=> b[0] } )
-            .flatMap()
-    )
+    // Generate summary.csv by sorted sample_id based on merged Channels ASSEMBLY_QC.out.detailed_result & SEROTYPING.out.result
+    ASSEMBLY_QC.out.detailed_result
+    .join(SEROTYPING.out.result, failOnDuplicate: true)
+        .map { it.join',' }
+        .collectFile(
+            name: "summary.csv",
+            storeDir: "$params.output",
+            seed: ["Sample_ID", "No_of_Contigs" , "Assembly_Length", "Seq_Depth", "Assembly_QC", "Serotype", "SeroBA_Comment"].join(","),
+            sort: { it -> it.split(",")[0] },
+            newLine: true
+        )
 }
