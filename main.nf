@@ -23,7 +23,7 @@ include { PREPROCESSING } from "$projectDir/modules/preprocessing"
 include { GET_SPADES; GET_UNICYCLER; ASSEMBLING } from "$projectDir/modules/assembling"
 include { GET_SEROBA_DB; SEROTYPING } from "$projectDir/modules/serotyping"
 include { ASSEMBLY_QC } from "$projectDir/modules/assembly_qc"
-include { GET_KRAKEN_DB } from "$projectDir/modules/taxonomy"
+include { GET_KRAKEN_DB; TAXONOMY } from "$projectDir/modules/taxonomy"
 
 
 // Main workflow
@@ -68,18 +68,23 @@ workflow {
         .join(PREPROCESSING.out.base_count, failOnDuplicate: true, failOnMismatch: true)
     )
 
-    // From Channel PREPROCESSING.out.processed_reads, serotype the preprocess read pairs, then gather the results
+    // From Channel PREPROCESSING.out.processed_reads, serotype the preprocess read pairs
     // Output into Channels SEROTYPING.out.result
     SEROTYPING(seroba_db, PREPROCESSING.out.processed_reads)
+    
+    // From Channel ASSEMBLING.out.assembly assess Streptococcus pneumoniae percentage in assembly
+    // Output into Channels TAXONOMY.out.detailed_result & TAXONOMY.out.result
+    TAXONOMY(kraken2_db, ASSEMBLING.out.assembly)
 
-    // Generate summary.csv by sorted sample_id based on merged Channels ASSEMBLY_QC.out.detailed_result & SEROTYPING.out.result
+    // Generate summary.csv by sorted sample_id based on merged Channels ASSEMBLY_QC.out.detailed_result & TAXONOMY.out.detailed_result & SEROTYPING.out.result
     ASSEMBLY_QC.out.detailed_result
+    .join(TAXONOMY.out.detailed_result, failOnDuplicate: true)
     .join(SEROTYPING.out.result, failOnDuplicate: true)
         .map { it.join',' }
         .collectFile(
             name: "summary.csv",
             storeDir: "$params.output",
-            seed: ["Sample_ID", "No_of_Contigs" , "Assembly_Length", "Seq_Depth", "Assembly_QC", "Serotype", "SeroBA_Comment"].join(","),
+            seed: ["Sample_ID", "No_of_Contigs" , "Assembly_Length", "Seq_Depth", "Assembly_QC", "S.Pneumo_Percentage", "Taxonomy_QC", "Serotype", "SeroBA_Comment"].join(","),
             sort: { it -> it.split(",")[0] },
             newLine: true
         )
