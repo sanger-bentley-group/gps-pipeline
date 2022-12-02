@@ -11,6 +11,6 @@ process PREPROCESSING {
     '''
     fastp --in1 !{reads[0]} --in2 !{reads[1]} --out1 processed-!{sample_id}_1.fastq.gz --out2 processed-!{sample_id}_2.fastq.gz --unpaired1 processed-!{sample_id}_unpaired.fastq.gz --unpaired2 processed-!{sample_id}_unpaired.fastq.gz
     
-    BASES=$(cat "fastp.json" | python3 -c "import sys, json; print(json.load(sys.stdin)['summary']['after_filtering']['total_bases'])")
+    BASES=$(< fastp.json jq .summary.after_filtering.total_bases)
     '''
 }
