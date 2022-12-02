@@ -17,6 +17,7 @@ dependencies:
   - nextflow=22.10
   - git=2.38.1
   - jq=1.6
+  - bc=1.07.1
   - kraken2=2.1.2
   # Linux specific packages below
   - unicycler=0.5.0
