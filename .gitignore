@@ -8,5 +8,5 @@ work
 
 # program binaries, test data, output
 bin
-data
-results
+input
+output
