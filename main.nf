@@ -1,9 +1,12 @@
 #!/usr/bin/env nextflow
 
+// Default directory for input reads
+params.reads = "$projectDir/input"
+// Default output directory
+params.output = "$projectDir/output"
+
 // Get host OS type
 params.os = System.properties['os.name']
-// Default directory for input reads
-params.reads = "$projectDir/data"
 // Default directory for SPAdes 
 params.spades_local = "$projectDir/bin/spades"
 // Default directory for Unicycler
@@ -14,9 +17,9 @@ params.seroba_local = "$projectDir/bin/seroba"
 // Default link and local directory for Kraken2 Database
 params.kraken2_db_remote = "https://genome-idx.s3.amazonaws.com/kraken/k2_standard_08gb_20220926.tar.gz"
 params.kraken2_db_local = "$projectDir/bin/kraken"
-// Default output directory
-params.output = "$projectDir/results"
-
+// Default referece genome assembly path and local directory for its BWA database 
+params.ref_genome = "$projectDir/data/Streptococcus_pneumoniae_ATCC_700669_v1.fa"
+params.ref_genome_bwa_db_local =  "$projectDir/bin/bwa_ref_db"
 
 // Import modules
 include { PREPROCESSING } from "$projectDir/modules/preprocessing"
@@ -24,6 +27,7 @@ include { GET_SPADES; GET_UNICYCLER; ASSEMBLING } from "$projectDir/modules/asse
 include { GET_SEROBA_DB; SEROTYPING } from "$projectDir/modules/serotyping"
 include { ASSEMBLY_QC } from "$projectDir/modules/assembly_qc"
 include { GET_KRAKEN_DB; TAXONOMY } from "$projectDir/modules/taxonomy"
+include { GET_REF_GENOME_BWA_DB_PREFIX } from "$projectDir/modules/mapping"
 
 
 // Main workflow
@@ -48,6 +52,9 @@ workflow {
 
     // Get path to Kraken2 Database, download if necessary
     kraken2_db = GET_KRAKEN_DB(params.kraken2_db_remote, params.kraken2_db_local)
+
+    // Get path to prefix of Reference Genome BWA Database, generate from assembly if necessary
+    ref_genome_bwa_db_prefix = GET_REF_GENOME_BWA_DB_PREFIX(params.ref_genome, params.ref_genome_bwa_db_local)
 
     // Get read pairs into Channel raw_read_pairs_ch
     raw_read_pairs_ch = Channel.fromFilePairs( "$params.reads/*_{1,2}.fastq.gz", checkIfExists: true )
