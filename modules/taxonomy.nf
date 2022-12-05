@@ -23,7 +23,7 @@ process GET_KRAKEN_DB {
     '''
 }
 
-// Run Kraken 2 to assess Streptococcus pneumoniae percentage in assembly
+// Run Kraken 2 to assess Streptococcus pneumoniae percentage in reads
 process TAXONOMY {
     input:
     val kraken_db
