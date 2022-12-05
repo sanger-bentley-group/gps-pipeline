@@ -67,7 +67,6 @@ workflow {
     // Output into Channel ASSEMBLING.out.assembly, and hardlink the assemblies to $params.output directory
     ASSEMBLING(unicycler_runner_py, spades_py, PREPROCESSING.out.processed_reads)
 
-
     // From Channel ASSEMBLING.out.assembly and Channel PREPROCESSING.out.base_count, assess assembly quality
     // Output into Channels ASSEMBLY_QC.out.detailed_result & ASSEMBLY_QC.out.result
     ASSEMBLY_QC(
@@ -79,9 +78,9 @@ workflow {
     // Output into Channels SEROTYPING.out.result
     SEROTYPING(seroba_db, PREPROCESSING.out.processed_reads)
     
-    // From Channel ASSEMBLING.out.assembly assess Streptococcus pneumoniae percentage in assembly
+    // From Channel PREPROCESSING.out.processed_reads assess Streptococcus pneumoniae percentage in reads
     // Output into Channels TAXONOMY.out.detailed_result & TAXONOMY.out.result
-    TAXONOMY(kraken2_db, ASSEMBLING.out.assembly)
+    TAXONOMY(kraken2_db, PREPROCESSING.out.processed_reads)
 
     // Generate summary.csv by sorted sample_id based on merged Channels ASSEMBLY_QC.out.detailed_result & TAXONOMY.out.detailed_result & SEROTYPING.out.result
     ASSEMBLY_QC.out.detailed_result
