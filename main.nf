@@ -27,7 +27,7 @@ include { GET_SPADES; GET_UNICYCLER; ASSEMBLING } from "$projectDir/modules/asse
 include { GET_SEROBA_DB; SEROTYPING } from "$projectDir/modules/serotyping"
 include { ASSEMBLY_QC } from "$projectDir/modules/assembly_qc"
 include { GET_KRAKEN_DB; TAXONOMY } from "$projectDir/modules/taxonomy"
-include { GET_REF_GENOME_BWA_DB_PREFIX } from "$projectDir/modules/mapping"
+include { GET_REF_GENOME_BWA_DB_PREFIX; MAPPING } from "$projectDir/modules/mapping"
 
 
 // Main workflow
@@ -81,6 +81,8 @@ workflow {
     // From Channel PREPROCESSING.out.processed_reads assess Streptococcus pneumoniae percentage in reads
     // Output into Channels TAXONOMY.out.detailed_result & TAXONOMY.out.result
     TAXONOMY(kraken2_db, PREPROCESSING.out.processed_reads)
+
+    MAPPING(ref_genome_bwa_db_prefix, PREPROCESSING.out.processed_reads).view()
 
     // Generate summary.csv by sorted sample_id based on merged Channels ASSEMBLY_QC.out.detailed_result & TAXONOMY.out.detailed_result & SEROTYPING.out.result
     ASSEMBLY_QC.out.detailed_result
