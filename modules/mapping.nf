@@ -38,3 +38,18 @@ process MAPPING {
     rm !{sample_id}_mapped.bam
     '''
 }
+
+
+process REF_COVERAGE {
+    input:
+    tuple val(sample_id), path(bam)
+
+    output:
+    tuple val(sample_id), env(COVERAGE), emit: result
+
+    shell:
+    '''
+    samtools index !{bam}
+    COVERAGE=$(samtools coverage !{bam} | awk -F'\t' 'FNR==2 {print $6}')
+    '''
+}
