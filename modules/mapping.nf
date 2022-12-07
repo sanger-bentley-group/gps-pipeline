@@ -33,7 +33,7 @@ process MAPPING {
 
     shell:
     '''
-    bwa mem !{reference_prefix} <(zcat !{read1}) <(zcat !{read2}) > !{sample_id}_mapped.sam
+    bwa mem !{reference_prefix} <(zcat < !{read1}) <(zcat < !{read2}) > !{sample_id}_mapped.sam
 
     samtools view -b !{sample_id}_mapped.sam > !{sample_id}_mapped.bam
     rm !{sample_id}_mapped.sam
