@@ -1,3 +1,5 @@
+// Construct the FM-index database for the reference genome
+// Return database prefix with path for bwa mem runs
 process GET_REF_GENOME_BWA_DB_PREFIX {
     input:
     path reference
@@ -18,7 +20,9 @@ process GET_REF_GENOME_BWA_DB_PREFIX {
     '''
 }
 
-
+// Map the reads to reference using BWA-MEM algorithm,
+// then covert the resulting SAM into BAM and sort it
+// Return sorted BAM
 process MAPPING {
     input:
     val reference_prefix
@@ -39,7 +43,7 @@ process MAPPING {
     '''
 }
 
-
+// Return reference coverage percentage by the reads
 process REF_COVERAGE {
     input:
     tuple val(sample_id), path(bam)
@@ -54,7 +58,7 @@ process REF_COVERAGE {
     '''
 }
 
-
+// Return .vcf by calling the SNPs
 process SNP_CALL {
     input:
     path reference
@@ -69,8 +73,8 @@ process SNP_CALL {
     '''
 }
 
-
-process HET_SNP_SITES {
+// Return non-cluster heterozygous SNP (Het-SNP) site count
+process HET_SNP_COUNT {
     input:
     tuple val(sample_id), path(vcf)
 
@@ -155,19 +159,19 @@ process HET_SNP_SITES {
     '''
 }
 
-
+// Return overall mapping QC result based on reference coverage and count of Het-SNP sites
 process MAPPING_QC {
     input:
-    tuple val(sample_id), val(ref_coverage), val(het_snp_sites)
+    tuple val(sample_id), val(ref_coverage), val(het_snp_count)
 
     output:
-    tuple val(sample_id), val(ref_coverage), val(het_snp_sites), env(MAPPING_QC), emit: detailed_result
+    tuple val(sample_id), val(ref_coverage), val(het_snp_count), env(MAPPING_QC), emit: detailed_result
     tuple val(sample_id), env(MAPPING_QC), emit: result
 
     shell:
     '''
     COVERAGE=!{ref_coverage}
-    HET_SNP=!{het_snp_sites}
+    HET_SNP=!{het_snp_count}
     
     if (( $(echo "$COVERAGE > 60.00" | bc -l) )) && (( $HET_SNP < 220 )); then
         MAPPING_QC="PASS"

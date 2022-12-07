@@ -27,7 +27,7 @@ include { GET_SPADES; GET_UNICYCLER; ASSEMBLING } from "$projectDir/modules/asse
 include { GET_SEROBA_DB; SEROTYPING } from "$projectDir/modules/serotyping"
 include { ASSEMBLY_QC } from "$projectDir/modules/assembly_qc"
 include { GET_KRAKEN_DB; TAXONOMY } from "$projectDir/modules/taxonomy"
-include { GET_REF_GENOME_BWA_DB_PREFIX; MAPPING; REF_COVERAGE; SNP_CALL; HET_SNP_SITES; MAPPING_QC } from "$projectDir/modules/mapping"
+include { GET_REF_GENOME_BWA_DB_PREFIX; MAPPING; REF_COVERAGE; SNP_CALL; HET_SNP_COUNT; MAPPING_QC } from "$projectDir/modules/mapping"
 
 
 // Main workflow
@@ -75,17 +75,24 @@ workflow {
     )
 
     // From Channel PREPROCESSING.out.processed_reads, serotype the preprocess read pairs
-    // Output into Channels SEROTYPING.out.result
+    // Output into Channel SEROTYPING.out.result
     SEROTYPING(seroba_db, PREPROCESSING.out.processed_reads)
     
     // From Channel PREPROCESSING.out.processed_reads assess Streptococcus pneumoniae percentage in reads
     // Output into Channels TAXONOMY.out.detailed_result & TAXONOMY.out.result
     TAXONOMY(kraken2_db, PREPROCESSING.out.processed_reads)
 
+    // From Channel PREPROCESSING.out.processed_reads map reads to reference
+    // Output into Channel MAPPING.out.bam
     MAPPING(ref_genome_bwa_db_prefix, PREPROCESSING.out.processed_reads)
+    
+    // From Channel MAPPING.out.bam calculates reference coverage and non-cluster Het-SNP site count respecitvely
+    // Output into Channels REF_COVERAGE.out.result & HET_SNP_COUNT.out.result respectively
     REF_COVERAGE(MAPPING.out.bam)
-    SNP_CALL(params.ref_genome, MAPPING.out.bam) | HET_SNP_SITES
-    MAPPING_QC(REF_COVERAGE.out.result.join(HET_SNP_SITES.out.result, failOnDuplicate: true))
+    SNP_CALL(params.ref_genome, MAPPING.out.bam) | HET_SNP_COUNT
+    // Merge Channels REF_COVERAGE.out.result & HET_SNP_COUNT.out.result to provide Mapping QC Status
+    // Output into Channels MAPPING_QC.out.detailed_result & MAPPING_QC.out.result
+    MAPPING_QC(REF_COVERAGE.out.result.join(HET_SNP_COUNT.out.result, failOnDuplicate: true))
 
     // Generate summary.csv by sorted sample_id based on merged Channels ASSEMBLY_QC.out.detailed_result & TAXONOMY.out.detailed_result & MAPPING_QC.out.detailed_result & SEROTYPING.out.result
     ASSEMBLY_QC.out.detailed_result
