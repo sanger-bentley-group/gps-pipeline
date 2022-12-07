@@ -27,7 +27,7 @@ include { GET_SPADES; GET_UNICYCLER; ASSEMBLING } from "$projectDir/modules/asse
 include { GET_SEROBA_DB; SEROTYPING } from "$projectDir/modules/serotyping"
 include { ASSEMBLY_QC } from "$projectDir/modules/assembly_qc"
 include { GET_KRAKEN_DB; TAXONOMY } from "$projectDir/modules/taxonomy"
-include { GET_REF_GENOME_BWA_DB_PREFIX; MAPPING; REF_COVERAGE; SNP_CALL; HET_SNP_SITES } from "$projectDir/modules/mapping"
+include { GET_REF_GENOME_BWA_DB_PREFIX; MAPPING; REF_COVERAGE; SNP_CALL; HET_SNP_SITES; MAPPING_QC } from "$projectDir/modules/mapping"
 
 
 // Main workflow
@@ -83,20 +83,20 @@ workflow {
     TAXONOMY(kraken2_db, PREPROCESSING.out.processed_reads)
 
     MAPPING(ref_genome_bwa_db_prefix, PREPROCESSING.out.processed_reads)
-
     REF_COVERAGE(MAPPING.out.bam)
-
     SNP_CALL(params.ref_genome, MAPPING.out.bam) | HET_SNP_SITES
+    MAPPING_QC(REF_COVERAGE.out.result.join(HET_SNP_SITES.out.result, failOnDuplicate: true))
 
-    // Generate summary.csv by sorted sample_id based on merged Channels ASSEMBLY_QC.out.detailed_result & TAXONOMY.out.detailed_result & SEROTYPING.out.result
+    // Generate summary.csv by sorted sample_id based on merged Channels ASSEMBLY_QC.out.detailed_result & TAXONOMY.out.detailed_result & MAPPING_QC.out.detailed_result & SEROTYPING.out.result
     ASSEMBLY_QC.out.detailed_result
     .join(TAXONOMY.out.detailed_result, failOnDuplicate: true)
+    .join(MAPPING_QC.out.detailed_result, failOnDuplicate: true)
     .join(SEROTYPING.out.result, failOnDuplicate: true)
         .map { it.join',' }
         .collectFile(
             name: "summary.csv",
             storeDir: "$params.output",
-            seed: ["Sample_ID", "No_of_Contigs" , "Assembly_Length", "Seq_Depth", "Assembly_QC", "S.Pneumo_Percentage", "Taxonomy_QC", "Serotype", "SeroBA_Comment"].join(","),
+            seed: ["Sample_ID", "No_of_Contigs" , "Assembly_Length", "Seq_Depth", "Assembly_QC", "S.Pneumo_Percentage", "Taxonomy_QC", "Ref_Coverage_Percentage", "Het-SNP_Sites" ,"Mapping_QC","Serotype", "SeroBA_Comment"].join(","),
             sort: { it -> it.split(",")[0] },
             newLine: true
         )
