@@ -35,7 +35,7 @@ process TAXONOMY {
 
     shell:
     '''
-    kraken2 --use-names --db !{kraken_db} --paired !{read1} !{read2} --report kraken_report.txt
+    kraken2 --use-names --memory-mapping --db !{kraken_db} --paired !{read1} !{read2} --report kraken_report.txt
 
     PERCENTAGE=$(awk -F"\t" '$4 ~ /^S$/ && $6 ~ /Streptococcus pneumoniae$/ { gsub(/^[ \t]+/, "", $1); print $1 }' kraken_report.txt)
 
