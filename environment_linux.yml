@@ -19,6 +19,8 @@ dependencies:
   - jq=1.6
   - bc=1.07.1
   - kraken2=2.1.2
+  - bwa=0.7.17
+  - samtools=1.12
   # Linux specific packages below
   - unicycler=0.5.0
   - spades=3.15.5

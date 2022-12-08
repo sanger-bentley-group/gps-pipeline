@@ -23,11 +23,11 @@ process GET_KRAKEN_DB {
     '''
 }
 
-// Run Kraken 2 to assess Streptococcus pneumoniae percentage in assembly
+// Run Kraken 2 to assess Streptococcus pneumoniae percentage in reads
 process TAXONOMY {
     input:
     val kraken_db
-    tuple val(sample_id), path(assembly)
+    tuple val(sample_id), path(read1), path(read2), path(unpaired)
 
     output:
     tuple val(sample_id), env(PERCENTAGE), env(TAXONOMY_QC), emit: detailed_result
@@ -35,7 +35,7 @@ process TAXONOMY {
 
     shell:
     '''
-    kraken2 --use-names --db !{kraken_db} !{assembly} --report kraken_report.txt
+    kraken2 --use-names --memory-mapping --db !{kraken_db} --paired !{read1} !{read2} --report kraken_report.txt
 
     PERCENTAGE=$(awk -F"\t" '$4 ~ /^S$/ && $6 ~ /Streptococcus pneumoniae$/ { gsub(/^[ \t]+/, "", $1); print $1 }' kraken_report.txt)
 

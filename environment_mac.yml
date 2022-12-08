@@ -19,5 +19,7 @@ dependencies:
   - jq=1.6
   - bc=1.07.1
   - kraken2=2.1.2
+  - bwa=0.7.17
+  - samtools=1.12
   # MacOS specific packages below
   - blast=2.12.0

@@ -39,7 +39,7 @@ GPS Unified Pipeline is a Nextflow Pipeline for processing Streptococcus pneumon
      ```
 
 ### Run
-- You can run the pipeline without arguments/parameters. It will attempt to get the raw reads from the default location (`data` directory inside the `gps-unified-pipeline` local repository)
+- You can run the pipeline without arguments/parameters. It will attempt to get the raw reads from the default location (`input` directory inside the `gps-unified-pipeline` local repository)
   ```
   nextflow run main.nf
   ```
@@ -49,7 +49,7 @@ GPS Unified Pipeline is a Nextflow Pipeline for processing Streptococcus pneumon
   ```
 
 ### Output
-- By default, the pipeline outputs the results into `results` directory inside the `gps-unified-pipeline` local repository
+- By default, the pipeline outputs the results into `output` directory inside the `gps-unified-pipeline` local repository
 - It can be changed by adding argument `--output`
   ```
   nextflow run main.nf --output /path/to/output-directory
