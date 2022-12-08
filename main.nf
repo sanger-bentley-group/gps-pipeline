@@ -22,10 +22,9 @@ params.ref_genome = "$projectDir/data/Streptococcus_pneumoniae_ATCC_700669_v1.fa
 params.ref_genome_bwa_db_local =  "$projectDir/bin/bwa_ref_db"
 
 // Import modules
-include { PREPROCESSING } from "$projectDir/modules/preprocessing"
-include { GET_SPADES; GET_UNICYCLER; ASSEMBLING } from "$projectDir/modules/assembling"
-include { GET_SEROBA_DB; SEROTYPING } from "$projectDir/modules/serotyping"
-include { ASSEMBLY_QC } from "$projectDir/modules/assembly_qc"
+include { PREPROCESS } from "$projectDir/modules/preprocess"
+include { GET_SPADES; GET_UNICYCLER; ASSEMBLY; ASSEMBLY_QC } from "$projectDir/modules/assembly"
+include { GET_SEROBA_DB; SEROTYPE } from "$projectDir/modules/serotype"
 include { GET_KRAKEN_DB; TAXONOMY } from "$projectDir/modules/taxonomy"
 include { GET_REF_GENOME_BWA_DB_PREFIX; MAPPING; REF_COVERAGE; SNP_CALL; HET_SNP_COUNT; MAPPING_QC } from "$projectDir/modules/mapping"
 
@@ -60,31 +59,31 @@ workflow {
     raw_read_pairs_ch = Channel.fromFilePairs( "$params.reads/*_{1,2}.fastq.gz", checkIfExists: true )
 
     // Preprocess read pairs
-    // Output into Channels PREPROCESSING.out.processed_reads & PREPROCESSING.out.base_count
-    PREPROCESSING(raw_read_pairs_ch)
+    // Output into Channels PREPROCESS.out.processed_reads & PREPROCESS.out.base_count
+    PREPROCESS(raw_read_pairs_ch)
 
-    // From Channel PREPROCESSING.out.processed_reads, assemble the preprocess read pairs
-    // Output into Channel ASSEMBLING.out.assembly, and hardlink the assemblies to $params.output directory
-    ASSEMBLING(unicycler_runner_py, spades_py, PREPROCESSING.out.processed_reads)
+    // From Channel PREPROCESS.out.processed_reads, assemble the preprocess read pairs
+    // Output into Channel ASSEMBLY.out.assembly, and hardlink the assemblies to $params.output directory
+    ASSEMBLY(unicycler_runner_py, spades_py, PREPROCESS.out.processed_reads)
 
-    // From Channel ASSEMBLING.out.assembly and Channel PREPROCESSING.out.base_count, assess assembly quality
+    // From Channel ASSEMBLY.out.assembly and Channel PREPROCESS.out.base_count, assess assembly quality
     // Output into Channels ASSEMBLY_QC.out.detailed_result & ASSEMBLY_QC.out.result
     ASSEMBLY_QC(
-        ASSEMBLING.out.assembly
-        .join(PREPROCESSING.out.base_count, failOnDuplicate: true, failOnMismatch: true)
+        ASSEMBLY.out.assembly
+        .join(PREPROCESS.out.base_count, failOnDuplicate: true, failOnMismatch: true)
     )
 
-    // From Channel PREPROCESSING.out.processed_reads, serotype the preprocess read pairs
-    // Output into Channel SEROTYPING.out.result
-    SEROTYPING(seroba_db, PREPROCESSING.out.processed_reads)
+    // From Channel PREPROCESS.out.processed_reads, serotype the preprocess read pairs
+    // Output into Channel SEROTYPE.out.result
+    SEROTYPE(seroba_db, PREPROCESS.out.processed_reads)
     
-    // From Channel PREPROCESSING.out.processed_reads assess Streptococcus pneumoniae percentage in reads
+    // From Channel PREPROCESS.out.processed_reads assess Streptococcus pneumoniae percentage in reads
     // Output into Channels TAXONOMY.out.detailed_result & TAXONOMY.out.result
-    TAXONOMY(kraken2_db, PREPROCESSING.out.processed_reads)
+    TAXONOMY(kraken2_db, PREPROCESS.out.processed_reads)
 
-    // From Channel PREPROCESSING.out.processed_reads map reads to reference
+    // From Channel PREPROCESS.out.processed_reads map reads to reference
     // Output into Channel MAPPING.out.bam
-    MAPPING(ref_genome_bwa_db_prefix, PREPROCESSING.out.processed_reads)
+    MAPPING(ref_genome_bwa_db_prefix, PREPROCESS.out.processed_reads)
     
     // From Channel MAPPING.out.bam calculates reference coverage and non-cluster Het-SNP site count respecitvely
     // Output into Channels REF_COVERAGE.out.result & HET_SNP_COUNT.out.result respectively
@@ -94,11 +93,11 @@ workflow {
     // Output into Channels MAPPING_QC.out.detailed_result & MAPPING_QC.out.result
     MAPPING_QC(REF_COVERAGE.out.result.join(HET_SNP_COUNT.out.result, failOnDuplicate: true))
 
-    // Generate summary.csv by sorted sample_id based on merged Channels ASSEMBLY_QC.out.detailed_result & TAXONOMY.out.detailed_result & MAPPING_QC.out.detailed_result & SEROTYPING.out.result
+    // Generate summary.csv by sorted sample_id based on merged Channels ASSEMBLY_QC.out.detailed_result & TAXONOMY.out.detailed_result & MAPPING_QC.out.detailed_result & SEROTYPE.out.result
     ASSEMBLY_QC.out.detailed_result
     .join(TAXONOMY.out.detailed_result, failOnDuplicate: true)
     .join(MAPPING_QC.out.detailed_result, failOnDuplicate: true)
-    .join(SEROTYPING.out.result, failOnDuplicate: true)
+    .join(SEROTYPE.out.result, failOnDuplicate: true)
         .map { it.join',' }
         .collectFile(
             name: "summary.csv",

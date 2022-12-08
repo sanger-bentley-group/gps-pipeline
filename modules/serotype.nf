@@ -19,7 +19,7 @@ process GET_SEROBA_DB {
 }
 
 // Run Seroba to serotype samples
-process SEROTYPING {
+process SEROTYPE {
     input:
     val database
     tuple val(sample_id), path(read1), path(read2), path(unpaired)

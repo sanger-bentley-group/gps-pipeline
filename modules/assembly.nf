@@ -50,7 +50,7 @@ process GET_UNICYCLER {
 
 // Run Unicycler to get assembly using specific SPAdes executable
 // Return sample_id and assembly, and hardlink the assembly to $params.output directory
-process ASSEMBLING {
+process ASSEMBLY {
     publishDir "$params.output/assemblies", mode: 'link'
 
     input:
@@ -66,5 +66,30 @@ process ASSEMBLING {
     !{unicycler_runner} -1 !{read1} -2 !{read2} -s !{unpaired} -o results --spades_path !{spades}
     
     mv results/assembly.fasta !{sample_id}.contigs.fasta
+    '''
+}
+
+// Run quast to assess assembly quality
+process ASSEMBLY_QC {
+    input:
+    tuple val(sample_id), path(assembly), val(bases)
+
+    output:
+    tuple val(sample_id), env(CONTIGS), env(LENGTH), env(DEPTH), env(ASSEMBLY_QC), emit: detailed_result
+    tuple val(sample_id), env(ASSEMBLY_QC), emit: result
+
+    shell:
+    '''
+    quast -o results !{assembly}
+    
+    CONTIGS=$(awk -F'\t' '$1 == "# contigs" { print $2 }' results/report.tsv)
+    LENGTH=$(awk -F'\t' '$1 == "Total length" { print $2 }' results/report.tsv)
+    DEPTH=$(printf "%.0f" $((!{bases} / $LENGTH)))
+    
+    if (( $CONTIGS < 500 )) && (( $LENGTH >= 1900000 )) && (( $LENGTH <= 2300000 )) && (( $DEPTH >= 20 )); then
+        ASSEMBLY_QC="PASS"
+    else
+        ASSEMBLY_QC="FAIL"
+    fi
     '''
 }
