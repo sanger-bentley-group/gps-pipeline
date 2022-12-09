@@ -93,7 +93,8 @@ workflow {
     // Output into Channels TAXONOMY.out.detailed_result & TAXONOMY.out.result
     TAXONOMY(kraken2_db, PREPROCESS.out.processed_reads)
 
-
+    // Merge Channels ASSEMBLY_QC.out.result & MAPPING_QC.out.result & TAXONOMY.out.result to provide Overall QC Status
+    // Output into Channel OVERALL_QC.out.result
     OVERALL_QC(
         ASSEMBLY_QC.out.result
         .join(MAPPING_QC.out.result, failOnDuplicate: true)
