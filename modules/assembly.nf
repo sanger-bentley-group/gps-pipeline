@@ -84,9 +84,9 @@ process ASSEMBLY_QC {
     
     CONTIGS=$(awk -F'\t' '$1 == "# contigs" { print $2 }' results/report.tsv)
     LENGTH=$(awk -F'\t' '$1 == "Total length" { print $2 }' results/report.tsv)
-    DEPTH=$(printf "%.0f" $((!{bases} / $LENGTH)))
+    DEPTH=$(printf %.2f $(echo "!{bases} / $LENGTH" | bc -l) )
     
-    if (( $CONTIGS < 500 )) && (( $LENGTH >= 1900000 )) && (( $LENGTH <= 2300000 )) && (( $DEPTH >= 20 )); then
+    if (( $CONTIGS < 500 )) && (( $LENGTH >= 1900000 )) && (( $LENGTH <= 2300000 )) && (( $(echo "$DEPTH >= 20.00" | bc -l) )); then
         ASSEMBLY_QC="PASS"
     else
         ASSEMBLY_QC="FAIL"
