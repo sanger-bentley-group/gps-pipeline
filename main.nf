@@ -86,7 +86,7 @@ workflow {
     // Output into Channels MAPPING_QC.out.detailed_result & MAPPING_QC.out.result
     MAPPING_QC(
         REF_COVERAGE.out.result
-        .join(HET_SNP_COUNT.out.result, failOnDuplicate: true)
+        .join(HET_SNP_COUNT.out.result, failOnDuplicate: true, failOnMismatch: true)
     )
 
     // From Channel PREPROCESS.out.processed_reads assess Streptococcus pneumoniae percentage in reads
@@ -97,20 +97,30 @@ workflow {
     // Output into Channel OVERALL_QC.out.result
     OVERALL_QC(
         ASSEMBLY_QC.out.result
-        .join(MAPPING_QC.out.result, failOnDuplicate: true)
-        .join(TAXONOMY.out.result, failOnDuplicate: true)
+        .join(MAPPING_QC.out.result, failOnDuplicate: true, failOnMismatch: true)
+        .join(TAXONOMY.out.result, failOnDuplicate: true, failOnMismatch: true)
     )
 
-    // From Channel PREPROCESS.out.processed_reads, serotype the preprocess read pairs
-    // Output into Channel SEROTYPE.out.result
-    SEROTYPE(seroba_db, PREPROCESS.out.processed_reads)
+    // From Channel PREPROCESS.out.processed_reads, only output reads of samples passed overall QC based on Channel OVERALL_QC.out.result
+    QC_PASSED_READS_ch = OVERALL_QC.out.result.join(PREPROCESS.out.processed_reads, failOnDuplicate: true, failOnMismatch: true)
+                        .filter { it[1] == "PASS" }
+                        .map { it -> it[0, 2..-1] }
 
-    // Generate summary.csv by sorted sample_id based on merged Channels ASSEMBLY_QC.out.detailed_result & MAPPING_QC.out.detailed_result & TAXONOMY.out.detailed_result  & SEROTYPE.out.result
+    // From Channel ASSEMBLY.out.assembly, only output assemblies of samples passed overall QC based on Channel OVERALL_QC.out.result
+    QC_PASSED_ASSEMBLIES_ch = OVERALL_QC.out.result.join(ASSEMBLY.out.assembly, failOnDuplicate: true, failOnMismatch: true)
+                            .filter { it[1] == "PASS" }
+                            .map { it -> it[0, 2..-1] }
+
+    // From Channel QC_PASSED_READS_ch, serotype the preprocess reads of samples passed overall QC
+    // Output into Channel SEROTYPE.out.result
+    SEROTYPE(seroba_db, QC_PASSED_READS_ch)
+
+    // Generate summary.csv by sorted sample_id based on merged Channels ASSEMBLY_QC.out.detailed_result & MAPPING_QC.out.detailed_result & TAXONOMY.out.detailed_result & SEROTYPE.out.result
     ASSEMBLY_QC.out.detailed_result
-    .join(MAPPING_QC.out.detailed_result, failOnDuplicate: true)
-    .join(TAXONOMY.out.detailed_result, failOnDuplicate: true)
-    .join(OVERALL_QC.out.result, failOnDuplicate: true)
-    .join(SEROTYPE.out.result, failOnDuplicate: true)
+    .join(MAPPING_QC.out.detailed_result, failOnDuplicate: true, failOnMismatch: true)
+    .join(TAXONOMY.out.detailed_result, failOnDuplicate: true, failOnMismatch: true)
+    .join(OVERALL_QC.out.result, failOnDuplicate: true, failOnMismatch: true)
+    .join(SEROTYPE.out.result, failOnDuplicate: true, remainder: true)
         .map { it.join',' }
         .collectFile(
             name: "summary.csv",
