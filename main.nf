@@ -24,9 +24,10 @@ params.ref_genome_bwa_db_local =  "$projectDir/bin/bwa_ref_db"
 // Import modules
 include { PREPROCESS } from "$projectDir/modules/preprocess"
 include { GET_SPADES; GET_UNICYCLER; ASSEMBLY; ASSEMBLY_QC } from "$projectDir/modules/assembly"
-include { GET_SEROBA_DB; SEROTYPE } from "$projectDir/modules/serotype"
-include { GET_KRAKEN_DB; TAXONOMY } from "$projectDir/modules/taxonomy"
 include { GET_REF_GENOME_BWA_DB_PREFIX; MAPPING; REF_COVERAGE; SNP_CALL; HET_SNP_COUNT; MAPPING_QC } from "$projectDir/modules/mapping"
+include { GET_KRAKEN_DB; TAXONOMY } from "$projectDir/modules/taxonomy"
+include { OVERALL_QC } from "$projectDir/modules/overall_qc"
+include { GET_SEROBA_DB; SEROTYPE } from "$projectDir/modules/serotype"
 
 
 // Main workflow
@@ -72,37 +73,59 @@ workflow {
         ASSEMBLY.out.assembly
         .join(PREPROCESS.out.base_count, failOnDuplicate: true, failOnMismatch: true)
     )
-
-    // From Channel PREPROCESS.out.processed_reads, serotype the preprocess read pairs
-    // Output into Channel SEROTYPE.out.result
-    SEROTYPE(seroba_db, PREPROCESS.out.processed_reads)
     
-    // From Channel PREPROCESS.out.processed_reads assess Streptococcus pneumoniae percentage in reads
-    // Output into Channels TAXONOMY.out.detailed_result & TAXONOMY.out.result
-    TAXONOMY(kraken2_db, PREPROCESS.out.processed_reads)
-
     // From Channel PREPROCESS.out.processed_reads map reads to reference
     // Output into Channel MAPPING.out.bam
     MAPPING(ref_genome_bwa_db_prefix, PREPROCESS.out.processed_reads)
-    
+
     // From Channel MAPPING.out.bam calculates reference coverage and non-cluster Het-SNP site count respecitvely
     // Output into Channels REF_COVERAGE.out.result & HET_SNP_COUNT.out.result respectively
     REF_COVERAGE(MAPPING.out.bam)
     SNP_CALL(params.ref_genome, MAPPING.out.bam) | HET_SNP_COUNT
     // Merge Channels REF_COVERAGE.out.result & HET_SNP_COUNT.out.result to provide Mapping QC Status
     // Output into Channels MAPPING_QC.out.detailed_result & MAPPING_QC.out.result
-    MAPPING_QC(REF_COVERAGE.out.result.join(HET_SNP_COUNT.out.result, failOnDuplicate: true))
+    MAPPING_QC(
+        REF_COVERAGE.out.result
+        .join(HET_SNP_COUNT.out.result, failOnDuplicate: true, failOnMismatch: true)
+    )
 
-    // Generate summary.csv by sorted sample_id based on merged Channels ASSEMBLY_QC.out.detailed_result & TAXONOMY.out.detailed_result & MAPPING_QC.out.detailed_result & SEROTYPE.out.result
+    // From Channel PREPROCESS.out.processed_reads assess Streptococcus pneumoniae percentage in reads
+    // Output into Channels TAXONOMY.out.detailed_result & TAXONOMY.out.result
+    TAXONOMY(kraken2_db, PREPROCESS.out.processed_reads)
+
+    // Merge Channels ASSEMBLY_QC.out.result & MAPPING_QC.out.result & TAXONOMY.out.result to provide Overall QC Status
+    // Output into Channel OVERALL_QC.out.result
+    OVERALL_QC(
+        ASSEMBLY_QC.out.result
+        .join(MAPPING_QC.out.result, failOnDuplicate: true, failOnMismatch: true)
+        .join(TAXONOMY.out.result, failOnDuplicate: true, failOnMismatch: true)
+    )
+
+    // From Channel PREPROCESS.out.processed_reads, only output reads of samples passed overall QC based on Channel OVERALL_QC.out.result
+    QC_PASSED_READS_ch = OVERALL_QC.out.result.join(PREPROCESS.out.processed_reads, failOnDuplicate: true, failOnMismatch: true)
+                        .filter { it[1] == "PASS" }
+                        .map { it -> it[0, 2..-1] }
+
+    // From Channel ASSEMBLY.out.assembly, only output assemblies of samples passed overall QC based on Channel OVERALL_QC.out.result
+    QC_PASSED_ASSEMBLIES_ch = OVERALL_QC.out.result.join(ASSEMBLY.out.assembly, failOnDuplicate: true, failOnMismatch: true)
+                            .filter { it[1] == "PASS" }
+                            .map { it -> it[0, 2..-1] }
+
+    // From Channel QC_PASSED_READS_ch, serotype the preprocess reads of samples passed overall QC
+    // Output into Channel SEROTYPE.out.result
+    SEROTYPE(seroba_db, QC_PASSED_READS_ch)
+
+    // Generate summary.csv by sorted sample_id based on merged Channels ASSEMBLY_QC.out.detailed_result & MAPPING_QC.out.detailed_result & TAXONOMY.out.detailed_result & SEROTYPE.out.result
     ASSEMBLY_QC.out.detailed_result
-    .join(TAXONOMY.out.detailed_result, failOnDuplicate: true)
-    .join(MAPPING_QC.out.detailed_result, failOnDuplicate: true)
-    .join(SEROTYPE.out.result, failOnDuplicate: true)
+    .join(MAPPING_QC.out.detailed_result, failOnDuplicate: true, failOnMismatch: true)
+    .join(TAXONOMY.out.detailed_result, failOnDuplicate: true, failOnMismatch: true)
+    .join(OVERALL_QC.out.result, failOnDuplicate: true, failOnMismatch: true)
+    .join(SEROTYPE.out.result, failOnDuplicate: true, remainder: true)
         .map { it.join',' }
         .collectFile(
             name: "summary.csv",
             storeDir: "$params.output",
-            seed: ["Sample_ID", "No_of_Contigs" , "Assembly_Length", "Seq_Depth", "Assembly_QC", "S.Pneumo_Percentage", "Taxonomy_QC", "Ref_Coverage_Percentage", "Het-SNP_Sites" ,"Mapping_QC","Serotype", "SeroBA_Comment"].join(","),
+            seed: ["Sample_ID", "No_of_Contigs" , "Assembly_Length", "Seq_Depth", "Assembly_QC", "Ref_Coverage_Percentage", "Het-SNP_Sites" ,"Mapping_QC",  "S.Pneumo_Percentage", "Taxonomy_QC", "Overall_QC", "Serotype", "SeroBA_Comment"].join(","),
             sort: { it -> it.split(",")[0] },
             newLine: true
         )
