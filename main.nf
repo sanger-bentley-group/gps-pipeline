@@ -126,20 +126,22 @@ workflow {
     .join(TAXONOMY.out.detailed_result, failOnDuplicate: true, failOnMismatch: true)
     .join(OVERALL_QC.out.result, failOnDuplicate: true, failOnMismatch: true)
     .join(SEROTYPE.out.result, failOnDuplicate: true, remainder: true)
+        .map { it -> (it[-1] == null) ? it[0..-2] + ["_"] * 2 : it}
     .join(MLST.out.result, failOnDuplicate: true, remainder: true)
-        .map { it.join',' }
-        .collectFile(
-            name: "summary.csv",
-            storeDir: "$params.output",
-            seed: [
-                    "Sample_ID",
-                    "No_of_Contigs" , "Assembly_Length", "Seq_Depth", "Assembly_QC", 
-                    "Ref_Coverage_Percentage", "Het-SNP_Sites" , "Mapping_QC",
-                    "S.Pneumo_Percentage", "Taxonomy_QC", "Overall_QC", 
-                    "Serotype", "SeroBA_Comment", 
-                    "ST", "aroE", "gdh", "gki", "recP", "spi", "xpt", "ddl"
-                ].join(","),
-            sort: { it -> it.split(",")[0] },
-            newLine: true
-        )
+        .map { it -> (it[-1] == null) ? it[0..-2] + ["_"] * 8: it}
+    .map { it.join',' }
+    .collectFile(
+        name: "summary.csv",
+        storeDir: "$params.output",
+        seed: [
+                "Sample_ID",
+                "No_of_Contigs" , "Assembly_Length", "Seq_Depth", "Assembly_QC", 
+                "Ref_Coverage_Percentage", "Het-SNP_Sites" , "Mapping_QC",
+                "S.Pneumo_Percentage", "Taxonomy_QC", "Overall_QC", 
+                "Serotype", "SeroBA_Comment", 
+                "ST", "aroE", "gdh", "gki", "recP", "spi", "xpt", "ddl"
+            ].join(","),
+        sort: { it -> it.split(",")[0] },
+        newLine: true
+    )
 }
