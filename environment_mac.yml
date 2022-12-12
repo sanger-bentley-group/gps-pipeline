@@ -2,6 +2,7 @@ name: pipeline
 channels:
   - bioconda
   - conda-forge
+  - etetoolkit # Bioconda channel only has t_coffee package for Linux
   - defaults
   - r
 dependencies:
@@ -21,5 +22,7 @@ dependencies:
   - kraken2=2.1.2
   - bwa=0.7.17
   - samtools=1.12
+  - perl=5.32.1
+  - perl-bio-mlst-check=2.1.1706216
   # MacOS specific packages below
   - blast=2.12.0
