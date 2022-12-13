@@ -28,6 +28,7 @@ include { GET_REF_GENOME_BWA_DB_PREFIX; MAPPING; REF_COVERAGE; SNP_CALL; HET_SNP
 include { GET_KRAKEN_DB; TAXONOMY } from "$projectDir/modules/taxonomy"
 include { OVERALL_QC } from "$projectDir/modules/overall_qc"
 include { GET_SEROBA_DB; SEROTYPE } from "$projectDir/modules/serotype"
+include { MLST } from "$projectDir/modules/mlst"
 
 
 // Main workflow
@@ -115,18 +116,32 @@ workflow {
     // Output into Channel SEROTYPE.out.result
     SEROTYPE(seroba_db, QC_PASSED_READS_ch)
 
-    // Generate summary.csv by sorted sample_id based on merged Channels ASSEMBLY_QC.out.detailed_result & MAPPING_QC.out.detailed_result & TAXONOMY.out.detailed_result & SEROTYPE.out.result
+    // From Channel QC_PASSED_ASSEMBLIES_ch, PubMLST typing the assemblies of samples passed overall QC
+    // Output into Channel MLST.out.result
+    MLST(QC_PASSED_ASSEMBLIES_ch)
+
+    // Generate summary.csv by sorted sample_id based on merged Channels ASSEMBLY_QC.out.detailed_result & MAPPING_QC.out.detailed_result & TAXONOMY.out.detailed_result & SEROTYPE.out.result & MLST.out.result
     ASSEMBLY_QC.out.detailed_result
     .join(MAPPING_QC.out.detailed_result, failOnDuplicate: true, failOnMismatch: true)
     .join(TAXONOMY.out.detailed_result, failOnDuplicate: true, failOnMismatch: true)
     .join(OVERALL_QC.out.result, failOnDuplicate: true, failOnMismatch: true)
     .join(SEROTYPE.out.result, failOnDuplicate: true, remainder: true)
-        .map { it.join',' }
-        .collectFile(
-            name: "summary.csv",
-            storeDir: "$params.output",
-            seed: ["Sample_ID", "No_of_Contigs" , "Assembly_Length", "Seq_Depth", "Assembly_QC", "Ref_Coverage_Percentage", "Het-SNP_Sites" ,"Mapping_QC",  "S.Pneumo_Percentage", "Taxonomy_QC", "Overall_QC", "Serotype", "SeroBA_Comment"].join(","),
-            sort: { it -> it.split(",")[0] },
-            newLine: true
-        )
+        .map { it -> (it[-1] == null) ? it[0..-2] + ["_"] * 2 : it}
+    .join(MLST.out.result, failOnDuplicate: true, remainder: true)
+        .map { it -> (it[-1] == null) ? it[0..-2] + ["_"] * 8: it}
+    .map { it.join',' }
+    .collectFile(
+        name: "summary.csv",
+        storeDir: "$params.output",
+        seed: [
+                "Sample_ID",
+                "Contigs#" , "Assembly_Length", "Seq_Depth", "Assembly_QC", 
+                "Ref_Cov_%", "Het-SNP#" , "Mapping_QC",
+                "S.Pneumo_%", "Taxonomy_QC", "Overall_QC", 
+                "Serotype", "SeroBA_Comment", 
+                "ST", "aroE", "gdh", "gki", "recP", "spi", "xpt", "ddl"
+            ].join(","),
+        sort: { it -> it.split(",")[0] },
+        newLine: true
+    )
 }
