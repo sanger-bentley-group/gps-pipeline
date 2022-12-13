@@ -135,9 +135,9 @@ workflow {
         storeDir: "$params.output",
         seed: [
                 "Sample_ID",
-                "No_of_Contigs" , "Assembly_Length", "Seq_Depth", "Assembly_QC", 
-                "Ref_Coverage_Percentage", "Het-SNP_Sites" , "Mapping_QC",
-                "S.Pneumo_Percentage", "Taxonomy_QC", "Overall_QC", 
+                "Contigs#" , "Assembly_Length", "Seq_Depth", "Assembly_QC", 
+                "Ref_Cov_%", "Het-SNP#" , "Mapping_QC",
+                "S.Pneumo_%", "Taxonomy_QC", "Overall_QC", 
                 "Serotype", "SeroBA_Comment", 
                 "ST", "aroE", "gdh", "gki", "recP", "spi", "xpt", "ddl"
             ].join(","),
