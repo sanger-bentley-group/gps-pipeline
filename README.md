@@ -47,6 +47,12 @@ GPS Unified Pipeline is a Nextflow Pipeline for processing Streptococcus pneumon
   ```
   nextflow run main.nf --reads /path/to/raw-reads-directory
   ```
+- For a test run, you could use the included test reads in the `test_input` directory
+  ```
+  nextflow run main.nf --reads test_input
+  ```
+  - `9870_5#52` will fail the Taxonomy QC and hence Overall QC, therefore without analysis results
+  - `21127_1#156` should pass Overall QC, and with analysis results
 
 ### Output
 - By default, the pipeline outputs the results into `output` directory inside the `gps-unified-pipeline` local repository
