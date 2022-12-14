@@ -1,5 +1,5 @@
 // Return Kraken 2 database path
-// Simple check if hash.k2d exists. If not: clean, download, and unzip to params.kraken2_db_local
+// Check if GET_KRAKEN_DB has run successfully on the specific database. If not: clean, download, and unzip to params.kraken2_db_local
 process GET_KRAKEN_DB {
     input:
     val remote
@@ -10,7 +10,9 @@ process GET_KRAKEN_DB {
 
     shell:
     '''
-    if [[ ! -f !{local}/hash.k2d ]]; then
+    DB_NAME=$(basename !{remote})
+
+    if [ ! -f !{local}/done_kraken_${DB_NAME} ] || [ ! -f !{local}/hash.k2d ]; then
         curl -L !{remote} > kraken_db.tar.gz
 
         rm -rf !{local}
@@ -19,6 +21,8 @@ process GET_KRAKEN_DB {
         tar -xzf kraken_db.tar.gz -C !{local}
 
         rm -f kraken_db.tar.gz
+
+        touch !{local}/done_kraken_${DB_NAME}
     fi 
     '''
 }
