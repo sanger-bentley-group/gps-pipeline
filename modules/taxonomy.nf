@@ -11,14 +11,14 @@ process GET_KRAKEN_DB {
     shell:
     '''
     if [[ ! -f !{local}/hash.k2d ]]; then
-        curl -L !{remote} > k2_standard_08gb.tar.gz
+        curl -L !{remote} > kraken_db.tar.gz
 
         rm -rf !{local}
         mkdir -p !{local}
 
-        tar -xzf k2_standard_08gb.tar.gz -C !{local}
+        tar -xzf kraken_db.tar.gz -C !{local}
 
-        rm -f k2_standard_08gb.tar.gz
+        rm -f kraken_db.tar.gz
     fi 
     '''
 }
