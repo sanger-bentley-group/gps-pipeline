@@ -27,6 +27,7 @@ process GET_KRAKEN_DB {
 process TAXONOMY {
     input:
     val kraken_db
+    val kraken2_memory_mapping
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
 
     output:
@@ -35,7 +36,11 @@ process TAXONOMY {
 
     shell:
     '''
-    kraken2 --use-names --memory-mapping --db !{kraken_db} --paired !{read1} !{read2} --report kraken_report.txt
+    if [ !{kraken2_memory_mapping} = true ]; then
+        kraken2 --use-names --memory-mapping --db !{kraken_db} --paired !{read1} !{read2} --report kraken_report.txt
+    else
+        kraken2 --use-names --db !{kraken_db} --paired !{read1} !{read2} --report kraken_report.txt
+    fi
 
     PERCENTAGE=$(awk -F"\t" '$4 ~ /^S$/ && $6 ~ /Streptococcus pneumoniae$/ { gsub(/^[ \t]+/, "", $1); printf "%.2f", $1 }' kraken_report.txt)
 
