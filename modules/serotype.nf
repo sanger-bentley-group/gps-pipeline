@@ -1,5 +1,6 @@
-// Return Seroba databases path
-// Pull to check if seroba database is up-to-date. If outdated or does not exist: clean, clone and re-create kmc and ariba databases
+// Return SeroBA databases path
+// Check if GET_SEROBA_DB has run successfully and pull to check if SeroBA database is up-to-date. 
+// If outdated or does not exist: clean, clone and re-create kmc and ariba databases
 process GET_SEROBA_DB {
     input:
     val remote
@@ -10,15 +11,17 @@ process GET_SEROBA_DB {
 
     shell:
     '''
-    if !(git -C !{local} pull | grep -q 'Already up to date'); then
+    if [ ! -f !{local}/done_seroba ] || !(git -C !{local} pull | grep -q 'Already up[- ]to[- ]date'); then
         rm -rf !{local}
         git clone !{remote} !{local}
         seroba createDBs !{local}/database/ 71
+
+        touch !{local}/done_seroba
     fi
     '''
 }
 
-// Run Seroba to serotype samples
+// Run SeroBA to serotype samples
 process SEROTYPE {
     input:
     val database

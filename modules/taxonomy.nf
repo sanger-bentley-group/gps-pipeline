@@ -1,5 +1,5 @@
 // Return Kraken 2 database path
-// Simple check if hash.k2d exists. If not: clean, download, and unzip to params.kraken2_db_local
+// Check if GET_KRAKEN_DB has run successfully on the specific database. If not: clean, download, and unzip to params.kraken2_db_local
 process GET_KRAKEN_DB {
     input:
     val remote
@@ -10,15 +10,19 @@ process GET_KRAKEN_DB {
 
     shell:
     '''
-    if [[ ! -f !{local}/hash.k2d ]]; then
-        curl -L !{remote} > k2_standard_08gb.tar.gz
+    DB_NAME=$(basename !{remote})
+
+    if [ ! -f !{local}/done_kraken_${DB_NAME} ] || [ ! -f !{local}/hash.k2d ]; then
+        curl -L !{remote} > kraken_db.tar.gz
 
         rm -rf !{local}
         mkdir -p !{local}
 
-        tar -xzf k2_standard_08gb.tar.gz -C !{local}
+        tar -xzf kraken_db.tar.gz -C !{local}
 
-        rm -f k2_standard_08gb.tar.gz
+        rm -f kraken_db.tar.gz
+
+        touch !{local}/done_kraken_${DB_NAME}
     fi 
     '''
 }
@@ -27,6 +31,7 @@ process GET_KRAKEN_DB {
 process TAXONOMY {
     input:
     val kraken_db
+    val kraken2_memory_mapping
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
 
     output:
@@ -35,7 +40,11 @@ process TAXONOMY {
 
     shell:
     '''
-    kraken2 --use-names --memory-mapping --db !{kraken_db} --paired !{read1} !{read2} --report kraken_report.txt
+    if [ !{kraken2_memory_mapping} = true ]; then
+        kraken2 --use-names --memory-mapping --db !{kraken_db} --paired !{read1} !{read2} --report kraken_report.txt
+    else
+        kraken2 --use-names --db !{kraken_db} --paired !{read1} !{read2} --report kraken_report.txt
+    fi
 
     PERCENTAGE=$(awk -F"\t" '$4 ~ /^S$/ && $6 ~ /Streptococcus pneumoniae$/ { gsub(/^[ \t]+/, "", $1); printf "%.2f", $1 }' kraken_report.txt)
 
