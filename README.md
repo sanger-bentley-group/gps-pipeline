@@ -73,6 +73,7 @@ GPS Unified Pipeline is a Nextflow Pipeline for processing Streptococcus pneumon
   nextflow run main.nf --[option name] [value]
   ```
 - `$projectDir` is the directory where the `gps-unified-pipeline` local repository is stored
+- Must not have trailing slash ("`/`" at the end of path) on all paths
   | Option | Default | Possible Values | Description |
   | --- | ---| --- | --- |
   | `reads` | `"$projectDir/input"` | Any valid path | Path to the input directory that contains the reads to be processed |
