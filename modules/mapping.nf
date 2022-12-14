@@ -1,4 +1,4 @@
-// Construct the FM-index database for the reference genome
+// Construct the FM-index database of the reference genome for BWA
 // Return database prefix with path for bwa mem runs
 process GET_REF_GENOME_BWA_DB_PREFIX {
     input:
