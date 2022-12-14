@@ -1,5 +1,6 @@
-// Construct the FM-index database for the reference genome
 // Return database prefix with path for bwa mem runs
+// Check if GET_REF_GENOME_BWA_DB_PREFIX has run successfully on the specific reference.
+// If not: construct the FM-index database of the reference genome for BWA
 process GET_REF_GENOME_BWA_DB_PREFIX {
     input:
     path reference
@@ -10,12 +11,14 @@ process GET_REF_GENOME_BWA_DB_PREFIX {
 
     shell:
     '''
-    if [ ! -f !{local}/ref.amb ] || [ ! -f !{local}/ref.ann ] || [ ! -f !{local}/ref.bwt ] || [ ! -f !{local}/ref.pac ] || [ ! -f !{local}/ref.sa ] ; then
+    if [ ! -f !{local}/done_bwa_db_!{reference} ] || [ ! -f !{local}/ref.amb ] || [ ! -f !{local}/ref.ann ] || [ ! -f !{local}/ref.bwt ] || [ ! -f !{local}/ref.pac ] || [ ! -f !{local}/ref.sa ] ; then
         bwa index -p ref !{reference}
 
         rm -rf !{local}
         mkdir -p !{local}
         mv ref.amb ref.ann ref.bwt ref.pac ref.sa -t !{local}
+        
+        touch !{local}/done_bwa_db_!{reference}
     fi 
     '''
 }
