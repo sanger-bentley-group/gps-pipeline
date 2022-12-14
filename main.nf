@@ -1,31 +1,5 @@
 #!/usr/bin/env nextflow
 
-// Default directory for input reads
-params.reads = "$projectDir/input"
-// Default output directory
-params.output = "$projectDir/output"
-
-// Get host OS type
-params.os = System.properties['os.name']
-
-// Default directory for SPAdes 
-params.spades_local = "$projectDir/bin/spades"
-// Default directory for Unicycler
-params.unicycler_local = "$projectDir/bin/unicycler"
-
-// Default git and local directory for SeroBA 
-params.seroba_remote = "https://github.com/sanger-pathogens/seroba.git"
-params.seroba_local = "$projectDir/bin/seroba"
-
-// Default link and local directory for Kraken2 Database, and usage of memory mapping
-params.kraken2_db_remote = "https://genome-idx.s3.amazonaws.com/kraken/k2_standard_08gb_20220926.tar.gz"
-params.kraken2_db_local = "$projectDir/bin/kraken"
-params.kraken2_memory_mapping = true
-
-// Default referece genome assembly path and local directory for its BWA database 
-params.ref_genome = "$projectDir/data/Streptococcus_pneumoniae_ATCC_700669_v1.fa"
-params.ref_genome_bwa_db_local =  "$projectDir/bin/bwa_ref_db"
-
 
 // Import modules
 include { PREPROCESS } from "$projectDir/modules/preprocess"
