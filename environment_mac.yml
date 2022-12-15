@@ -24,5 +24,6 @@ dependencies:
   - samtools=1.12
   - perl=5.32.1
   - mlst=2.23.0
+  - shovill=1.1.0
   # MacOS specific packages below
   - blast=2.12.0

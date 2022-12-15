@@ -1,5 +1,5 @@
 // MacOS Specific
-// Return SPAdes executable path
+// Return SPAdes directory
 // Check if GET_SPADES has run successfully and SPAdes executable is v3.15.5.
 // If not: clean, download, unzip and move content to params.spades_local
 process GET_SPADES {
@@ -7,7 +7,7 @@ process GET_SPADES {
     val local
 
     output:
-    val "$local/bin/spades.py"
+    val "$local/bin"
 
     shell:
     '''
@@ -54,24 +54,53 @@ process GET_UNICYCLER {
     '''
 }
 
-// Run Unicycler to get assembly using specific SPAdes executable
+// Run Unicycler to get assembly
+// Use specific SPAdes executable if provided its directory
 // Return sample_id and assembly, and hardlink the assembly to $params.output directory
-process ASSEMBLY {
+process ASSEMBLY_UNICYCLER {
     publishDir "$params.output/assemblies", mode: 'link'
 
     input:
     val unicycler_runner
-    val spades
+    val spades_dir
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
 
     output:
-    tuple val(sample_id), path("${sample_id}.contigs.fasta"), emit: assembly
+    tuple val(sample_id), path("${sample_id}.contigs.fasta")
 
     shell:
     '''
-    !{unicycler_runner} -1 !{read1} -2 !{read2} -s !{unpaired} -o results --spades_path !{spades}
-    
+    if [ "!{spades_dir}" != "" ]; then 
+        export PATH="!{spades_dir}:$PATH"
+    fi
+
+    !{unicycler_runner} -1 !{read1} -2 !{read2} -s !{unpaired} -o results
     mv results/assembly.fasta !{sample_id}.contigs.fasta
+    '''
+}
+
+// Run Shovill to get assembly
+// Use specific SPAdes executable if provided its directory
+// Return sample_id and assembly, and hardlink the assembly to $params.output directory
+process ASSEMBLY_SHOVILL {
+    publishDir "$params.output/assemblies", mode: 'link'
+
+    input:
+    val spades_dir
+    tuple val(sample_id), path(read1), path(read2), path(unpaired)
+
+    output:
+    tuple val(sample_id), path("${sample_id}.contigs.fasta")
+
+    shell:
+    '''
+    if [ "!{spades_dir}" != "" ]; then 
+        export PATH="!{spades_dir}:$PATH"
+    fi
+    
+    shovill --R1 !{read1} --R2 !{read2} --outdir results
+    
+    mv results/contigs.fa !{sample_id}.contigs.fasta
     '''
 }
 

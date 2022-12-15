@@ -3,7 +3,7 @@
 
 // Import modules
 include { PREPROCESS } from "$projectDir/modules/preprocess"
-include { GET_SPADES; GET_UNICYCLER; ASSEMBLY; ASSEMBLY_QC } from "$projectDir/modules/assembly"
+include { GET_SPADES; GET_UNICYCLER; ASSEMBLY_UNICYCLER; ASSEMBLY_SHOVILL; ASSEMBLY_QC } from "$projectDir/modules/assembly"
 include { GET_REF_GENOME_BWA_DB_PREFIX; MAPPING; REF_COVERAGE; SNP_CALL; HET_SNP_COUNT; MAPPING_QC } from "$projectDir/modules/mapping"
 include { GET_KRAKEN_DB; TAXONOMY } from "$projectDir/modules/taxonomy"
 include { OVERALL_QC } from "$projectDir/modules/overall_qc"
@@ -20,12 +20,14 @@ workflow {
     // therefore separate download / compiling for MacOS is required for now
     // might update this part and merge environment_*.yml when the pipeline is dockerised in a Linux environment
     
-    // Get path to SPAdes executable, download if necessary
-    spades_py = ( params.os == "Mac OS X" ) ? GET_SPADES(params.spades_local) : "spades.py"
-    
+    // Get path to SPAdes directory, download if necessary
+    spades_dir = ( params.os == "Mac OS X" ) ? GET_SPADES(params.spades_local) : ""
+
     // Get path to Unicycler executable, download if necessary
-    unicycler_runner_py = ( params.os == "Mac OS X" ) ? GET_UNICYCLER(params.unicycler_local) : "unicycler"
-    
+    if ( params.assembler == "unicycler" ) {
+        unicycler_runner_py = ( params.os == "Mac OS X" ) ? GET_UNICYCLER(params.unicycler_local) : "unicycler"
+    }
+
     // ===============
 
     // Get path to SeroBA databases, clone and rebuild if necessary
@@ -45,13 +47,20 @@ workflow {
     PREPROCESS(raw_read_pairs_ch)
 
     // From Channel PREPROCESS.out.processed_reads, assemble the preprocess read pairs
-    // Output into Channel ASSEMBLY.out.assembly, and hardlink the assemblies to $params.output directory
-    ASSEMBLY(unicycler_runner_py, spades_py, PREPROCESS.out.processed_reads)
+    // Output into Channel ASSEMBLY_ch, and hardlink the assemblies to $params.output directory
+    if ( params.assembler == "shovill" ) {
+        ASSEMBLY_ch = ASSEMBLY_SHOVILL(spades_dir, PREPROCESS.out.processed_reads)
+    } else if ( params.assembler == "unicycler" ) {
+        ASSEMBLY_ch = ASSEMBLY_UNICYCLER(unicycler_runner_py, spades_dir, PREPROCESS.out.processed_reads)
+    } else {
+        println "Provided assembler option is not valid. Supported value: shovill, unicycler"
+        System.exit(0)
+    }
 
-    // From Channel ASSEMBLY.out.assembly and Channel PREPROCESS.out.base_count, assess assembly quality
+    // From Channel ASSEMBLY_ch and Channel PREPROCESS.out.base_count, assess assembly quality
     // Output into Channels ASSEMBLY_QC.out.detailed_result & ASSEMBLY_QC.out.result
     ASSEMBLY_QC(
-        ASSEMBLY.out.assembly
+        ASSEMBLY_ch
         .join(PREPROCESS.out.base_count, failOnDuplicate: true, failOnMismatch: true)
     )
     
@@ -87,8 +96,8 @@ workflow {
                         .filter { it[1] == "PASS" }
                         .map { it -> it[0, 2..-1] }
 
-    // From Channel ASSEMBLY.out.assembly, only output assemblies of samples passed overall QC based on Channel OVERALL_QC.out.result
-    QC_PASSED_ASSEMBLIES_ch = OVERALL_QC.out.result.join(ASSEMBLY.out.assembly, failOnDuplicate: true, failOnMismatch: true)
+    // From Channel ASSEMBLY_ch, only output assemblies of samples passed overall QC based on Channel OVERALL_QC.out.result
+    QC_PASSED_ASSEMBLIES_ch = OVERALL_QC.out.result.join(ASSEMBLY_ch, failOnDuplicate: true, failOnMismatch: true)
                             .filter { it[1] == "PASS" }
                             .map { it -> it[0, 2..-1] }
 
