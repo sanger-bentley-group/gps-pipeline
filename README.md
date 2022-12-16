@@ -78,7 +78,8 @@ GPS Unified Pipeline is a Nextflow Pipeline for processing Streptococcus pneumon
   | --- | ---| --- | --- |
   | `reads` | `"$projectDir/input"` | Any valid path | Path to the input directory that contains the reads to be processed |
   | `output` | `"$projectDir/output"` | Any valid path | Path to the output directory that save the results |
-  | `os` | `System.properties['os.name']` | "Mac OS X" or "Linux" | Type of host OS. The pipeline will acquire this information automatically by default |
+  | `os` | `System.properties['os.name']` | `"Mac OS X"` or `"Linux"` | Type of host OS. The pipeline will acquire this information automatically by default |
+  | `assembler`| `"shovill"` | `"shovill"` or `"unicycler"` | SPAdes Assembler to assembly the reads |
   | `spades_local` | `"$projectDir/bin/spades"` | Any valid path | MacOS Specific. Path to the directory where SPAdes executables can be found or download to |
   | `unicycler_local` | `"$projectDir/bin/unicycler"` | Any valid path | MacOS Specific. Path to the directory where Unicycler executables can be found or download to |
   | `seroba_remote` | [SeroBA GitHub Repo](https://github.com/sanger-pathogens/seroba.git) | Any valid URL to a git remote repository | URL to a SeroBA git remote repository |
