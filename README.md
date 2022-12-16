@@ -30,7 +30,7 @@ GPS Unified Pipeline is a Nextflow Pipeline for processing Streptococcus pneumon
      ```
      CONDA_SUBDIR=osx-64 mamba env create -f environment_mac.yml
      mamba activate pipeline
-     mamba config --env --set subdir osx-64
+     conda config --env --set subdir osx-64
      ```
    - Linux
      ```
