@@ -1,4 +1,4 @@
-# GPS Unified Pipeline - Work-in-progress
+# GPS Unified Pipeline
 
 GPS Unified Pipeline is a Nextflow Pipeline for processing Streptococcus pneumoniae sequencing raw reads (FASTQ files) by the GPS Project ([Global Pneumococcal Sequencing Project](https://www.pneumogen.net/gps/)). 
 
@@ -9,7 +9,7 @@ GPS Unified Pipeline is a Nextflow Pipeline for processing Streptococcus pneumon
 &nbsp;
 ## Usage
 ### Requirement
-- Conda / Mamba
+- Mamba / Conda
 - Git
 ### Setup
 1. Clone the repository
@@ -20,22 +20,22 @@ GPS Unified Pipeline is a Nextflow Pipeline for processing Streptococcus pneumon
     ```
     cd gps-unified-pipeline
     ```
-3. Setup Conda Environment (If using Mamba, replace `conda` with `mamba` in the following commands)
+3. Setup Conda Environment with Mamba (If using Conda, replace `mamba` with `conda` in the following commands. Use of Mamba is highly recommended due to long environment-resolving time of Conda)
    - MacOS (Intel CPU)
      ```
-     conda env create -f environment_mac.yml
-     conda activate pipeline
+     mamba env create -f environment_mac.yml
+     mamba activate pipeline
      ```
    - MacOS (Apple Silicon)
      ```
-     CONDA_SUBDIR=osx-64 conda env create -f environment_mac.yml
-     conda activate pipeline
-     conda config --env --set subdir osx-64
+     CONDA_SUBDIR=osx-64 mamba env create -f environment_mac.yml
+     mamba activate pipeline
+     mamba config --env --set subdir osx-64
      ```
    - Linux
      ```
-     conda env create -f environment_linux.yml
-     conda activate pipeline
+     mamba env create -f environment_linux.yml
+     mamba activate pipeline
      ```
 
 ### Run
