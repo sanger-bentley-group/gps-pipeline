@@ -23,6 +23,7 @@ dependencies:
   - samtools=1.12
   - perl=5.32.1
   - mlst=2.23.0
+  - shovill=1.1.0
   # Linux specific packages below
   - unicycler=0.5.0
   - spades=3.15.5
