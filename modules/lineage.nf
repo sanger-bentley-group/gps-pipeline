@@ -18,7 +18,7 @@ process GET_POPPUNK_DB {
         mkdir -p !{local}
 
         curl -L !{db_remote} > $DB_NAME.zip
-        unzip $DB_NAME.zip -d !{local}
+        jar -xf $DB_NAME.zip -C !{local}
 
         rm $DB_NAME.zip
 
