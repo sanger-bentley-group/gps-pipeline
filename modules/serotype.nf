@@ -13,6 +13,7 @@ process GET_SEROBA_DB {
     '''
     if [ ! -f !{local}/done_seroba ] || !(git -C !{local} pull | grep -q 'Already up[- ]to[- ]date'); then
         rm -rf !{local}
+        
         git clone !{remote} !{local}
         seroba createDBs !{local}/database/ 71
 
