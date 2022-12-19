@@ -14,13 +14,11 @@ process GET_KRAKEN_DB {
     DB_NAME=$(basename !{remote})
 
     if [ ! -f !{local}/done_kraken_${DB_NAME} ] || [ ! -f !{local}/hash.k2d ]; then
-        curl -L !{remote} > kraken_db.tar.gz
-
         rm -rf !{local}
         mkdir -p !{local}
 
+        curl -L !{remote} > kraken_db.tar.gz
         tar -xzf kraken_db.tar.gz -C !{local}
-
         rm -f kraken_db.tar.gz
 
         touch !{local}/done_kraken_${DB_NAME}
