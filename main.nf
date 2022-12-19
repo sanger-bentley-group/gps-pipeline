@@ -9,6 +9,7 @@ include { GET_KRAKEN_DB; TAXONOMY } from "$projectDir/modules/taxonomy"
 include { OVERALL_QC } from "$projectDir/modules/overall_qc"
 include { GET_SEROBA_DB; SEROTYPE } from "$projectDir/modules/serotype"
 include { MLST } from "$projectDir/modules/mlst"
+include { GET_POPPUNK_DB; GET_POPPUNK_EXT_CLUSTERS } from "$projectDir/modules/lineage"
 
 
 // Main workflow
@@ -30,14 +31,21 @@ workflow {
 
     // ===============
 
-    // Get path to SeroBA databases, clone and rebuild if necessary
-    seroba_db = GET_SEROBA_DB(params.seroba_remote, params.seroba_local)
+    // Get path to prefix of Reference Genome BWA Database, generate from assembly if necessary
+    ref_genome_bwa_db_prefix = GET_REF_GENOME_BWA_DB_PREFIX(params.ref_genome, params.ref_genome_bwa_db_local)
 
     // Get path to Kraken2 Database, download if necessary
     kraken2_db = GET_KRAKEN_DB(params.kraken2_db_remote, params.kraken2_db_local)
 
-    // Get path to prefix of Reference Genome BWA Database, generate from assembly if necessary
-    ref_genome_bwa_db_prefix = GET_REF_GENOME_BWA_DB_PREFIX(params.ref_genome, params.ref_genome_bwa_db_local)
+    // Get path to SeroBA Databases, clone and rebuild if necessary
+    seroba_db = GET_SEROBA_DB(params.seroba_remote, params.seroba_local)
+
+    // Get paths to PopPUNK Database and External Clusters, download if necessary
+    poppunk_db = GET_POPPUNK_DB(params.poppunk_db_remote, params.poppunk_db_local)
+    poppunk_ext_clusters = GET_POPPUNK_EXT_CLUSTERS(params.poppunk_ext_clusters_remote, params.poppunk_db_local)
+
+    poppunk_db.view()
+    poppunk_ext_clusters.view()
 
     // Get read pairs into Channel raw_read_pairs_ch
     raw_read_pairs_ch = Channel.fromFilePairs( "$params.reads/*_{1,2}.fastq.gz", checkIfExists: true )
