@@ -1,5 +1,6 @@
 // Return Kraken 2 database path
-// Check if GET_KRAKEN_DB has run successfully on the specific database. If not: clean, download, and unzip to params.kraken2_db_local
+// Check if GET_KRAKEN_DB has run successfully on the specific database. 
+// If not: clean, download, and unzip to params.kraken2_db_local
 process GET_KRAKEN_DB {
     input:
     val remote
