@@ -7,9 +7,9 @@ include { GET_SPADES; GET_UNICYCLER; ASSEMBLY_UNICYCLER; ASSEMBLY_SHOVILL; ASSEM
 include { GET_REF_GENOME_BWA_DB_PREFIX; MAPPING; REF_COVERAGE; SNP_CALL; HET_SNP_COUNT; MAPPING_QC } from "$projectDir/modules/mapping"
 include { GET_KRAKEN_DB; TAXONOMY } from "$projectDir/modules/taxonomy"
 include { OVERALL_QC } from "$projectDir/modules/overall_qc"
+include { GET_POPPUNK_DB; GET_POPPUNK_EXT_CLUSTERS; LINEAGE } from "$projectDir/modules/lineage"
 include { GET_SEROBA_DB; SEROTYPE } from "$projectDir/modules/serotype"
 include { MLST } from "$projectDir/modules/mlst"
-include { GET_POPPUNK_DB; GET_POPPUNK_EXT_CLUSTERS } from "$projectDir/modules/lineage"
 
 
 // Main workflow
@@ -43,9 +43,6 @@ workflow {
     // Get paths to PopPUNK Database and External Clusters, download if necessary
     poppunk_db = GET_POPPUNK_DB(params.poppunk_db_remote, params.poppunk_db_local)
     poppunk_ext_clusters = GET_POPPUNK_EXT_CLUSTERS(params.poppunk_ext_clusters_remote, params.poppunk_db_local)
-
-    poppunk_db.view()
-    poppunk_ext_clusters.view()
 
     // Get read pairs into Channel raw_read_pairs_ch
     raw_read_pairs_ch = Channel.fromFilePairs( "$params.reads/*_{1,2}.fastq.gz", checkIfExists: true )
@@ -109,6 +106,15 @@ workflow {
                             .filter { it[1] == "PASS" }
                             .map { it -> it[0, 2..-1] }
 
+    // From Channel QC_PASSED_ASSEMBLIES_ch, generate PopPUNK query file containing assemblies of samples passed overall QC 
+    // Output into POPPUNK_QFILE
+    POPPUNK_QFILE = QC_PASSED_ASSEMBLIES_ch
+                    .map{ it.join'\t'}
+                    .collectFile(name: "qfile.txt", newLine: true)
+
+    // From generated POPPUNK_QFILE, assign GPSC to samples passed overall QC
+    LINEAGE(poppunk_db, poppunk_ext_clusters, POPPUNK_QFILE)
+
     // From Channel QC_PASSED_READS_ch, serotype the preprocess reads of samples passed overall QC
     // Output into Channel SEROTYPE.out.result
     SEROTYPE(seroba_db, QC_PASSED_READS_ch)
@@ -122,6 +128,8 @@ workflow {
     .join(MAPPING_QC.out.detailed_result, failOnDuplicate: true, failOnMismatch: true)
     .join(TAXONOMY.out.detailed_result, failOnDuplicate: true, failOnMismatch: true)
     .join(OVERALL_QC.out.result, failOnDuplicate: true, failOnMismatch: true)
+    .join(LINEAGE.out.csv.splitCsv(skip: 1), failOnDuplicate: true, remainder: true)
+        .map { it -> (it[-1] == null) ? it[0..-2] + ["_"]: it}
     .join(SEROTYPE.out.result, failOnDuplicate: true, remainder: true)
         .map { it -> (it[-1] == null) ? it[0..-2] + ["_"] * 2 : it}
     .join(MLST.out.result, failOnDuplicate: true, remainder: true)
@@ -134,7 +142,8 @@ workflow {
                 "Sample_ID",
                 "Contigs#" , "Assembly_Length", "Seq_Depth", "Assembly_QC", 
                 "Ref_Cov_%", "Het-SNP#" , "Mapping_QC",
-                "S.Pneumo_%", "Taxonomy_QC", "Overall_QC", 
+                "S.Pneumo_%", "Taxonomy_QC", "Overall_QC",
+                "GPSC",
                 "Serotype", "SeroBA_Comment", 
                 "ST", "aroE", "gdh", "gki", "recP", "spi", "xpt", "ddl"
             ].join(","),
