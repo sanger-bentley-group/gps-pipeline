@@ -11,6 +11,7 @@ GPS Unified Pipeline is a Nextflow Pipeline for processing Streptococcus pneumon
 ### Requirement
 - Mamba / Conda
 - Git
+- Docker
 ### Setup
 1. Clone the repository
     ```
@@ -89,3 +90,8 @@ GPS Unified Pipeline is a Nextflow Pipeline for processing Streptococcus pneumon
   | `kraken2_memory_mapping` | `true` | `true` or `false` | Using memory mapping option of Kraken2 or not. `true` means not loading the database into RAM, suitable for memory-limited or fast storage (e.g. SSD) environments |
   | `ref_genome` | `"$projectDir/data/Streptococcus_pneumoniae_ATCC_700669_v1.fa"` | Any valid path to a `.fa` or `.fasta` file | Path to the reference genome for mapping |
   | `ref_genome_bwa_db_local` | `"$projectDir/bin/bwa_ref_db"` | Any valid path | Path to the directory where the reference genome FM-index database for BWA is stored |
+
+&nbsp;
+## Credits
+- `LINEAGE` process in `lineage.nf` module is adapted from [`GPSC_pipeline_nf`](https://github.com/sanger-bentley-group/GPSC_pipeline_nf) by [@blue-moon22](https://github.com/blue-moon22)
+- `HET_SNP_COUNT` process in `mapping.nf` module is adapted from [`mecA-HetSites-calculator`](https://github.com/kumarnaren/mecA-HetSites-calculator) by [@kumarnaren](https://github.com/kumarnaren)
