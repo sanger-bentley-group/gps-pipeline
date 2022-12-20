@@ -11,16 +11,15 @@ process GET_POPPUNK_DB {
 
     shell:
     '''
-    DB_NAME=$(basename !{db_remote} .zip)
+    DB_NAME=$(basename !{db_remote} .tar.gz)
 
     if [ ! -f !{local}/$DB_NAME/done_poppunk_$DB_NAME ] || [ ! -f !{local}/$DB_NAME/$DB_NAME.h5 ]; then
         rm -rf !{local}/$DB_NAME
         mkdir -p !{local}
 
-        curl -L !{db_remote} > $DB_NAME.zip
-        jar -xf $DB_NAME.zip -C !{local}
-
-        rm $DB_NAME.zip
+        curl -L !{db_remote} > poppunk_db.tar.gz
+        tar -xzf poppunk_db.tar.gz -C !{local}
+        rm poppunk_db.tar.gz
 
         touch !{local}/$DB_NAME/done_poppunk_$DB_NAME
     fi
