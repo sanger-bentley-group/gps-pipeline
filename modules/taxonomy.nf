@@ -34,8 +34,7 @@ process TAXONOMY {
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
 
     output:
-    tuple val(sample_id), env(PERCENTAGE), env(TAXONOMY_QC), emit: detailed_result
-    tuple val(sample_id), env(TAXONOMY_QC), emit: result
+    tuple val(sample_id), path("kraken_report.txt"), emit: report
 
     shell:
     '''
@@ -44,8 +43,22 @@ process TAXONOMY {
     else
         kraken2 --use-names --db !{kraken_db} --paired !{read1} !{read2} --report kraken_report.txt
     fi
+    '''
+}
 
-    PERCENTAGE=$(awk -F"\t" '$4 ~ /^S$/ && $6 ~ /Streptococcus pneumoniae$/ { gsub(/^[ \t]+/, "", $1); printf "%.2f", $1 }' kraken_report.txt)
+
+// Return Taxonomy QC result based on kraken_report.txt
+process TAXONOMY_QC {
+    input:
+    tuple val(sample_id), path(kraken_report)
+
+    output:
+    tuple val(sample_id), env(PERCENTAGE), env(TAXONOMY_QC), emit: detailed_result
+    tuple val(sample_id), env(TAXONOMY_QC), emit: result
+
+    shell:
+    '''
+    PERCENTAGE=$(awk -F"\t" '$4 ~ /^S$/ && $6 ~ /Streptococcus pneumoniae$/ { gsub(/^[ \t]+/, "", $1); printf "%.2f", $1 }' !{kraken_report})
 
     if [ -z "${PERCENTAGE}" ]; then
         PERCENTAGE="0.00"

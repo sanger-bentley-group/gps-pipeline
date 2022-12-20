@@ -5,7 +5,7 @@
 include { PREPROCESS; GET_BASES } from "$projectDir/modules/preprocess"
 include { GET_SPADES; GET_UNICYCLER; ASSEMBLY_UNICYCLER; ASSEMBLY_SHOVILL; ASSEMBLY_QC } from "$projectDir/modules/assembly"
 include { GET_REF_GENOME_BWA_DB_PREFIX; MAPPING; REF_COVERAGE; SNP_CALL; HET_SNP_COUNT; MAPPING_QC } from "$projectDir/modules/mapping"
-include { GET_KRAKEN_DB; TAXONOMY } from "$projectDir/modules/taxonomy"
+include { GET_KRAKEN_DB; TAXONOMY; TAXONOMY_QC } from "$projectDir/modules/taxonomy"
 include { OVERALL_QC } from "$projectDir/modules/overall_qc"
 include { GET_POPPUNK_DB; GET_POPPUNK_EXT_CLUSTERS; LINEAGE } from "$projectDir/modules/lineage"
 include { GET_SEROBA_DB; SEROTYPE } from "$projectDir/modules/serotype"
@@ -85,15 +85,19 @@ workflow {
     )
 
     // From Channel PREPROCESS.out.processed_reads assess Streptococcus pneumoniae percentage in reads
-    // Output into Channels TAXONOMY.out.detailed_result & TAXONOMY.out.result
+    // Output into Channels TAXONOMY.out.detailed_result & TAXONOMY.out.result report
     TAXONOMY(kraken2_db, params.kraken2_memory_mapping, PREPROCESS.out.processed_reads)
 
-    // Merge Channels ASSEMBLY_QC.out.result & MAPPING_QC.out.result & TAXONOMY.out.result to provide Overall QC Status
+    // From Channel TAXONOMY.out.report, assess taxonomy quality
+    // Output into Channels TAXONOMY_QC.out.detailed_result & TAXONOMY_QC.out.result report
+    TAXONOMY_QC(TAXONOMY.out.report)
+
+    // Merge Channels ASSEMBLY_QC.out.result & MAPPING_QC.out.result & TAXONOMY_QC.out.result to provide Overall QC Status
     // Output into Channel OVERALL_QC.out.result
     OVERALL_QC(
         ASSEMBLY_QC.out.result
         .join(MAPPING_QC.out.result, failOnDuplicate: true, failOnMismatch: true)
-        .join(TAXONOMY.out.result, failOnDuplicate: true, failOnMismatch: true)
+        .join(TAXONOMY_QC.out.result, failOnDuplicate: true, failOnMismatch: true)
     )
 
     // From Channel PREPROCESS.out.processed_reads, only output reads of samples passed overall QC based on Channel OVERALL_QC.out.result
@@ -126,14 +130,14 @@ workflow {
     // Generate summary.csv by sorted sample_id based on merged Channels 
     // ASSEMBLY_QC.out.detailed_result,
     // MAPPING_QC.out.detailed_result,
-    // TAXONOMY.out.detailed_result,
+    // TAXONOMY_QC.out.detailed_result,
     // OVERALL_QC.out.result,
     // LINEAGE.out.csv,
     // SEROTYPE.out.result,
     // MLST.out.result
     ASSEMBLY_QC.out.detailed_result
     .join(MAPPING_QC.out.detailed_result, failOnDuplicate: true, failOnMismatch: true)
-    .join(TAXONOMY.out.detailed_result, failOnDuplicate: true, failOnMismatch: true)
+    .join(TAXONOMY_QC.out.detailed_result, failOnDuplicate: true, failOnMismatch: true)
     .join(OVERALL_QC.out.result, failOnDuplicate: true, failOnMismatch: true)
     .join(LINEAGE.out.csv.splitCsv(skip: 1), failOnDuplicate: true, remainder: true)
         .map { it -> (it[-1] == null) ? it[0..-2] + ["_"]: it}
