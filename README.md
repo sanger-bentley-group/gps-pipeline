@@ -40,6 +40,9 @@ GPS Unified Pipeline is a Nextflow Pipeline for processing Streptococcus pneumon
      ```
 
 ### Run
+> ⚠️ Important
+> 
+> Docker Desktop / Engine must be running and `pipeline` Conda Environment must be activated before running the following commands
 - You can run the pipeline without options. It will attempt to get the raw reads from the default location (`input` directory inside the `gps-unified-pipeline` local repository)
   ```
   nextflow run main.nf
@@ -53,7 +56,7 @@ GPS Unified Pipeline is a Nextflow Pipeline for processing Streptococcus pneumon
   nextflow run main.nf --reads test_input
   ```
   - `9870_5#52` will fail the Taxonomy QC and hence Overall QC, therefore without analysis results
-  - `17175_7#59` and `21127_1#156` should pass Overall QC, and with analysis results
+  - `17175_7#59` and `21127_1#156` should pass Overall QC, therefore with analysis results
 
 ### Output
 - By default, the pipeline outputs the results into `output` directory inside the `gps-unified-pipeline` local repository
