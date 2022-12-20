@@ -12,12 +12,12 @@ process GET_SPADES {
     shell:
     '''
     if [ ! -f !{local}/done_spades ] || [ ! -f !{local}/bin/spades.py ] || ! !{local}/bin/spades.py --version | grep -q 'v3.15.5' ; then
-        curl -L https://github.com/ablab/spades/releases/download/v3.15.5/SPAdes-3.15.5-Darwin.tar.gz > SPAdes-3.15.5-Darwin.tar.gz
-        tar -xzf SPAdes-3.15.5-*.tar.gz
-
         rm -rf !{local}
         mkdir -p !{local}
-        mv SPAdes*/* !{local}/
+        
+        curl -L https://github.com/ablab/spades/releases/download/v3.15.5/SPAdes-3.15.5-Darwin.tar.gz > SPAdes-3.15.5-Darwin.tar.gz
+        tar -xzf SPAdes-3.15.5-Darwin.tar.gz -C !{local} --strip-component=1 
+        rm -f SPAdes-3.15.5-Darwin.tar.gz
 
         touch !{local}/done_spades
     fi 
@@ -38,13 +38,12 @@ process GET_UNICYCLER {
     shell:
     '''
     if [ ! -f !{local}/done_unicycler ] || [ ! -f !{local}/unicycler-runner.py ] || ! !{local}/unicycler-runner.py --version | grep -q 'v0.5.0' ; then
-        curl -L https://github.com/rrwick/Unicycler/archive/refs/tags/v0.5.0.tar.gz > v0.5.0.tar.gz
-        
-        tar -xzf v0.5.0.tar.gz
-
         rm -rf !{local}
         mkdir -p !{local}
-        mv Unicycler-0.5.0/* !{local}/
+        
+        curl -L https://github.com/rrwick/Unicycler/archive/refs/tags/v0.5.0.tar.gz > v0.5.0.tar.gz
+        tar -xzf v0.5.0.tar.gz -C !{local} --strip-components=1
+        rm -f v0.5.0.tar.gz
 
         cd !{local}
         arch -x86_64 make
