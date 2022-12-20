@@ -79,13 +79,11 @@ process ASSEMBLY_UNICYCLER {
 }
 
 // Run Shovill to get assembly
-// Use specific SPAdes executable if provided its directory
 // Return sample_id and assembly, and hardlink the assembly to $params.output directory
 process ASSEMBLY_SHOVILL {
     publishDir "$params.output/assemblies", mode: 'link'
 
     input:
-    val spades_dir
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
 
     output:
@@ -93,10 +91,6 @@ process ASSEMBLY_SHOVILL {
 
     shell:
     '''
-    if [ "!{spades_dir}" != "" ]; then 
-        export PATH="!{spades_dir}:$PATH"
-    fi
-    
     shovill --R1 !{read1} --R2 !{read2} --outdir results
     
     mv results/contigs.fa !{sample_id}.contigs.fasta
