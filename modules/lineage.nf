@@ -30,7 +30,7 @@ process GET_POPPUNK_DB {
 
 // Return PopPUNK External Clusters file path
 // Check if GET_POPPUNK_EXT_CLUSTERS has run successfully on the specific external clusters file.
-// If not: clean, download, and unzip to params.poppunk_db_local
+// If not: clean and download to params.poppunk_db_local
 process GET_POPPUNK_EXT_CLUSTERS {
     input:
     val ext_clusters_remote
@@ -57,6 +57,8 @@ process GET_POPPUNK_EXT_CLUSTERS {
 }
 
 // Run PopPUNK to assign GPSCs to samples
+// Add "prefix_" to all sample names in qfile to avoid poppunk_assign crashing due to sample name already exists in database
+// Remove "prefix_" from all sample names in the output
 process LINEAGE {
     input:
     path poppunk_db
