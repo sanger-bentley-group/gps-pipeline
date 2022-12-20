@@ -85,11 +85,14 @@ GPS Unified Pipeline is a Nextflow Pipeline for processing Streptococcus pneumon
   | `unicycler_local` | `"$projectDir/bin/unicycler"` | Any valid path | MacOS Specific. Path to the directory where Unicycler executables can be found or download to |
   | `seroba_remote` | [SeroBA GitHub Repo](https://github.com/sanger-pathogens/seroba.git) | Any valid URL to a git remote repository | URL to a SeroBA git remote repository |
   | `seroba_local` | `"$projectDir/bin/seroba"` | Any valid path | Path to the directory where SeroBA local repository can be found or cloned to |
-  | `kraken2_db_remote` | [Kraken 2 RefSeq Index Standard-8 (2022-09-12)](https://genome-idx.s3.amazonaws.com/kraken/k2_standard_08gb_20220926.tar.gz") | Any valid URL to a Kraken2 database in `.tar.gz` format | URL to a Kraken2 database |
+  | `kraken2_db_remote` | [Kraken 2 RefSeq Index Standard-8 (2022-09-12)](https://genome-idx.s3.amazonaws.com/kraken/k2_standard_08gb_20220926.tar.gz) | Any valid URL to a Kraken2 database in `.tar.gz` format | URL to a Kraken2 database |
   | `kraken2_db_local` | `"$projectDir/bin/kraken"` | Any valid path | Path to the directory where a Kraken2 database can be found or download to |
   | `kraken2_memory_mapping` | `true` | `true` or `false` | Using memory mapping option of Kraken2 or not. `true` means not loading the database into RAM, suitable for memory-limited or fast storage (e.g. SSD) environments |
   | `ref_genome` | `"$projectDir/data/Streptococcus_pneumoniae_ATCC_700669_v1.fa"` | Any valid path to a `.fa` or `.fasta` file | Path to the reference genome for mapping |
   | `ref_genome_bwa_db_local` | `"$projectDir/bin/bwa_ref_db"` | Any valid path | Path to the directory where the reference genome FM-index database for BWA is stored |
+    | `poppunk_db_remote` | [GPS v6](https://gps-project.cog.sanger.ac.uk/GPS_v6.tar.gz) | Any valid URL to a PopPUNK database in `.tar.gz` format | URL to a PopPUNK database |
+    | `poppunk_ext_clusters_remote` | [GPS v6 GPSC Designation](https://www.pneumogen.net/gps/GPS_v6_external_clusters.csv) | Any valid URL to a PopPUNK external clusters file in `.csv` format | URL to a PopPUNK external clusters file |
+  | `poppunk_db_local` | `"$projectDir/bin/poppunk"` | Any valid path | Path to the directory where a PopPUNK database and external clusters file can be found or download to |
 
 &nbsp;
 ## Credits
