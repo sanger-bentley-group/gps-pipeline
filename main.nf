@@ -54,7 +54,7 @@ workflow {
     // From Channel PREPROCESS.out.processed_reads, assemble the preprocess read pairs
     // Output into Channel ASSEMBLY_ch, and hardlink the assemblies to $params.output directory
     if ( params.assembler == "shovill" ) {
-        ASSEMBLY_ch = ASSEMBLY_SHOVILL(spades_dir, PREPROCESS.out.processed_reads)
+        ASSEMBLY_ch = ASSEMBLY_SHOVILL(PREPROCESS.out.processed_reads)
     } else if ( params.assembler == "unicycler" ) {
         ASSEMBLY_ch = ASSEMBLY_UNICYCLER(unicycler_runner_py, spades_dir, PREPROCESS.out.processed_reads)
     } else {
