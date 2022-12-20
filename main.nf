@@ -123,7 +123,14 @@ workflow {
     // Output into Channel MLST.out.result
     MLST(QC_PASSED_ASSEMBLIES_ch)
 
-    // Generate summary.csv by sorted sample_id based on merged Channels ASSEMBLY_QC.out.detailed_result & MAPPING_QC.out.detailed_result & TAXONOMY.out.detailed_result & SEROTYPE.out.result & MLST.out.result
+    // Generate summary.csv by sorted sample_id based on merged Channels 
+    // ASSEMBLY_QC.out.detailed_result,
+    // MAPPING_QC.out.detailed_result,
+    // TAXONOMY.out.detailed_result,
+    // OVERALL_QC.out.result,
+    // LINEAGE.out.csv,
+    // SEROTYPE.out.result,
+    // MLST.out.result
     ASSEMBLY_QC.out.detailed_result
     .join(MAPPING_QC.out.detailed_result, failOnDuplicate: true, failOnMismatch: true)
     .join(TAXONOMY.out.detailed_result, failOnDuplicate: true, failOnMismatch: true)
@@ -142,7 +149,8 @@ workflow {
                 "Sample_ID",
                 "Contigs#" , "Assembly_Length", "Seq_Depth", "Assembly_QC", 
                 "Ref_Cov_%", "Het-SNP#" , "Mapping_QC",
-                "S.Pneumo_%", "Taxonomy_QC", "Overall_QC",
+                "S.Pneumo_%", "Taxonomy_QC",
+                "Overall_QC",
                 "GPSC",
                 "Serotype", "SeroBA_Comment", 
                 "ST", "aroE", "gdh", "gki", "recP", "spi", "xpt", "ddl"
