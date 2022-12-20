@@ -12,10 +12,11 @@ process GET_REF_GENOME_BWA_DB_PREFIX {
     shell:
     '''
     if [ ! -f !{local}/done_bwa_db_!{reference} ] || [ ! -f !{local}/ref.amb ] || [ ! -f !{local}/ref.ann ] || [ ! -f !{local}/ref.bwt ] || [ ! -f !{local}/ref.pac ] || [ ! -f !{local}/ref.sa ] ; then
-        bwa index -p ref !{reference}
-
         rm -rf !{local}
         mkdir -p !{local}
+
+        bwa index -p ref !{reference}
+        
         mv ref.amb ref.ann ref.bwt ref.pac ref.sa -t !{local}
         
         touch !{local}/done_bwa_db_!{reference}
