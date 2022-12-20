@@ -2,7 +2,7 @@
 
 
 // Import modules
-include { PREPROCESS } from "$projectDir/modules/preprocess"
+include { PREPROCESS; GET_BASES } from "$projectDir/modules/preprocess"
 include { GET_SPADES; GET_UNICYCLER; ASSEMBLY_UNICYCLER; ASSEMBLY_SHOVILL; ASSEMBLY_QC } from "$projectDir/modules/assembly"
 include { GET_REF_GENOME_BWA_DB_PREFIX; MAPPING; REF_COVERAGE; SNP_CALL; HET_SNP_COUNT; MAPPING_QC } from "$projectDir/modules/mapping"
 include { GET_KRAKEN_DB; TAXONOMY } from "$projectDir/modules/taxonomy"
@@ -48,7 +48,7 @@ workflow {
     raw_read_pairs_ch = Channel.fromFilePairs( "$params.reads/*_{1,2}.fastq.gz", checkIfExists: true )
 
     // Preprocess read pairs
-    // Output into Channels PREPROCESS.out.processed_reads & PREPROCESS.out.base_count
+    // Output into Channels PREPROCESS.out.processed_reads & PREPROCESS.out.json
     PREPROCESS(raw_read_pairs_ch)
 
     // From Channel PREPROCESS.out.processed_reads, assemble the preprocess read pairs
@@ -62,11 +62,11 @@ workflow {
         System.exit(0)
     }
 
-    // From Channel ASSEMBLY_ch and Channel PREPROCESS.out.base_count, assess assembly quality
+    // From Channel ASSEMBLY_ch and Channel GET_BASES(PREPROCESS.out.json), assess assembly quality
     // Output into Channels ASSEMBLY_QC.out.detailed_result & ASSEMBLY_QC.out.result
     ASSEMBLY_QC(
         ASSEMBLY_ch
-        .join(PREPROCESS.out.base_count, failOnDuplicate: true, failOnMismatch: true)
+        .join(GET_BASES(PREPROCESS.out.json), failOnDuplicate: true, failOnMismatch: true)
     )
     
     // From Channel PREPROCESS.out.processed_reads map reads to reference
