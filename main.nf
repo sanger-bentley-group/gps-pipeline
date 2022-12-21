@@ -8,7 +8,7 @@ include { GET_REF_GENOME_BWA_DB_PREFIX; MAPPING; REF_COVERAGE; SNP_CALL; HET_SNP
 include { GET_KRAKEN_DB; TAXONOMY; TAXONOMY_QC } from "$projectDir/modules/taxonomy"
 include { OVERALL_QC } from "$projectDir/modules/overall_qc"
 include { GET_POPPUNK_DB; GET_POPPUNK_EXT_CLUSTERS; LINEAGE } from "$projectDir/modules/lineage"
-include { GET_SEROBA_DB; SEROTYPE } from "$projectDir/modules/serotype"
+include { GET_SEROBA_DB; CREATE_SEROBA_DB; SEROTYPE } from "$projectDir/modules/serotype"
 include { MLST } from "$projectDir/modules/mlst"
 
 
@@ -21,7 +21,8 @@ workflow {
     kraken2_db = GET_KRAKEN_DB(params.kraken2_db_remote, params.kraken2_db_local)
 
     // Get path to SeroBA Databases, clone and rebuild if necessary
-    seroba_db = GET_SEROBA_DB(params.seroba_remote, params.seroba_local)
+    GET_SEROBA_DB(params.seroba_remote, params.seroba_local)
+    seroba_db = CREATE_SEROBA_DB(params.seroba_local, GET_SEROBA_DB.out.create_db)
 
     // Get paths to PopPUNK Database and External Clusters, download if necessary
     poppunk_db = GET_POPPUNK_DB(params.poppunk_db_remote, params.poppunk_db_local)

@@ -1,22 +1,41 @@
-// Return SeroBA databases path
-// Check if GET_SEROBA_DB has run successfully and pull to check if SeroBA database is up-to-date. 
-// If outdated or does not exist: clean, clone and re-create kmc and ariba databases
+// Return boolean of CREATE_DB
+// Check if GET_SEROBA_DB and CREATE_SEROBA_DB has run successfully and pull to check if SeroBA database is up-to-date. 
+// If outdated or does not exist: clean and clone, set CREATE_DB to true
 process GET_SEROBA_DB {
     input:
     val remote
     val local
 
     output:
-    val "$local/database"
+    env CREATE_DB, emit: create_db
 
     shell:
     '''
     if [ ! -f !{local}/done_seroba ] || !(git -C !{local} pull | grep -q 'Already up[- ]to[- ]date'); then
         rm -rf !{local}
-        
         git clone !{remote} !{local}
-        seroba createDBs !{local}/database/ 71
 
+        CREATE_DB=true
+    else
+        CREATE_DB=false
+    fi
+    '''
+}
+
+// Return SeroBA databases path
+// If create_db == true: re-create kmc and ariba databases
+process CREATE_SEROBA_DB {
+    input:
+    val local
+    val create_db
+
+    output:
+    val "$local/database"
+
+    shell:
+    '''
+    if [ !{create_db} = true ]; then
+        seroba createDBs !{local}/database/ 71
         touch !{local}/done_seroba
     fi
     '''
