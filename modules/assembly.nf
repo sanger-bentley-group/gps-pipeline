@@ -37,9 +37,22 @@ process ASSEMBLY_SHOVILL {
 }
 
 // Run quast to assess assembly quality
+process ASSEMBLY_ASSESS {
+    input:
+    tuple val(sample_id), path(assembly)
+    output:
+    tuple val(sample_id), path("results/report.tsv"), emit: report
+
+    shell:
+    '''
+    quast.py -o results !{assembly}
+    '''
+}
+
+// Return Assembly QC result based on report.tsv from Quast and total base count 
 process ASSEMBLY_QC {
     input:
-    tuple val(sample_id), path(assembly), val(bases)
+    tuple val(sample_id), path(report), val(bases)
 
     output:
     tuple val(sample_id), env(CONTIGS), env(LENGTH), env(DEPTH), env(ASSEMBLY_QC), emit: detailed_result
@@ -47,10 +60,8 @@ process ASSEMBLY_QC {
 
     shell:
     '''
-    quast -o results !{assembly}
-    
-    CONTIGS=$(awk -F'\t' '$1 == "# contigs" { print $2 }' results/report.tsv)
-    LENGTH=$(awk -F'\t' '$1 == "Total length" { print $2 }' results/report.tsv)
+    CONTIGS=$(awk -F'\t' '$1 == "# contigs" { print $2 }' !{report})
+    LENGTH=$(awk -F'\t' '$1 == "Total length" { print $2 }' !{report})
     DEPTH=$(printf %.2f $(echo "!{bases} / $LENGTH" | bc -l) )
     
     if (( $CONTIGS < 500 )) && (( $LENGTH >= 1900000 )) && (( $LENGTH <= 2300000 )) && (( $(echo "$DEPTH >= 20.00" | bc -l) )); then
