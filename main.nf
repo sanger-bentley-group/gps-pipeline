@@ -3,7 +3,7 @@
 
 // Import modules
 include { PREPROCESS; GET_BASES } from "$projectDir/modules/preprocess"
-include { GET_SPADES; GET_UNICYCLER; ASSEMBLY_UNICYCLER; ASSEMBLY_SHOVILL; ASSEMBLY_QC } from "$projectDir/modules/assembly"
+include { ASSEMBLY_UNICYCLER; ASSEMBLY_SHOVILL; ASSEMBLY_QC } from "$projectDir/modules/assembly"
 include { GET_REF_GENOME_BWA_DB_PREFIX; MAPPING; REF_COVERAGE; SNP_CALL; HET_SNP_COUNT; MAPPING_QC } from "$projectDir/modules/mapping"
 include { GET_KRAKEN_DB; TAXONOMY; TAXONOMY_QC } from "$projectDir/modules/taxonomy"
 include { OVERALL_QC } from "$projectDir/modules/overall_qc"
@@ -14,23 +14,6 @@ include { MLST } from "$projectDir/modules/mlst"
 
 // Main workflow
 workflow {
-    // ===============
-    
-    // Currently SPAdes v3.15.5 and Unicycler v0.5.0 are not available in Conda of MacOS, 
-    // and older versions yield suboptimal assemblies or lead to critical errors
-    // therefore separate download / compiling for MacOS is required for now
-    // might update this part and merge environment_*.yml when the pipeline is dockerised in a Linux environment
-    
-    // Get path to SPAdes directory, download if necessary
-    spades_dir = ( params.os == "Mac OS X" ) ? GET_SPADES(params.spades_local) : ""
-
-    // Get path to Unicycler executable, download if necessary
-    if ( params.assembler == "unicycler" ) {
-        unicycler_runner_py = ( params.os == "Mac OS X" ) ? GET_UNICYCLER(params.unicycler_local) : "unicycler"
-    }
-
-    // ===============
-
     // Get path to prefix of Reference Genome BWA Database, generate from assembly if necessary
     ref_genome_bwa_db_prefix = GET_REF_GENOME_BWA_DB_PREFIX(params.ref_genome, params.ref_genome_bwa_db_local)
 
@@ -56,7 +39,7 @@ workflow {
     if ( params.assembler == "shovill" ) {
         ASSEMBLY_ch = ASSEMBLY_SHOVILL(PREPROCESS.out.processed_reads)
     } else if ( params.assembler == "unicycler" ) {
-        ASSEMBLY_ch = ASSEMBLY_UNICYCLER(unicycler_runner_py, spades_dir, PREPROCESS.out.processed_reads)
+        ASSEMBLY_ch = ASSEMBLY_UNICYCLER(PREPROCESS.out.processed_reads)
     } else {
         println "Provided assembler option is not valid. Supported value: shovill, unicycler"
         System.exit(0)
