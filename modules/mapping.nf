@@ -24,23 +24,35 @@ process GET_REF_GENOME_BWA_DB_PREFIX {
     '''
 }
 
-// Map the reads to reference using BWA-MEM algorithm,
-// then covert the resulting SAM into BAM and sort it
-// Return sorted BAM
+// Map the reads to reference using BWA-MEM algorithm
+// Return SAM
 process MAPPING {
     input:
     val reference_prefix
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
 
     output:
-    tuple val(sample_id), path("${sample_id}_mapped_sorted.bam"), emit: bam
+    tuple val(sample_id), path("${sample_id}_mapped.sam"), emit: sam
 
     shell:
     '''
     bwa mem !{reference_prefix} <(zcat < !{read1}) <(zcat < !{read2}) > !{sample_id}_mapped.sam
+    '''
+}
 
-    samtools view -b !{sample_id}_mapped.sam > !{sample_id}_mapped.bam
-    rm !{sample_id}_mapped.sam
+// Convert SAM into BAM and sort it
+// Return sorted BAM
+process SAM_TO_SORTED_BAM {
+    input:
+    tuple val(sample_id), path(sam)
+
+    output:
+    tuple val(sample_id), path("${sample_id}_mapped_sorted.bam"), emit: bam
+
+    shell:
+    '''
+    samtools view -b !{sam} > !{sample_id}_mapped.bam
+    rm !{sam}
 
     samtools sort -o !{sample_id}_mapped_sorted.bam !{sample_id}_mapped.bam
     rm !{sample_id}_mapped.bam
