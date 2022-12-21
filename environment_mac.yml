@@ -12,5 +12,3 @@ dependencies:
   - bc=1.07.1
   - bwa=0.7.17
   - samtools=1.12
-  # MacOS specific packages below
-  - blast=2.12.0
