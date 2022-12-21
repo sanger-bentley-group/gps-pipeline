@@ -5,7 +5,6 @@ channels:
   - defaults
   - r
 dependencies:
-  - quast=5.2.0
   - bcftools=1.12
   - nextflow=22.10
   - bc=1.07.1
