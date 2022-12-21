@@ -3,7 +3,7 @@
 
 // Import modules
 include { PREPROCESS; GET_BASES } from "$projectDir/modules/preprocess"
-include { ASSEMBLY_UNICYCLER; ASSEMBLY_SHOVILL; ASSEMBLY_QC } from "$projectDir/modules/assembly"
+include { ASSEMBLY_UNICYCLER; ASSEMBLY_SHOVILL; ASSEMBLY_ASSESS; ASSEMBLY_QC } from "$projectDir/modules/assembly"
 include { GET_REF_GENOME_BWA_DB_PREFIX; MAPPING; REF_COVERAGE; SNP_CALL; HET_SNP_COUNT; MAPPING_QC } from "$projectDir/modules/mapping"
 include { GET_KRAKEN_DB; TAXONOMY; TAXONOMY_QC } from "$projectDir/modules/taxonomy"
 include { OVERALL_QC } from "$projectDir/modules/overall_qc"
@@ -45,10 +45,13 @@ workflow {
         System.exit(0)
     }
 
-    // From Channel ASSEMBLY_ch and Channel GET_BASES(PREPROCESS.out.json), assess assembly quality
+    // From Channel ASSEMBLY_ch, assess assembly quality
+    ASSEMBLY_ASSESS(ASSEMBLY_ch)
+
+    // From Channel ASSEMBLY_ASSESS.out.report and Channel GET_BASES(PREPROCESS.out.json), provide Assembly QC status
     // Output into Channels ASSEMBLY_QC.out.detailed_result & ASSEMBLY_QC.out.result
     ASSEMBLY_QC(
-        ASSEMBLY_ch
+        ASSEMBLY_ASSESS.out.report
         .join(GET_BASES(PREPROCESS.out.json), failOnDuplicate: true, failOnMismatch: true)
     )
     
@@ -71,7 +74,7 @@ workflow {
     // Output into Channels TAXONOMY.out.detailed_result & TAXONOMY.out.result report
     TAXONOMY(kraken2_db, params.kraken2_memory_mapping, PREPROCESS.out.processed_reads)
 
-    // From Channel TAXONOMY.out.report, assess taxonomy quality
+    // From Channel TAXONOMY.out.report, provide taxonomy QC status
     // Output into Channels TAXONOMY_QC.out.detailed_result & TAXONOMY_QC.out.result report
     TAXONOMY_QC(TAXONOMY.out.report)
 
