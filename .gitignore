@@ -6,7 +6,7 @@ work
 .nextflow
 .nextflow.log*
 
-# program binaries, test data, output
+# Binaries, data, output
 bin
 input
 output
