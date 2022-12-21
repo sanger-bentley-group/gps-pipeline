@@ -31,7 +31,6 @@ process ASSEMBLY_SHOVILL {
     shell:
     '''
     shovill --R1 !{read1} --R2 !{read2} --outdir results
-    
     mv results/contigs.fa !{sample_id}.contigs.fasta
     '''
 }
