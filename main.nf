@@ -2,35 +2,18 @@
 
 
 // Import modules
-include { PREPROCESS } from "$projectDir/modules/preprocess"
-include { GET_SPADES; GET_UNICYCLER; ASSEMBLY_UNICYCLER; ASSEMBLY_SHOVILL; ASSEMBLY_QC } from "$projectDir/modules/assembly"
-include { GET_REF_GENOME_BWA_DB_PREFIX; MAPPING; REF_COVERAGE; SNP_CALL; HET_SNP_COUNT; MAPPING_QC } from "$projectDir/modules/mapping"
-include { GET_KRAKEN_DB; TAXONOMY } from "$projectDir/modules/taxonomy"
+include { PREPROCESS; GET_BASES } from "$projectDir/modules/preprocess"
+include { ASSEMBLY_UNICYCLER; ASSEMBLY_SHOVILL; ASSEMBLY_ASSESS; ASSEMBLY_QC } from "$projectDir/modules/assembly"
+include { GET_REF_GENOME_BWA_DB_PREFIX; MAPPING; SAM_TO_SORTED_BAM; REF_COVERAGE; SNP_CALL; HET_SNP_COUNT; MAPPING_QC } from "$projectDir/modules/mapping"
+include { GET_KRAKEN_DB; TAXONOMY; TAXONOMY_QC } from "$projectDir/modules/taxonomy"
 include { OVERALL_QC } from "$projectDir/modules/overall_qc"
 include { GET_POPPUNK_DB; GET_POPPUNK_EXT_CLUSTERS; LINEAGE } from "$projectDir/modules/lineage"
-include { GET_SEROBA_DB; SEROTYPE } from "$projectDir/modules/serotype"
+include { GET_SEROBA_DB; CREATE_SEROBA_DB; SEROTYPE } from "$projectDir/modules/serotype"
 include { MLST } from "$projectDir/modules/mlst"
 
 
 // Main workflow
 workflow {
-    // ===============
-    
-    // Currently SPAdes v3.15.5 and Unicycler v0.5.0 are not available in Conda of MacOS, 
-    // and older versions yield suboptimal assemblies or lead to critical errors
-    // therefore separate download / compiling for MacOS is required for now
-    // might update this part and merge environment_*.yml when the pipeline is dockerised in a Linux environment
-    
-    // Get path to SPAdes directory, download if necessary
-    spades_dir = ( params.os == "Mac OS X" ) ? GET_SPADES(params.spades_local) : ""
-
-    // Get path to Unicycler executable, download if necessary
-    if ( params.assembler == "unicycler" ) {
-        unicycler_runner_py = ( params.os == "Mac OS X" ) ? GET_UNICYCLER(params.unicycler_local) : "unicycler"
-    }
-
-    // ===============
-
     // Get path to prefix of Reference Genome BWA Database, generate from assembly if necessary
     ref_genome_bwa_db_prefix = GET_REF_GENOME_BWA_DB_PREFIX(params.ref_genome, params.ref_genome_bwa_db_local)
 
@@ -38,7 +21,8 @@ workflow {
     kraken2_db = GET_KRAKEN_DB(params.kraken2_db_remote, params.kraken2_db_local)
 
     // Get path to SeroBA Databases, clone and rebuild if necessary
-    seroba_db = GET_SEROBA_DB(params.seroba_remote, params.seroba_local)
+    GET_SEROBA_DB(params.seroba_remote, params.seroba_local)
+    seroba_db = CREATE_SEROBA_DB(params.seroba_local, GET_SEROBA_DB.out.create_db)
 
     // Get paths to PopPUNK Database and External Clusters, download if necessary
     poppunk_db = GET_POPPUNK_DB(params.poppunk_db_remote, params.poppunk_db_local)
@@ -48,35 +32,43 @@ workflow {
     raw_read_pairs_ch = Channel.fromFilePairs( "$params.reads/*_{1,2}.fastq.gz", checkIfExists: true )
 
     // Preprocess read pairs
-    // Output into Channels PREPROCESS.out.processed_reads & PREPROCESS.out.base_count
+    // Output into Channels PREPROCESS.out.processed_reads & PREPROCESS.out.json
     PREPROCESS(raw_read_pairs_ch)
 
     // From Channel PREPROCESS.out.processed_reads, assemble the preprocess read pairs
     // Output into Channel ASSEMBLY_ch, and hardlink the assemblies to $params.output directory
     if ( params.assembler == "shovill" ) {
-        ASSEMBLY_ch = ASSEMBLY_SHOVILL(spades_dir, PREPROCESS.out.processed_reads)
+        ASSEMBLY_ch = ASSEMBLY_SHOVILL(PREPROCESS.out.processed_reads)
     } else if ( params.assembler == "unicycler" ) {
-        ASSEMBLY_ch = ASSEMBLY_UNICYCLER(unicycler_runner_py, spades_dir, PREPROCESS.out.processed_reads)
+        ASSEMBLY_ch = ASSEMBLY_UNICYCLER(PREPROCESS.out.processed_reads)
     } else {
         println "Provided assembler option is not valid. Supported value: shovill, unicycler"
         System.exit(0)
     }
 
-    // From Channel ASSEMBLY_ch and Channel PREPROCESS.out.base_count, assess assembly quality
+    // From Channel ASSEMBLY_ch, assess assembly quality
+    ASSEMBLY_ASSESS(ASSEMBLY_ch)
+
+    // From Channel ASSEMBLY_ASSESS.out.report and Channel GET_BASES(PREPROCESS.out.json), provide Assembly QC status
     // Output into Channels ASSEMBLY_QC.out.detailed_result & ASSEMBLY_QC.out.result
     ASSEMBLY_QC(
-        ASSEMBLY_ch
-        .join(PREPROCESS.out.base_count, failOnDuplicate: true, failOnMismatch: true)
+        ASSEMBLY_ASSESS.out.report
+        .join(GET_BASES(PREPROCESS.out.json), failOnDuplicate: true, failOnMismatch: true)
     )
     
     // From Channel PREPROCESS.out.processed_reads map reads to reference
-    // Output into Channel MAPPING.out.bam
+    // Output into Channel MAPPING.out.sam
     MAPPING(ref_genome_bwa_db_prefix, PREPROCESS.out.processed_reads)
 
-    // From Channel MAPPING.out.bam calculates reference coverage and non-cluster Het-SNP site count respecitvely
+    // From Channel MAPPING.out.sam, Convert SAM into sorted BAM
+    // Output into Channel SAM_TO_SORTED_BAM.out.bam
+    SAM_TO_SORTED_BAM(MAPPING.out.sam)
+
+    // From Channel SAM_TO_SORTED_BAM.out.bam calculates reference coverage and non-cluster Het-SNP site count respecitvely
     // Output into Channels REF_COVERAGE.out.result & HET_SNP_COUNT.out.result respectively
-    REF_COVERAGE(MAPPING.out.bam)
-    SNP_CALL(params.ref_genome, MAPPING.out.bam) | HET_SNP_COUNT
+    REF_COVERAGE(SAM_TO_SORTED_BAM.out.bam)
+    SNP_CALL(params.ref_genome, SAM_TO_SORTED_BAM.out.bam) | HET_SNP_COUNT
+
     // Merge Channels REF_COVERAGE.out.result & HET_SNP_COUNT.out.result to provide Mapping QC Status
     // Output into Channels MAPPING_QC.out.detailed_result & MAPPING_QC.out.result
     MAPPING_QC(
@@ -85,15 +77,19 @@ workflow {
     )
 
     // From Channel PREPROCESS.out.processed_reads assess Streptococcus pneumoniae percentage in reads
-    // Output into Channels TAXONOMY.out.detailed_result & TAXONOMY.out.result
+    // Output into Channels TAXONOMY.out.detailed_result & TAXONOMY.out.result report
     TAXONOMY(kraken2_db, params.kraken2_memory_mapping, PREPROCESS.out.processed_reads)
 
-    // Merge Channels ASSEMBLY_QC.out.result & MAPPING_QC.out.result & TAXONOMY.out.result to provide Overall QC Status
+    // From Channel TAXONOMY.out.report, provide taxonomy QC status
+    // Output into Channels TAXONOMY_QC.out.detailed_result & TAXONOMY_QC.out.result report
+    TAXONOMY_QC(TAXONOMY.out.report)
+
+    // Merge Channels ASSEMBLY_QC.out.result & MAPPING_QC.out.result & TAXONOMY_QC.out.result to provide Overall QC Status
     // Output into Channel OVERALL_QC.out.result
     OVERALL_QC(
         ASSEMBLY_QC.out.result
         .join(MAPPING_QC.out.result, failOnDuplicate: true, failOnMismatch: true)
-        .join(TAXONOMY.out.result, failOnDuplicate: true, failOnMismatch: true)
+        .join(TAXONOMY_QC.out.result, failOnDuplicate: true, failOnMismatch: true)
     )
 
     // From Channel PREPROCESS.out.processed_reads, only output reads of samples passed overall QC based on Channel OVERALL_QC.out.result
@@ -126,14 +122,14 @@ workflow {
     // Generate summary.csv by sorted sample_id based on merged Channels 
     // ASSEMBLY_QC.out.detailed_result,
     // MAPPING_QC.out.detailed_result,
-    // TAXONOMY.out.detailed_result,
+    // TAXONOMY_QC.out.detailed_result,
     // OVERALL_QC.out.result,
     // LINEAGE.out.csv,
     // SEROTYPE.out.result,
     // MLST.out.result
     ASSEMBLY_QC.out.detailed_result
     .join(MAPPING_QC.out.detailed_result, failOnDuplicate: true, failOnMismatch: true)
-    .join(TAXONOMY.out.detailed_result, failOnDuplicate: true, failOnMismatch: true)
+    .join(TAXONOMY_QC.out.detailed_result, failOnDuplicate: true, failOnMismatch: true)
     .join(OVERALL_QC.out.result, failOnDuplicate: true, failOnMismatch: true)
     .join(LINEAGE.out.csv.splitCsv(skip: 1), failOnDuplicate: true, remainder: true)
         .map { it -> (it[-1] == null) ? it[0..-2] + ["_"]: it}
