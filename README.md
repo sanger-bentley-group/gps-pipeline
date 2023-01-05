@@ -9,11 +9,14 @@ GPS Unified Pipeline is a Nextflow Pipeline for processing Streptococcus pneumon
 &nbsp;
 ## Usage
 ### Requirement
-- Mamba / Conda
-- Git
-- Docker
+- [Docker](https://www.docker.com/)
+- Java 11+ ([OpenJDK](https://openjdk.org/)/[Oracle Java](https://www.oracle.com/java/))
 ### Setup
-1. Clone the repository
+1. Download and unzip the repository: https://github.com/HarryHung/gps-unified-pipeline/archive/refs/heads/master.zip
+
+    or 
+
+     Clone the repository (if Git is installed on your system)
     ```
     git clone https://github.com/HarryHung/gps-unified-pipeline.git
     ```
@@ -21,39 +24,21 @@ GPS Unified Pipeline is a Nextflow Pipeline for processing Streptococcus pneumon
     ```
     cd gps-unified-pipeline
     ```
-3. Setup Conda Environment with Mamba (If using Conda, replace `mamba` with `conda` in the following commands. Use of Mamba is highly recommended due to long environment-resolving time of Conda)
-   - MacOS (Intel CPU)
-     ```
-     mamba env create -f environment_mac.yml
-     mamba activate pipeline
-     ```
-   - MacOS (Apple Silicon)
-     ```
-     CONDA_SUBDIR=osx-64 mamba env create -f environment_mac.yml
-     mamba activate pipeline
-     conda config --env --set subdir osx-64
-     ```
-   - Linux
-     ```
-     mamba env create -f environment_linux.yml
-     mamba activate pipeline
-     ```
-
 ### Run
 > ⚠️ Important
 > 
-> Docker Desktop / Engine must be running and `pipeline` Conda Environment must be activated before running the following commands
+> Docker Desktop / Engine must be running, and an active Internet connection is required to download additional files
 - You can run the pipeline without options. It will attempt to get the raw reads from the default location (`input` directory inside the `gps-unified-pipeline` local repository)
   ```
-  nextflow run main.nf
+  ./nextflow run main.nf
   ```
 - You can also specific the location of the raw reads by adding option `--reads`
   ```
-  nextflow run main.nf --reads /path/to/raw-reads-directory
+  ./nextflow run main.nf --reads /path/to/raw-reads-directory
   ```
 - For a test run, you could use the included test reads in the `test_input` directory
   ```
-  nextflow run main.nf --reads test_input
+  ./nextflow run main.nf --reads test_input
   ```
   - `9870_5#52` will fail the Taxonomy QC and hence Overall QC, therefore without analysis results
   - `17175_7#59` and `21127_1#156` should pass Overall QC, therefore with analysis results
@@ -62,7 +47,7 @@ GPS Unified Pipeline is a Nextflow Pipeline for processing Streptococcus pneumon
 - By default, the pipeline outputs the results into `output` directory inside the `gps-unified-pipeline` local repository
 - It can be changed by adding option `--output`
   ```
-  nextflow run main.nf --output /path/to/output-directory
+  ./nextflow run main.nf --output /path/to/output-directory
   ```
 - The following directories and files are output into the output directory
   | Directory / File | Description |
@@ -74,7 +59,7 @@ GPS Unified Pipeline is a Nextflow Pipeline for processing Streptococcus pneumon
 - The table below contains the avilable options that can be used when you run the pipeline
 - Usage:
   ```
-  nextflow run main.nf --[option name] [value]
+  ./nextflow run main.nf --[option name] [value]
   ```
 - `$projectDir` is the directory where the `gps-unified-pipeline` local repository is stored
 - Must not have trailing slash ("`/`" at the end of path) on all paths
@@ -82,10 +67,7 @@ GPS Unified Pipeline is a Nextflow Pipeline for processing Streptococcus pneumon
   | --- | ---| --- | --- |
   | `reads` | `"$projectDir/input"` | Any valid path | Path to the input directory that contains the reads to be processed |
   | `output` | `"$projectDir/output"` | Any valid path | Path to the output directory that save the results |
-  | `os` | `System.properties['os.name']` | `"Mac OS X"` or `"Linux"` | Type of host OS. The pipeline will acquire this information automatically by default |
   | `assembler`| `"shovill"` | `"shovill"` or `"unicycler"` | SPAdes Assembler to assembly the reads |
-  | `spades_local` | `"$projectDir/bin/spades"` | Any valid path | MacOS Specific. Path to the directory where SPAdes executables can be found or download to |
-  | `unicycler_local` | `"$projectDir/bin/unicycler"` | Any valid path | MacOS Specific. Path to the directory where Unicycler executables can be found or download to |
   | `seroba_remote` | [SeroBA GitHub Repo](https://github.com/sanger-pathogens/seroba.git) | Any valid URL to a git remote repository | URL to a SeroBA git remote repository |
   | `seroba_local` | `"$projectDir/bin/seroba"` | Any valid path | Path to the directory where SeroBA local repository can be found or cloned to |
   | `kraken2_db_remote` | [Kraken 2 RefSeq Index Standard-8 (2022-09-12)](https://genome-idx.s3.amazonaws.com/kraken/k2_standard_08gb_20220926.tar.gz) | Any valid URL to a Kraken2 database in `.tar.gz` format | URL to a Kraken2 database |
