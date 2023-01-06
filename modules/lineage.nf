@@ -17,7 +17,7 @@ process GET_POPPUNK_DB {
         rm -rf !{local}/$DB_NAME
         mkdir -p !{local}
 
-        curl -kL !{db_remote} > poppunk_db.tar.gz
+        wget !{db_remote} -O poppunk_db.tar.gz
         tar -xzf poppunk_db.tar.gz -C !{local}
         rm poppunk_db.tar.gz
 
@@ -47,7 +47,7 @@ process GET_POPPUNK_EXT_CLUSTERS {
         rm -f !{local}/$EXT_CLUSTERS_FILE
         mkdir -p !{local}
 
-        curl -kL !{ext_clusters_remote} > !{local}/$EXT_CLUSTERS_FILE
+        wget !{ext_clusters_remote} -O !{local}/$EXT_CLUSTERS_FILE
 
         touch !{local}/done_$EXT_CLUSTERS_FILE
     fi
