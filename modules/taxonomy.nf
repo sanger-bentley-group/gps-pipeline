@@ -17,7 +17,7 @@ process GET_KRAKEN_DB {
         rm -rf !{local}
         mkdir -p !{local}
 
-        curl -kL !{remote} > kraken_db.tar.gz
+        wget !{remote} -O kraken_db.tar.gz
         tar -xzf kraken_db.tar.gz -C !{local}
         rm -f kraken_db.tar.gz
 
