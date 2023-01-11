@@ -9,8 +9,9 @@ GPS Unified Pipeline is a Nextflow Pipeline for processing Streptococcus pneumon
 &nbsp;
 ## Usage
 ### Requirement
+- POSIX compatible system (e.g. Linux, MacOS, Windows through [WSL](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux))
+- Java 11 (or later, up to 18) ([OpenJDK](https://openjdk.org/)/[Oracle Java](https://www.oracle.com/java/))
 - [Docker](https://www.docker.com/)
-- Java 11+ ([OpenJDK](https://openjdk.org/)/[Oracle Java](https://www.oracle.com/java/))
 ### Setup
 1. Clone the repository (if Git is installed on your system)
     ```
