@@ -134,7 +134,7 @@ workflow {
     // MLST.out.result
     // GET_PBP_RESISTANCE.out.result
     // 
-    // Replace null with approiate amount of "_" items when sample does not exist in that output (i.e. QC rejected)
+    // Replace null with approiate amount of "_" items when sample_id does not exist in that output (i.e. QC rejected)
     ASSEMBLY_QC.out.detailed_result
     .join(MAPPING_QC.out.detailed_result, failOnDuplicate: true, failOnMismatch: true)
     .join(TAXONOMY_QC.out.detailed_result, failOnDuplicate: true, failOnMismatch: true)

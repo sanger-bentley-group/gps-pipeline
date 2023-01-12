@@ -1,5 +1,8 @@
-// WIP. As a docker executable is used directly, which diminish the portability of the pipeline. Will attempt to switch to a docker environment and execute the tools within via shell script. 
-// Run spn-resistance-pbp pipeline to assign PBP genes and estimate MIC (minimum inhibitory concentration) for 6 Beta-lactam antibiotics of samples
+// WIP
+// As a docker executable is used directly, the portability of the pipeline is diminished
+// Will attempt to switch to a docker environment and execute the tools within via shell script
+// 
+// Run spn-resistance-pbp pipeline to assign PBP genes and estimate samples' MIC (minimum inhibitory concentration) for 6 Beta-lactam antibiotics
 process PBP_RESISTANCE {
     input:
     tuple val(sample_id), path(assembly)
@@ -14,7 +17,7 @@ process PBP_RESISTANCE {
 }
 
 // Extract the results from the result.json file of spn-resistance-pbp pipeline
-// = signs in MICs are replaced by eq_sign_sign to avoid issue when Nextflow attempt to capture their respective environment variables 
+// "=" character in MICs are replaced by "eq_sign" string to avoid issue when Nextflow attempt to capture string variables with "=" character 
 process GET_PBP_RESISTANCE {
     input:
     tuple val(sample_id), path(json)
