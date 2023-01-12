@@ -11,7 +11,7 @@ process GET_SEROBA_DB {
 
     shell:
     '''
-    # Assume up-to-date if done_seroba and the host cannot be resolved
+    # Assume up-to-date if done_seroba exists and the host cannot be resolved (often means the Internet is not available)
     if [ ! -f !{local}/done_seroba ] || !((git -C !{local} pull || echo 'Already up-to-date') | grep -q 'Already up[- ]to[- ]date'); then
         rm -rf !{local}
         git clone !{remote} !{local}
