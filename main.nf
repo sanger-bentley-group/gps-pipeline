@@ -140,7 +140,7 @@ workflow {
     .join(TAXONOMY_QC.out.detailed_result, failOnDuplicate: true, failOnMismatch: true)
     .join(OVERALL_QC.out.result, failOnDuplicate: true, failOnMismatch: true)
     .join(LINEAGE.out.csv.splitCsv(skip: 1), failOnDuplicate: true, remainder: true)
-        .map { it -> (it[-1] == null) ? it[0..-2] + ["_"]: it} 
+        .map { it -> (it[-1] == null) ? it[0..-2] + ["_"]: it}
     .join(SEROTYPE.out.result, failOnDuplicate: true, remainder: true)
         .map { it -> (it[-1] == null) ? it[0..-2] + ["_"] * 2 : it}
     .join(MLST.out.result, failOnDuplicate: true, remainder: true)
