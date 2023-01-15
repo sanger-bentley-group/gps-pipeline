@@ -66,12 +66,12 @@ process LINEAGE {
     path poppunk_qfile
 
     output:
-    path "output/output_external_clusters.csv", emit: csv
+    path "result.csv", emit: csv
 
     shell:
     '''
-    sed -i 's/^/prefix_/' !{poppunk_qfile}
-    poppunk_assign --db !{poppunk_db} --external-clustering !{poppunk_ext_clusters} --query !{poppunk_qfile} --output output --threads !{task.cpus}
-    sed -i 's/prefix_//' output/output_external_clusters.csv
+    sed 's/^/prefix_/' !{poppunk_qfile} > safe_qfile.txt
+    poppunk_assign --db !{poppunk_db} --external-clustering !{poppunk_ext_clusters} --query safe_qfile.txt --output output --threads !{task.cpus}
+    sed 's/^prefix_//' output/output_external_clusters.csv > result.csv
     '''
 }
