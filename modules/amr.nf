@@ -1,8 +1,4 @@
-// WIP
-// As a docker executable is used directly, the portability of the pipeline is diminished
-// Will attempt to switch to a docker environment and execute the tools within via shell script
-// 
-// Run spn-resistance-pbp pipeline to assign PBP genes and estimate samples' MIC (minimum inhibitory concentration) for 6 Beta-lactam antibiotics
+// Run spn_pbp_amr pipeline to assign PBP genes and estimate samples' MIC (minimum inhibitory concentration) for 6 Beta-lactam antibiotics
 process PBP_RESISTANCE {
     input:
     tuple val(sample_id), path(assembly)
@@ -12,7 +8,7 @@ process PBP_RESISTANCE {
 
     shell:
     '''
-    cat !{assembly} | docker run --rm -i harryhungch/spn-resistance-pbp:latest > result.json  
+    spn_pbp_amr !{assembly} > result.json
     '''
 }
 
