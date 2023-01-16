@@ -1,4 +1,4 @@
-// Run spn_pbp_amr pipeline to assign PBP genes and estimate samples' MIC (minimum inhibitory concentration) for 6 Beta-lactam antibiotics
+// Run PBP AMR predictor to assign PBP genes and estimate samples' MIC (minimum inhibitory concentration) for 6 Beta-lactam antibiotics
 process PBP_RESISTANCE {
     input:
     tuple val(sample_id), path(assembly)
@@ -12,7 +12,7 @@ process PBP_RESISTANCE {
     '''
 }
 
-// Extract the results from the result.json file of spn-resistance-pbp pipeline
+// Extract the results from the result.json file of the PBP AMR predictor
 // "=" character in MICs are replaced by "eq_sign" string to avoid issue when Nextflow attempt to capture string variables with "=" character 
 process GET_PBP_RESISTANCE {
     input:
