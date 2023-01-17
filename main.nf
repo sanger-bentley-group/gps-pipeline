@@ -145,7 +145,7 @@ workflow {
         .map { it -> (it[-1] == null) ? it[0..-2] + ["_"] * 2 : it}
     .join(MLST.out.result, failOnDuplicate: true, remainder: true)
         .map { it -> (it[-1] == null) ? it[0..-2] + ["_"] * 8: it}
-    .join(GET_PBP_RESISTANCE.out.result.map { it -> it*.replaceAll("eq_sign", "=") }, failOnDuplicate: true, remainder: true) // Revert the equal sign workaround
+    .join(GET_PBP_RESISTANCE.out.result.map { it -> it*.replaceAll("eq_sign", "=") }, failOnDuplicate: true, remainder: true) // Revert the equal sign workaround, refer to amr.nf for details
         .map { it -> (it[-1] == null) ? it[0..-2] + ["_"] * 18: it}
     .map { it.join',' }
     .collectFile(
