@@ -100,7 +100,7 @@ This project uses Open Source components. You can find the source code of their 
 - License (GPL-3.0): https://github.com/StaPH-B/docker-builds/blob/master/LICENSE
 - These Docker images provide containerised environments for processes within multiple modules 
 
-[Docker Image of git](https://hub.docker.com/r/bitnami/git)
+[Docker Image of Git](https://hub.docker.com/r/bitnami/git)
 - [Bitnami](https://bitnami.com/) ([@Bitnami](https://github.com/bitnami))
 - License (Apache 2.0): https://github.com/bitnami/containers/blob/main/LICENSE.md
 - This Docker image provides containerised environment for `GET_SEROBA_DB` process in `serotype.nf` module
