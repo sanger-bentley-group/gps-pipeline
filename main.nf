@@ -160,7 +160,7 @@ workflow {
                 "GPSC",
                 "Serotype", "SeroBA_Comment", 
                 "ST", "aroE", "gdh", "gki", "recP", "spi", "xpt", "ddl",
-                "PBP1a", "PBP2b", "PBP2x", "AMX_MIC", "AMX_Res", "CRO_MIC", "CRO_Res(Non-meningital)", "CRO_Res(Meningital)", "CTX_MIC", "CTX_Res(Non-meningital)", "CTX_Res(Meningital)", "CXM_MIC", "CXM_Res", "MEM_MIC", "MEM_Res", "PEN_MIC", "PEN_Res(Non-meningital)", "PEN_Res(Meningital)"
+                "pbp1a", "pbp2b", "pbp2x", "AMX_MIC", "AMX_Res", "CRO_MIC", "CRO_Res(Non-meningital)", "CRO_Res(Meningital)", "CTX_MIC", "CTX_Res(Non-meningital)", "CTX_Res(Meningital)", "CXM_MIC", "CXM_Res", "MEM_MIC", "MEM_Res", "PEN_MIC", "PEN_Res(Non-meningital)", "PEN_Res(Meningital)"
             ].join(","),
         sort: { it -> it.split(",")[0] },
         newLine: true
