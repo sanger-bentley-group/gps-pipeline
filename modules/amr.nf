@@ -1,4 +1,4 @@
-// Run PBP AMR predictor to assign PBP genes and estimate samples' MIC (minimum inhibitory concentration) for 6 Beta-lactam antibiotics
+// Run PBP AMR predictor to assign pbp genes and estimate samples' MIC (minimum inhibitory concentration) for 6 Beta-lactam antibiotics
 process PBP_RESISTANCE {
     input:
     tuple val(sample_id), path(assembly)
@@ -21,13 +21,13 @@ process GET_PBP_RESISTANCE {
     tuple val(sample_id), path(json)
 
     output:
-    tuple val(sample_id), env(PBP1A), env(PBP2B), env(PBP2X), env(AMX_MIC), env(AMX), env(CRO_MIC), env(CRO_NONMENINGITIS), env(CRO_MENINGITIS), env(CTX_MIC), env(CTX_NONMENINGITIS), env(CTX_MENINGITIS), env(CXM_MIC), env(CXM), env(MEM_MIC), env(MEM), env(PEN_MIC), env(PEN_NONMENINGITIS), env(PEN_MENINGITIS), emit: result
+    tuple val(sample_id), env(pbp1a), env(pbp2b), env(pbp2x), env(AMX_MIC), env(AMX), env(CRO_MIC), env(CRO_NONMENINGITIS), env(CRO_MENINGITIS), env(CTX_MIC), env(CTX_NONMENINGITIS), env(CTX_MENINGITIS), env(CXM_MIC), env(CXM), env(MEM_MIC), env(MEM), env(PEN_MIC), env(PEN_NONMENINGITIS), env(PEN_MENINGITIS), emit: result
 
     shell:
     '''
-    PBP1A=$(< !{json} jq -r .pbp1a)
-    PBP2B=$(< !{json} jq -r .pbp2b)
-    PBP2X=$(< !{json} jq -r .pbp2x)
+    pbp1a=$(< !{json} jq -r .pbp1a)
+    pbp2b=$(< !{json} jq -r .pbp2b)
+    pbp2x=$(< !{json} jq -r .pbp2x)
     AMX_MIC=$(< !{json} jq -r .amxMic | sed -e 's/=/eq_sign/g')
     AMX=$(< !{json} jq -r .amx)
     CRO_MIC=$(< !{json} jq -r .croMic | sed -e 's/=/eq_sign/g')
