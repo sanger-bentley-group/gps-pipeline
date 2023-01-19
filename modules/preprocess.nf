@@ -23,6 +23,6 @@ process GET_BASES {
 
     shell:
     '''
-    BASES=$(< fastp.json jq .summary.after_filtering.total_bases)
+    BASES=$(< !{json} jq -r .summary.after_filtering.total_bases)
     '''
 }

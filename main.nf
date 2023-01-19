@@ -10,7 +10,7 @@ include { OVERALL_QC } from "$projectDir/modules/overall_qc"
 include { GET_POPPUNK_DB; GET_POPPUNK_EXT_CLUSTERS; LINEAGE } from "$projectDir/modules/lineage"
 include { GET_SEROBA_DB; CREATE_SEROBA_DB; SEROTYPE } from "$projectDir/modules/serotype"
 include { MLST } from "$projectDir/modules/mlst"
-
+include { PBP_RESISTANCE; GET_PBP_RESISTANCE } from "$projectDir/modules/amr"
 
 // Main workflow
 workflow {
@@ -29,7 +29,7 @@ workflow {
     poppunk_ext_clusters = GET_POPPUNK_EXT_CLUSTERS(params.poppunk_ext_clusters_remote, params.poppunk_db_local)
 
     // Get read pairs into Channel raw_read_pairs_ch
-    raw_read_pairs_ch = Channel.fromFilePairs( "$params.reads/*_{1,2}.fastq.gz", checkIfExists: true )
+    raw_read_pairs_ch = Channel.fromFilePairs( "$params.reads/*_{,R}{1,2}{,_001}.{fq,fastq}{,.gz}", checkIfExists: true )
 
     // Preprocess read pairs
     // Output into Channels PREPROCESS.out.processed_reads & PREPROCESS.out.json
@@ -119,6 +119,11 @@ workflow {
     // Output into Channel MLST.out.result
     MLST(QC_PASSED_ASSEMBLIES_ch)
 
+    // From Channel QC_PASSED_ASSEMBLIES_ch, assign PBP genes and estimate MIC (minimum inhibitory concentration) for 6 Beta-lactam antibiotics
+    // Output into Channel GET_PBP_RESISTANCE.out.result
+    PBP_RESISTANCE(QC_PASSED_ASSEMBLIES_ch)
+    GET_PBP_RESISTANCE(PBP_RESISTANCE.out.json)
+
     // Generate summary.csv by sorted sample_id based on merged Channels 
     // ASSEMBLY_QC.out.detailed_result,
     // MAPPING_QC.out.detailed_result,
@@ -127,6 +132,9 @@ workflow {
     // LINEAGE.out.csv,
     // SEROTYPE.out.result,
     // MLST.out.result
+    // GET_PBP_RESISTANCE.out.result
+    // 
+    // Replace null with approiate amount of "_" items when sample_id does not exist in that output (i.e. QC rejected)
     ASSEMBLY_QC.out.detailed_result
     .join(MAPPING_QC.out.detailed_result, failOnDuplicate: true, failOnMismatch: true)
     .join(TAXONOMY_QC.out.detailed_result, failOnDuplicate: true, failOnMismatch: true)
@@ -137,6 +145,8 @@ workflow {
         .map { it -> (it[-1] == null) ? it[0..-2] + ["_"] * 2 : it}
     .join(MLST.out.result, failOnDuplicate: true, remainder: true)
         .map { it -> (it[-1] == null) ? it[0..-2] + ["_"] * 8: it}
+    .join(GET_PBP_RESISTANCE.out.result.map { it -> it*.replaceAll("eq_sign", "=") }, failOnDuplicate: true, remainder: true) // Revert the equal sign workaround, refer to amr.nf for details
+        .map { it -> (it[-1] == null) ? it[0..-2] + ["_"] * 18: it}
     .map { it.join',' }
     .collectFile(
         name: "summary.csv",
@@ -149,7 +159,8 @@ workflow {
                 "Overall_QC",
                 "GPSC",
                 "Serotype", "SeroBA_Comment", 
-                "ST", "aroE", "gdh", "gki", "recP", "spi", "xpt", "ddl"
+                "ST", "aroE", "gdh", "gki", "recP", "spi", "xpt", "ddl",
+                "pbp1a", "pbp2b", "pbp2x", "AMX_MIC", "AMX_Res", "CRO_MIC", "CRO_Res(Non-meningital)", "CRO_Res(Meningital)", "CTX_MIC", "CTX_Res(Non-meningital)", "CTX_Res(Meningital)", "CXM_MIC", "CXM_Res", "MEM_MIC", "MEM_Res", "PEN_MIC", "PEN_Res(Non-meningital)", "PEN_Res(Meningital)"
             ].join(","),
         sort: { it -> it.split(",")[0] },
         newLine: true
