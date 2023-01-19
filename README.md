@@ -1,6 +1,14 @@
 # GPS Unified Pipeline
 
-GPS Unified Pipeline is a Nextflow Pipeline for processing Streptococcus pneumoniae sequencing raw reads (FASTQ files) by the GPS Project ([Global Pneumococcal Sequencing Project](https://www.pneumogen.net/gps/)). 
+The GPS Unified Pipeline is a Nextflow pipeline for processing *Streptococcus pneumoniae* sequencing raw reads (FASTQ files). 
+
+By supplying the FASTQ files of *Streptococcus pneumoniae* samples, this pipeline will assess the quality of the reads based on assembly, mapping and taxonomy. If a sample passed all quality controls (QC), the pipeline will also provide its serotype, multi-locus sequence typing (MLST), lineage (based on [Global Pneumococcal Sequence Cluster (GPSC)](https://www.pneumogen.net/gps/GPSC_lineages.html)) and antimicrobial resistance (AMR) against multiple antimicrobials. 
+
+The pipeline is designed to be easy-to-setup, easy-to-use, offline-capable and usable on local machines. It is also suitable when the FASTQ files being analysed should not leave the local machine. 
+
+The pipeline only downloads essential files to enable the analysis, and no data is being uploaded from the local machine. After the first successful complete run, the pipeline can be used offline (unless any pipeline option is changed).
+
+The development of this pipeline is part of the GPS Project ([Global Pneumococcal Sequencing Project](https://www.pneumogen.net/gps/)). 
 
 &nbsp;
 ## Current workflow and progress
@@ -65,7 +73,7 @@ GPS Unified Pipeline is a Nextflow Pipeline for processing Streptococcus pneumon
   | `Ref_Cov_%` | Mapping | Percentage of reference covered by reads; > 60% to pass QC |
   | `Het-SNP#` | Mapping | Non-cluster heterozygous SNP (Het-SNP) site count; < 220 to pass QC |
   | `Mapping_QC` | QC | Mapping quality control result |
-  | `S.Pneumo_%` | Taxonomy | Percentage of reads assigned to Streptococcus pneumoniae; > 60% to pass QC |
+  | `S.Pneumo_%` | Taxonomy | Percentage of reads assigned to *Streptococcus pneumoniae*; > 60% to pass QC |
   | `Taxonomy_QC` | QC | Taxonomy quality control result  |
   | `Overall_QC` | QC | Overall quality control result; Based on `Assembly_QC`, `Mapping_QC` and `Taxonomy_QC` |
   | `GPSC` | Lineage | GPSC Lineage |
@@ -125,7 +133,7 @@ GPS Unified Pipeline is a Nextflow Pipeline for processing Streptococcus pneumon
 
 &nbsp;
 ## Credits
-This project uses Open-source components. You can find the homepage or source code of their open-source projects along with license information below. I acknowledge and am grateful to these developers for their contributions to open source.
+This project uses open-source components. You can find the homepage or source code of their open-source projects along with license information below. I acknowledge and am grateful to these developers for their contributions to open source.
 
 [BCFtools](https://samtools.github.io/bcftools/) and [SAMtools](https://www.htslib.org/)
 - Twelve years of SAMtools and BCFtools. Petr Danecek, James K Bonfield, Jennifer Liddle, John Marshall, Valeriu Ohan, Martin O Pollard, Andrew Whitwham, Thomas Keane, Shane A McCarthy, Robert M Davies, Heng Li. **GigaScience**, Volume 10, Issue 2, February 2021, giab008, https://doi.org/10.1093/gigascience/giab008
