@@ -56,6 +56,6 @@ process OTHER_RESISTANCE {
 
     shell:
     '''
-    /paarsnp/paarsnp.jar -i !{assembly} -s 1313
+    java -jar /paarsnp/paarsnp.jar -i !{assembly} -s 1313
     '''
 }
