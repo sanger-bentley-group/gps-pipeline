@@ -45,3 +45,17 @@ process GET_PBP_RESISTANCE {
     PEN_MENINGITIS=$(< !{json} jq -r .penMeningitis)
     '''
 }
+
+// Run AMRsearch to infer resistance (also determinants if any) of other antimicrobials
+process OTHER_RESISTANCE {
+    input:
+    tuple val(sample_id), path(assembly)
+
+    output:
+    tuple val(sample_id), path("*.jsn"), emit: json
+
+    shell:
+    '''
+    /paarsnp/paarsnp.jar -i !{assembly} -s 1313
+    '''
+}

@@ -10,7 +10,7 @@ include { OVERALL_QC } from "$projectDir/modules/overall_qc"
 include { GET_POPPUNK_DB; GET_POPPUNK_EXT_CLUSTERS; LINEAGE } from "$projectDir/modules/lineage"
 include { GET_SEROBA_DB; CREATE_SEROBA_DB; SEROTYPE } from "$projectDir/modules/serotype"
 include { MLST } from "$projectDir/modules/mlst"
-include { PBP_RESISTANCE; GET_PBP_RESISTANCE } from "$projectDir/modules/amr"
+include { PBP_RESISTANCE; GET_PBP_RESISTANCE; OTHER_RESISTANCE } from "$projectDir/modules/amr"
 
 // Main workflow
 workflow {
@@ -123,6 +123,10 @@ workflow {
     // Output into Channel GET_PBP_RESISTANCE.out.result
     PBP_RESISTANCE(QC_PASSED_ASSEMBLIES_ch)
     GET_PBP_RESISTANCE(PBP_RESISTANCE.out.json)
+
+    // WIP
+    OTHER_RESISTANCE(QC_PASSED_ASSEMBLIES_ch)
+    OTHER_RESISTANCE.out.json.view()
 
     // Generate summary.csv by sorted sample_id based on merged Channels 
     // ASSEMBLY_QC.out.detailed_result,
