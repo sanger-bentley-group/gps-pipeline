@@ -52,10 +52,10 @@ process OTHER_RESISTANCE {
     tuple val(sample_id), path(assembly)
 
     output:
-    tuple val(sample_id), path("*.jsn"), emit: json
+    tuple val(sample_id), path("result.json"), emit: json
 
     shell:
     '''
-    java -jar /paarsnp/paarsnp.jar -i !{assembly} -s 1313
+    java -jar /paarsnp/paarsnp.jar -i !{assembly} -s 1313 -o > result.json
     '''
 }
