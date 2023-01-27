@@ -14,7 +14,7 @@ process PBP_RESISTANCE {
 
 // Extract the results from the result.json file of the PBP AMR predictor
 // 
-// "=" character in MICs are replaced by "eq_sign" string to avoid issue when Nextflow attempt to capture string variables with "=" character 
+// "=" character are replaced by "eq_sign" string to avoid issue when Nextflow attempt to capture string variables with "=" character 
 // Reported to Nextflow team via issue nextflow-io/nextflow#3553, and a fix will be released with version 23.04.0 in 2023 April (ETA) 
 process GET_PBP_RESISTANCE {
     input:
@@ -25,24 +25,34 @@ process GET_PBP_RESISTANCE {
 
     shell:
     '''
-    pbp1a=$(< !{json} jq -r .pbp1a)
-    pbp2b=$(< !{json} jq -r .pbp2b)
-    pbp2x=$(< !{json} jq -r .pbp2x)
-    AMX_MIC=$(< !{json} jq -r .amxMic | sed -e 's/=/eq_sign/g')
-    AMX=$(< !{json} jq -r .amx)
-    CRO_MIC=$(< !{json} jq -r .croMic | sed -e 's/=/eq_sign/g')
-    CRO_NONMENINGITIS=$(< !{json} jq -r .croNonMeningitis)
-    CRO_MENINGITIS=$(< !{json} jq -r .croMeningitis)
-    CTX_MIC=$(< !{json} jq -r .ctxMic | sed -e 's/=/eq_sign/g')
-    CTX_NONMENINGITIS=$(< !{json} jq -r .ctxNonMeningitis)
-    CTX_MENINGITIS=$(< !{json} jq -r .ctxMeningitis)
-    CXM_MIC=$(< !{json} jq -r .cxmMic | sed -e 's/=/eq_sign/g')
-    CXM=$(< !{json} jq -r .cxm)
-    MEM_MIC=$(< !{json} jq -r .memMic | sed -e 's/=/eq_sign/g')
-    MEM=$(< !{json} jq -r .mem)
-    PEN_MIC=$(< !{json} jq -r .penMic | sed -e 's/=/eq_sign/g')
-    PEN_NONMENINGITIS=$(< !{json} jq -r .penNonMeningitis)
-    PEN_MENINGITIS=$(< !{json} jq -r .penMeningitis)
+    function GET_VALUE {
+        echo $( < !{json} jq -r --arg target "$1" '.[$target]' \
+            | sed 's/=/eq_sign/g' )
+    }
+
+    function GET_RES {
+        echo $( < !{json} jq -r --arg target "$1" '.[$target]' \
+            | sed 's/^S$/SENSITIVE/g;s/^I$/INTERMEDIATE/g;s/^R$/RESISTANT/g' )
+    }
+
+    pbp1a=$(GET_VALUE "pbp1a")
+    pbp2b=$(GET_VALUE "pbp2b")
+    pbp2x=$(GET_VALUE "pbp2x")
+    AMX_MIC=$(GET_VALUE "amxMic")
+    AMX=$(GET_RES "amx")
+    CRO_MIC=$(GET_VALUE "croMic")
+    CRO_NONMENINGITIS=$(GET_RES "croNonMeningitis")
+    CRO_MENINGITIS=$(GET_RES "croMeningitis")
+    CTX_MIC=$(GET_VALUE "ctxMic")
+    CTX_NONMENINGITIS=$(GET_RES "ctxNonMeningitis")
+    CTX_MENINGITIS=$(GET_RES "ctxMeningitis")
+    CXM_MIC=$(GET_VALUE "cxmMic")
+    CXM=$(GET_RES "cxm")
+    MEM_MIC=$(GET_VALUE "memMic")
+    MEM=$(GET_RES "mem")
+    PEN_MIC=$(GET_VALUE "penMic")
+    PEN_NONMENINGITIS=$(GET_RES "penNonMeningitis")
+    PEN_MENINGITIS=$(GET_RES "penMeningitis")
     '''
 }
 
@@ -71,13 +81,13 @@ process GET_OTHER_RESISTANCE {
     shell:
     '''
     function GET_RES {
-        echo $( jq -r --arg target "$1" < !{json} '.resistanceProfile[] | select( .agent.key == $target ) | .state' \
+        echo $( < !{json} jq -r --arg target "$1" '.resistanceProfile[] | select( .agent.key == $target ) | .state' \
             | sed 's/NOT_FOUND/NONE/g' \
             | tr '[:lower:]' '[:upper:]' )
     }
 
     function GET_DETERMINANTS {
-        echo $( jq -r --arg target "$1" < !{json} '.resistanceProfile[] | select( .agent.key == $target ) | .determinantRules | keys[] // "_"' \
+        echo $( < !{json} jq -r --arg target "$1" '.resistanceProfile[] | select( .agent.key == $target ) | .determinantRules | keys[] // "_"' \
         | sed 's/__/; /g' )
     }
 
