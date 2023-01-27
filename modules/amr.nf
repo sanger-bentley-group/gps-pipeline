@@ -59,3 +59,56 @@ process OTHER_RESISTANCE {
     java -jar /paarsnp/paarsnp.jar -i !{assembly} -s 1313 -o > result.json
     '''
 }
+
+// Extract the results from the result.json file of the AMRsearch
+process GET_OTHER_RESISTANCE {
+    input:
+    tuple val(sample_id), path(json)
+
+    output:
+    tuple val(sample_id), env(CHL_RES), env(CHL_DETERMINANTS), env(CLI_RES), env(CLI_DETERMINANTS), env(ERY_RES), env(ERY_DETERMINANTS), env(FLQ_RES), env(FLQ_DETERMINANTS), env(KAN_RES), env(KAN_DETERMINANTS), env(LNZ_RES), env(LNZ_DETERMINANTS), env(TCY_RES), env(TCY_DETERMINANTS), env(TMP_RES), env(TMP_DETERMINANTS), env(SSS_RES), env(SSS_DETERMINANTS), env(SXT_RES), env(SXT_DETERMINANTS), emit: result
+
+    shell:
+    '''
+    function GET_RES {
+        echo $( jq -r --arg target "$1" < !{json} '.resistanceProfile[] | select( .agent.key == $target ) | .state' \
+            | sed 's/NOT_FOUND/NONE/g' \
+            | tr '[:lower:]' '[:upper:]' )
+    }
+
+    function GET_DETERMINANTS {
+        echo $( jq -r --arg target "$1" < !{json} '.resistanceProfile[] | select( .agent.key == $target ) | .determinantRules | keys[] // "_"' \
+        | sed 's/__/; /g' )
+    }
+
+    CHL_RES=$(GET_RES "CHL")
+    CHL_DETERMINANTS=$(GET_DETERMINANTS "CHL")
+
+    CLI_RES=$(GET_RES "CLI")
+    CLI_DETERMINANTS=$(GET_DETERMINANTS "CLI")
+
+    ERY_RES=$(GET_RES "ERY")
+    ERY_DETERMINANTS=$(GET_DETERMINANTS "ERY")
+
+    FLQ_RES=$(GET_RES "FLQ")
+    FLQ_DETERMINANTS=$(GET_DETERMINANTS "FLQ")
+
+    KAN_RES=$(GET_RES "KAN")
+    KAN_DETERMINANTS=$(GET_DETERMINANTS "KAN")
+
+    LNZ_RES=$(GET_RES "LNZ")
+    LNZ_DETERMINANTS=$(GET_DETERMINANTS "LNZ")
+
+    TCY_RES=$(GET_RES "TCY")
+    TCY_DETERMINANTS=$(GET_DETERMINANTS "TCY")
+
+    TMP_RES=$(GET_RES "TMP")
+    TMP_DETERMINANTS=$(GET_DETERMINANTS "TMP")
+
+    SSS_RES=$(GET_RES "SSS")
+    SSS_DETERMINANTS=$(GET_DETERMINANTS "SSS")
+
+    SXT_RES=$(GET_RES "SXT")
+    SXT_DETERMINANTS=$(GET_DETERMINANTS "SXT")
+    '''
+}

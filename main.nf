@@ -10,7 +10,7 @@ include { OVERALL_QC } from "$projectDir/modules/overall_qc"
 include { GET_POPPUNK_DB; GET_POPPUNK_EXT_CLUSTERS; LINEAGE } from "$projectDir/modules/lineage"
 include { GET_SEROBA_DB; CREATE_SEROBA_DB; SEROTYPE } from "$projectDir/modules/serotype"
 include { MLST } from "$projectDir/modules/mlst"
-include { PBP_RESISTANCE; GET_PBP_RESISTANCE; OTHER_RESISTANCE } from "$projectDir/modules/amr"
+include { PBP_RESISTANCE; GET_PBP_RESISTANCE; OTHER_RESISTANCE; GET_OTHER_RESISTANCE } from "$projectDir/modules/amr"
 
 // Main workflow
 workflow {
@@ -124,9 +124,10 @@ workflow {
     PBP_RESISTANCE(QC_PASSED_ASSEMBLIES_ch)
     GET_PBP_RESISTANCE(PBP_RESISTANCE.out.json)
 
-    // WIP
+    // From Channel QC_PASSED_ASSEMBLIES_ch, infer resistance (also determinants if any) of other antimicrobials
+    // Output into Channel GET_OTHER_RESISTANCE.out.result
     OTHER_RESISTANCE(QC_PASSED_ASSEMBLIES_ch)
-    OTHER_RESISTANCE.out.json.view()
+    GET_OTHER_RESISTANCE(OTHER_RESISTANCE.out.json)
 
     // Generate summary.csv by sorted sample_id based on merged Channels 
     // ASSEMBLY_QC.out.detailed_result,
@@ -137,6 +138,7 @@ workflow {
     // SEROTYPE.out.result,
     // MLST.out.result
     // GET_PBP_RESISTANCE.out.result
+    // GET_OTHER_RESISTANCE.out.result
     // 
     // Replace null with approiate amount of "_" items when sample_id does not exist in that output (i.e. QC rejected)
     ASSEMBLY_QC.out.detailed_result
@@ -151,6 +153,8 @@ workflow {
         .map { it -> (it[-1] == null) ? it[0..-2] + ["_"] * 8: it}
     .join(GET_PBP_RESISTANCE.out.result.map { it -> it*.replaceAll("eq_sign", "=") }, failOnDuplicate: true, remainder: true) // Revert the equal sign workaround, refer to amr.nf for details
         .map { it -> (it[-1] == null) ? it[0..-2] + ["_"] * 18: it}
+    .join(GET_OTHER_RESISTANCE.out, failOnDuplicate: true, remainder: true)
+        .map { it -> (it[-1] == null) ? it[0..-2] + ["_"] * 20: it}
     .map { it.join',' }
     .collectFile(
         name: "summary.csv",
@@ -164,7 +168,8 @@ workflow {
                 "GPSC",
                 "Serotype", "SeroBA_Comment", 
                 "ST", "aroE", "gdh", "gki", "recP", "spi", "xpt", "ddl",
-                "pbp1a", "pbp2b", "pbp2x", "AMX_MIC", "AMX_Res", "CRO_MIC", "CRO_Res(Non-meningital)", "CRO_Res(Meningital)", "CTX_MIC", "CTX_Res(Non-meningital)", "CTX_Res(Meningital)", "CXM_MIC", "CXM_Res", "MEM_MIC", "MEM_Res", "PEN_MIC", "PEN_Res(Non-meningital)", "PEN_Res(Meningital)"
+                "pbp1a", "pbp2b", "pbp2x", "AMX_MIC", "AMX_Res", "CRO_MIC", "CRO_Res(Non-meningital)", "CRO_Res(Meningital)", "CTX_MIC", "CTX_Res(Non-meningital)", "CTX_Res(Meningital)", "CXM_MIC", "CXM_Res", "MEM_MIC", "MEM_Res", "PEN_MIC", "PEN_Res(Non-meningital)", "PEN_Res(Meningital)",
+                "CHL_Res", "CHL_Determinant", "CLI_Res", "CLI_Determinant", "ERY_Res", "ERY_Determinant", "FLQ_Res", "FLQ_Determinant", "KAN_Res", "KAN_Determinant", "LNZ_Res", "LNZ_Determinant", "TCY_Res", "TCY_Determinant", "TMP_Res", "TMP_Determinant", "SSS_Res", "SSS_Determinant", "SXT_Res", "SXT_Determinant"
             ].join(","),
         sort: { it -> it.split(",")[0] },
         newLine: true
