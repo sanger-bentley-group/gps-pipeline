@@ -125,7 +125,6 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | `SSS_Determinant` | Other AMR | Known determinants that inferred the SSS resistance |
   | `SXT_Res` | Other AMR | Inferred resistance against Co-Trimoxazole (SXT) |
   | `SXT_Determinant` | Other AMR | Known determinants that inferred the SXT resistance |
-> ℹ️ For resistance phenotypes, S = Susceptible, I = Intermediate, and R = Resistant
 
 ### Options
 - The table below contains the available options that can be used when you run the pipeline
