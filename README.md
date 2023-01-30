@@ -11,7 +11,7 @@ The pipeline only downloads essential files to enable the analysis, and no data 
 The development of this pipeline is part of the GPS Project ([Global Pneumococcal Sequencing Project](https://www.pneumogen.net/gps/)). 
 
 &nbsp;
-## Current workflow and progress
+## Current Workflow
 ![Workflow](doc/workflow.drawio.svg)
 
 &nbsp;
@@ -105,7 +105,26 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | `PEN_MIC` | PBP AMR | Estimated MIC of penicillin (PEN) |
   | `PEN_Res(Non-meningital)` | PBP AMR | Resistance phenotype against PEN in non-meningital form |
   | `PEN_Res(Meningital)` | PBP AMR | Resistance phenotype against PEN in meningital form |
-> ℹ️ For resistance phenotypes, S = Susceptible, I = Intermediate, and R = Resistant
+  | `CHL_Res` | Other AMR | Inferred resistance against Chloramphenicol (CHL) |
+  | `CHL_Determinant` | Other AMR | Known determinants that inferred the CHL resistance |
+  | `CLI_Res` | Other AMR | Inferred resistance against Clindamycin (CLI) |
+  | `CLI_Determinant` | Other AMR | Known determinants that inferred the CLI resistance |
+  | `ERY_Res` | Other AMR | Inferred resistance against Erythromycin (ERY) |
+  | `ERY_Determinant` | Other AMR | Known determinants that inferred the ERY resistance |
+  | `FLQ_Res` | Other AMR | Inferred resistance against Fluoroquinolones (FLQ) |
+  | `FLQ_Determinant` | Other AMR | Known determinants that inferred the FLQ resistance |
+  | `KAN_Res` | Other AMR | Inferred resistance against Kanamycin (KAN) |
+  | `KAN_Determinant` | Other AMR | Known determinants that inferred the KAN resistance |
+  | `LNZ_Res` | Other AMR | Inferred resistance against Linezolid (LNZ) |
+  | `LNZ_Determinant` | Other AMR | Known determinants that inferred the LNZ resistance |
+  | `TCY_Res` | Other AMR | Inferred resistance against Tetracycline (TCY) |
+  | `TCY_Determinant` | Other AMR | Known determinants that inferred the TCY resistance |
+  | `TMP_Res` | Other AMR | Inferred resistance against Trimethoprim (TMP) |
+  | `TMP_Determinant` | Other AMR | Known determinants that inferred the TMP resistance |
+  | `SSS_Res` | Other AMR | Inferred resistance against Sulfamethoxazole (SSS) |
+  | `SSS_Determinant` | Other AMR | Known determinants that inferred the SSS resistance |
+  | `SXT_Res` | Other AMR | Inferred resistance against Co-Trimoxazole (SXT) |
+  | `SXT_Determinant` | Other AMR | Known determinants that inferred the SXT resistance |
 
 ### Options
 - The table below contains the available options that can be used when you run the pipeline
@@ -134,6 +153,13 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 &nbsp;
 ## Credits
 This project uses open-source components. You can find the homepage or source code of their open-source projects along with license information below. I acknowledge and am grateful to these developers for their contributions to open source.
+
+[AMRsearch](https://github.com/pathogenwatch-oss/amr-search)
+- [Pathogenwatch](https://pathogen.watch/) ([@pathogenwatch-oss](https://github.com/pathogenwatch-oss))
+- License (MIT): https://github.com/pathogenwatch-oss/amr-search/blob/main/LICENSE
+- This project uses a Docker image built from a [custom fork](https://github.com/HarryHung/amr-search)
+  - The fork changes the Docker image from a Docker executable image to a Docker environment for Nextflow integration
+  - The Docker image provides the containerised environment for `OTHER_RESISTANCE` process of the `amr.nf` module 
 
 [BCFtools](https://samtools.github.io/bcftools/) and [SAMtools](https://www.htslib.org/)
 - Twelve years of SAMtools and BCFtools. Petr Danecek, James K Bonfield, Jennifer Liddle, John Marshall, Valeriu Ohan, Martin O Pollard, Andrew Whitwham, Thomas Keane, Shane A McCarthy, Robert M Davies, Heng Li. **GigaScience**, Volume 10, Issue 2, February 2021, giab008, https://doi.org/10.1093/gigascience/giab008
