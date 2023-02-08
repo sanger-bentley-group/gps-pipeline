@@ -11,6 +11,7 @@ include { GET_POPPUNK_DB; GET_POPPUNK_EXT_CLUSTERS; LINEAGE } from "$projectDir/
 include { GET_SEROBA_DB; CREATE_SEROBA_DB; SEROTYPE } from "$projectDir/modules/serotype"
 include { MLST } from "$projectDir/modules/mlst"
 include { PBP_RESISTANCE; GET_PBP_RESISTANCE; OTHER_RESISTANCE; GET_OTHER_RESISTANCE } from "$projectDir/modules/amr"
+include { GET_DOCKER_COMPOSE; PULL_IMAGES } from "$projectDir/modules/docker"
 
 // Main workflow
 workflow {
@@ -192,4 +193,8 @@ workflow init {
     // Check to PopPUNK Database and External Clusters, download if necessary
     GET_POPPUNK_DB(params.poppunk_db_remote, params.poppunk_db_local)
     GET_POPPUNK_EXT_CLUSTERS(params.poppunk_ext_clusters_remote, params.poppunk_db_local)
+
+    // Pull all Docker images mentioned in nextflow.config
+    GET_DOCKER_COMPOSE(Channel.fromPath( "$projectDir/nextflow.config" ))
+    PULL_IMAGES(GET_DOCKER_COMPOSE.out.compose)
 }
