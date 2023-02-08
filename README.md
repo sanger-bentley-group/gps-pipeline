@@ -32,10 +32,19 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
     ```
     cd gps-unified-pipeline
     ```
+3. (Optional) You could perform initialisation to download all required additional files and Docker images, so the pipeline can be used at any time with or without the Internet afterward.
+    ```
+    # Docker Desktop / Engine must be running, and an active Internet connection is required.
+    
+    ./nextflow run main.nf -entry init
+    ```
+
 ### Run
 > ⚠️ Important
 > 
-> Docker Desktop / Engine must be running, and an active Internet connection is required in the first run to download additional files
+> Docker Desktop / Engine must be running.
+> 
+> An active Internet connection is required in the first run (if initialisation was not performed) to download additional files.
 - You can run the pipeline without options. It will attempt to get the raw reads from the default location (`input` directory inside the `gps-unified-pipeline` local repository)
   ```
   ./nextflow run main.nf
