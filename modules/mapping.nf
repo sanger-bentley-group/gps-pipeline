@@ -36,7 +36,7 @@ process MAPPING {
 
     shell:
     '''
-    bwa mem !{reference_prefix} <(zcat < !{read1}) <(zcat < !{read2}) > !{sample_id}_mapped.sam
+    bwa mem -t $(nproc) !{reference_prefix} <(zcat < !{read1}) <(zcat < !{read2}) > !{sample_id}_mapped.sam
     '''
 }
 
@@ -51,10 +51,10 @@ process SAM_TO_SORTED_BAM {
 
     shell:
     '''
-    samtools view -b !{sam} > !{sample_id}_mapped.bam
+    samtools view -@ $(($(nproc) - 1)) -b !{sam} > !{sample_id}_mapped.bam
     rm !{sam}
 
-    samtools sort -o !{sample_id}_mapped_sorted.bam !{sample_id}_mapped.bam
+    samtools sort -@ $(nproc) -o !{sample_id}_mapped_sorted.bam !{sample_id}_mapped.bam
     rm !{sample_id}_mapped.bam
     '''
 }
@@ -69,7 +69,7 @@ process REF_COVERAGE {
 
     shell:
     '''
-    samtools index !{bam}
+    samtools index -@ $(($(nproc) - 1)) !{bam}
     COVERAGE=$(samtools coverage !{bam} | awk -F'\t' 'FNR==2 {print $6}')
     '''
 }
@@ -85,7 +85,7 @@ process SNP_CALL {
 
     shell:
     '''
-    bcftools mpileup -f !{reference} !{bam} | bcftools call -mv -O v -o !{sample_id}.vcf
+    bcftools mpileup --threads $(nproc) -f !{reference} !{bam} | bcftools call --threads $(nproc) -mv -O v -o !{sample_id}.vcf
     '''
 }
 
