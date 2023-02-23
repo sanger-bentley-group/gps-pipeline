@@ -71,7 +71,7 @@ process LINEAGE {
     shell:
     '''
     sed 's/^/prefix_/' !{poppunk_qfile} > safe_qfile.txt
-    poppunk_assign --db !{poppunk_db} --external-clustering !{poppunk_ext_clusters} --query safe_qfile.txt --output output
+    poppunk_assign --db !{poppunk_db} --external-clustering !{poppunk_ext_clusters} --query safe_qfile.txt --output output --threads $(nproc)
     sed 's/^prefix_//' output/output_external_clusters.csv > result.csv
     '''
 }
