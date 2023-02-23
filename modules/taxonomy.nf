@@ -39,9 +39,9 @@ process TAXONOMY {
     shell:
     '''
     if [ !{kraken2_memory_mapping} = true ]; then
-        kraken2 --use-names --memory-mapping --db !{kraken_db} --paired !{read1} !{read2} --report kraken_report.txt
+        kraken2 --threads $(nproc) --use-names --memory-mapping --db !{kraken_db} --paired !{read1} !{read2} --report kraken_report.txt
     else
-        kraken2 --use-names --db !{kraken_db} --paired !{read1} !{read2} --report kraken_report.txt
+        kraken2 --threads $(nproc) --use-names --db !{kraken_db} --paired !{read1} !{read2} --report kraken_report.txt
     fi
     '''
 }
