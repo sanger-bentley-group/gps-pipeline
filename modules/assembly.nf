@@ -12,7 +12,7 @@ process ASSEMBLY_UNICYCLER {
 
     shell:
     '''
-    unicycler -1 !{read1} -2 !{read2} -s !{unpaired} -o results
+    unicycler -1 !{read1} -2 !{read2} -s !{unpaired} -o results -t $(nproc)
     mv results/assembly.fasta !{sample_id}.contigs.fasta
     '''
 }
@@ -30,7 +30,7 @@ process ASSEMBLY_SHOVILL {
 
     shell:
     '''
-    shovill --R1 !{read1} --R2 !{read2} --outdir results
+    shovill --R1 !{read1} --R2 !{read2} --outdir results --cpus $(nproc)
     mv results/contigs.fa !{sample_id}.contigs.fasta
     '''
 }
