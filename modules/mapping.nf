@@ -54,7 +54,7 @@ process SAM_TO_SORTED_BAM {
     samtools view -@ $(($(nproc) - 1)) -b !{sam} > !{sample_id}_mapped.bam
     rm !{sam}
 
-    samtools sort -o -@ $(nproc) !{sample_id}_mapped_sorted.bam !{sample_id}_mapped.bam
+    samtools sort -@ $(nproc) -o !{sample_id}_mapped_sorted.bam !{sample_id}_mapped.bam
     rm !{sample_id}_mapped.bam
     '''
 }
