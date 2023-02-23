@@ -20,6 +20,7 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 - POSIX compatible system (e.g. Linux, macOS, Windows through [WSL](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux))
 - Java 11 (or later, up to 18) ([OpenJDK](https://openjdk.org/)/[Oracle Java](https://www.oracle.com/java/))
 - [Docker](https://www.docker.com/)
+- Recommend to have at least 16GB RAM and 100GB free storage
 ### Setup
 1. Clone the repository (if Git is installed on your system)
     ```
