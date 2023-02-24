@@ -36,7 +36,7 @@ process MAPPING {
 
     shell:
     '''
-    bwa mem -t $(nproc) !{reference_prefix} <(zcat < !{read1}) <(zcat < !{read2}) > !{sample_id}_mapped.sam
+    bwa mem -t $(nproc) !{reference_prefix} <(zcat -f -- < !{read1}) <(zcat -f -- < !{read2}) > !{sample_id}_mapped.sam
     '''
 }
 
