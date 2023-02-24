@@ -21,7 +21,13 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 - Java 11 (or later, up to 18) ([OpenJDK](https://openjdk.org/)/[Oracle Java](https://www.oracle.com/java/))
 - [Docker](https://www.docker.com/)
 - Recommend to have at least 16GB RAM and 100GB free storage
-### Setup
+### Accepted inputs
+- Currently only support Illumina paired-end short reads
+- Each sample is expected to have a pair of raw reads following this file name pattern: `*_{,R}{1,2}{,_001}.{fq,fastq}{,.gz}` 
+  - example 1: `SampleName_R1_001.fastq.gz`, `SampleName_R2_001.fastq.gz`
+  - example 2: `SampleName_1.fastq.gz`, `SampleName_2.fastq.gz`
+  - example 3: `SampleName_R1.fq`, `SampleName_R2.fq`
+### Setup 
 1. Clone the repository (if Git is installed on your system)
     ```
     git clone https://github.com/HarryHung/gps-unified-pipeline.git
