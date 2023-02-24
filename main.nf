@@ -1,7 +1,11 @@
 #!/usr/bin/env nextflow
 
 
-// Import modules
+// Version number of this release
+version='0.6.0'
+
+
+// Import core modules
 include { PREPROCESS; GET_BASES } from "$projectDir/modules/preprocess"
 include { ASSEMBLY_UNICYCLER; ASSEMBLY_SHOVILL; ASSEMBLY_ASSESS; ASSEMBLY_QC } from "$projectDir/modules/assembly"
 include { GET_REF_GENOME_BWA_DB_PREFIX; MAPPING; SAM_TO_SORTED_BAM; REF_COVERAGE; SNP_CALL; HET_SNP_COUNT; MAPPING_QC } from "$projectDir/modules/mapping"
@@ -12,6 +16,14 @@ include { GET_SEROBA_DB; CREATE_SEROBA_DB; SEROTYPE } from "$projectDir/modules/
 include { MLST } from "$projectDir/modules/mlst"
 include { PBP_RESISTANCE; GET_PBP_RESISTANCE; OTHER_RESISTANCE; GET_OTHER_RESISTANCE } from "$projectDir/modules/amr"
 include { GET_DOCKER_COMPOSE; PULL_IMAGES } from "$projectDir/modules/docker"
+
+// Import supporting modules
+include { startMessage } from "$projectDir/modules/messages" 
+
+
+// Start message
+startMessage(version)
+
 
 // Main workflow
 workflow {
@@ -178,7 +190,7 @@ workflow {
 }
 
 
-// Non-default workflow for initialisation
+// Alternative workflow for initialisation only
 workflow init {
     // Check Reference Genome BWA Database, generate from assembly if necessary
     GET_REF_GENOME_BWA_DB_PREFIX(params.ref_genome, params.ref_genome_bwa_db_local)
