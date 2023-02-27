@@ -43,7 +43,7 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
     ```
     # Docker Desktop / Engine must be running, and an active Internet connection is required.
     
-    ./nextflow run main.nf -entry init
+    ./nextflow run main.nf --init
     ```
 
 ### Run
@@ -152,6 +152,8 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 - Must not have a trailing slash ("`/`" at the end of the path) on all paths
   | Option | Default | Possible Values | Description |
   | --- | ---| --- | --- |
+  | `init` | `false` | `true` or `false` | Use alternative workflow for initialisation. Can be enabled simply by adding `--init` without value |
+  | `version` | `false` | `true` or `false` | Use alternative workflow for getting versions of pipeline and tools. Can be enabled simply by adding `--version` without value |
   | `reads` | `"$projectDir/input"` | Any valid path | Path to the input directory that contains the reads to be processed |
   | `output` | `"$projectDir/output"` | Any valid path | Path to the output directory that save the results |
   | `assembler`| `"shovill"` | `"shovill"` or `"unicycler"` | SPAdes Assembler to assembly the reads |
