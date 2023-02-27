@@ -8,19 +8,41 @@ def startMessage() {
        """.stripMargin()
 } 
 
+
+// Help message
+def helpMessage() {
+    log.info (
+        """
+        |This is a Nextflow Pipeline for processing Streptococcus pneumoniae sequencing raw reads (FASTQ files) 
+        |
+        |Usage: 
+        |./nextflow run main.nf [option] [value]
+        |
+        |All options are optional, some common options:
+        |--reads=PATH    Path to the input directory that contains the reads to be processed
+        |--output=PATH   Path to the output directory that save the results
+        |--init          Alternative workflow for initialisation
+        |--version       Alternative workflow for getting versions of pipeline and tools
+        |
+        |For all available options, refer to https://github.com/HarryHung/gps-unified-pipeline/blob/master/README.md
+        """.stripMargin()
+    )
+}
+
+
 // Workflow selection message
 def workflowSelectMessage(selectedWorkflow) {
-    String msg
+    String message
 
     switch(selectedWorkflow){
         case 'pipeline':
-            msg = "The main pipeline workflow was selected."
+            message = "The main pipeline workflow was selected."
             break
         case 'init':
-            msg = "The alternative workflow for initialisation was selected."
+            message = "The alternative workflow for initialisation was selected."
             break
         case 'version':
-            msg = "The alternative workflow for getting versions of pipeline and tools was selected."
+            message = "The alternative workflow for getting versions of pipeline and tools was selected."
             break
     }
 
@@ -30,7 +52,7 @@ def workflowSelectMessage(selectedWorkflow) {
 
     log.info(
         """
-        |${msg}
+        |${message}
         |The workflow started at ${dateStr} ${timeStr}.
         |
         |Current Progress:
@@ -40,35 +62,35 @@ def workflowSelectMessage(selectedWorkflow) {
 
 // End message
 def endMessage(selectedWorkflow) {
-    String successMsg
-    String failMsg
+    String successMessage
+    String failMessage
 
     switch(selectedWorkflow){
         case 'pipeline':
-            successMsg = """
+            successMessage = """
                 |The pipeline has been completed successfully.
                 |Check the outputs at ${params.output}.
                 """.stripMargin()
-            failMsg = """
+            failMessage = """
                 |The pipeline has failed.
                 |If you think it is caused by a bug, submit an issue at \"https://github.com/HarryHung/gps-unified-pipeline/issues\".
                 """.stripMargin()
             break
         case 'init':
-            successMsg = """
+            successMessage = """
                 |Initialisation has been completed successfully.
                 |The pipeline can now be used offline (unless any pipeline option is changed).
                 """.stripMargin()
-            failMsg = """
+            failMessage = """
                 |Initialisation has failed.
                 |Please ensure Docker is running and your machine is conneted to the Internet.
                 """.stripMargin()
             break
         case 'version':
-            successMsg = """
+            successMessage = """
                 |All the version information is printed above.
                 """.stripMargin()
-            failMsg = """
+            failMessage = """
                 |Failed to get version information on all tools.
                 |If you think it is caused by a bug, submit an issue at \"https://github.com/HarryHung/gps-unified-pipeline/issues\"
                 """.stripMargin()
@@ -82,7 +104,7 @@ def endMessage(selectedWorkflow) {
     log.info(
         """
         |The workflow ended at ${dateStr} ${timeStr}. The duration was ${workflow.duration}
-        |${workflow.success ? successMsg : failMsg}
+        |${workflow.success ? successMessage : failMessage}
         """.stripMargin()
     )
 }
