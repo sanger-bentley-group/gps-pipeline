@@ -1,45 +1,88 @@
 // Start message
-def startMessage(version) {
-    log.info """\
-        \n
-        =================================================
-        G P S   U N I F I E D   P I P E L I N E   v ${version} 
-        =================================================
-        """
-        .stripIndent()
+def startMessage() {
+    log.info """
+        |
+        |=================================================
+        |G P S   U N I F I E D   P I P E L I N E   v ${params.pipeline_version} 
+        |=================================================
+       """.stripMargin()
 } 
 
 // Workflow selection message
-def workflowSelectMessage(workflowName) {
-    log.info """\
-    ${workflowName} is selected and will now be executed.
-    """
-    .stripIndent()
+def workflowSelectMessage(selectedWorkflow) {
+    String msg
+
+    switch(selectedWorkflow){
+        case 'pipeline':
+            msg = "The main pipeline workflow was selected."
+            break
+        case 'init':
+            msg = "The alternative workflow for initialisation was selected."
+            break
+        case 'version':
+            msg = "The alternative workflow for getting versions of pipeline and tools was selected."
+            break
+    }
+
+    Date date = new Date()
+    String dateStr = date.format("yyyy-MM-dd")
+    String timeStr = date.format("HH:mm:ss")
+
+    log.info(
+        """
+        |${msg}
+        |The workflow started at ${dateStr} ${timeStr}.
+        |
+        |Current Progress:
+        """.stripMargin()
+    )
 }
 
 // End message
 def endMessage(selectedWorkflow) {
+    String successMsg
+    String failMsg
+
     switch(selectedWorkflow){
         case 'pipeline':
-            log.info (
-                workflow.success ?
-                "\nThe pipeline has been completed successfully.\nCheck the outputs at ${params.output}.\n" :
-                "\nThe pipeline has failed.\nIf you think it is caused by a bug, submit an issue at \"https://github.com/HarryHung/gps-unified-pipeline/issues\".\n"
-            )
+            successMsg = """
+                |The pipeline has been completed successfully.
+                |Check the outputs at ${params.output}.
+                """.stripMargin()
+            failMsg = """
+                |The pipeline has failed.
+                |If you think it is caused by a bug, submit an issue at \"https://github.com/HarryHung/gps-unified-pipeline/issues\".
+                """.stripMargin()
             break
         case 'init':
-            log.info (
-                workflow.success ?
-                "\nInitialisation has been completed successfully.\nThe pipeline can now be used offline (unless any pipeline option is changed).\n" :
-                "\nInitialisation has failed.\nPlease ensure Docker is running and your machine is conneted to the Internet.\n"
-            )
+            successMsg = """
+                |Initialisation has been completed successfully.
+                |The pipeline can now be used offline (unless any pipeline option is changed).
+                """.stripMargin()
+            failMsg = """
+                |Initialisation has failed.
+                |Please ensure Docker is running and your machine is conneted to the Internet.
+                """.stripMargin()
             break
         case 'version':
-            log.info (
-                workflow.success ?
-                "\nAll the version information is printed above.\n" :
-                "\nFailed to get version information on all tools.\nIf you think it is caused by a bug, submit an issue at \"https://github.com/HarryHung/gps-unified-pipeline/issues\".\n"
-            )
+            successMsg = """
+                |All the version information is printed above.
+                """.stripMargin()
+            failMsg = """
+                |Failed to get version information on all tools.
+                |If you think it is caused by a bug, submit an issue at \"https://github.com/HarryHung/gps-unified-pipeline/issues\"
+                """.stripMargin()
             break
     }
+
+    Date date = new Date()
+    String dateStr = date.format("yyyy-MM-dd")
+    String timeStr = date.format("HH:mm:ss")
+
+    log.info(
+        """
+        |The workflow ended at ${dateStr} ${timeStr}. The duration was ${workflow.duration}
+        |${workflow.success ? successMsg : failMsg}
+        """.stripMargin()
+    )
 }
