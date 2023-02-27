@@ -146,27 +146,28 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 - The table below contains the available options that can be used when you run the pipeline
 - Usage:
   ```
-  ./nextflow run main.nf --[option name] [value]
+  ./nextflow run main.nf [option] [value]
   ```
 - `$projectDir` is the directory where the `gps-unified-pipeline` local repository is stored
 - Must not have a trailing slash ("`/`" at the end of the path) on all paths
   | Option | Default | Possible Values | Description |
   | --- | ---| --- | --- |
-  | `init` | `false` | `true` or `false` | Use alternative workflow for initialisation. Can be enabled simply by adding `--init` without value |
-  | `version` | `false` | `true` or `false` | Use alternative workflow for getting versions of pipeline and tools. Can be enabled simply by adding `--version` without value |
-  | `reads` | `"$projectDir/input"` | Any valid path | Path to the input directory that contains the reads to be processed |
-  | `output` | `"$projectDir/output"` | Any valid path | Path to the output directory that save the results |
-  | `assembler`| `"shovill"` | `"shovill"` or `"unicycler"` | SPAdes Assembler to assembly the reads |
-  | `seroba_remote` | [SeroBA GitHub Repo](https://github.com/sanger-pathogens/seroba.git) | Any valid URL to a git remote repository | URL to a SeroBA git remote repository |
-  | `seroba_local` | `"$projectDir/bin/seroba"` | Any valid path | Path to the directory where SeroBA local repository should be saved to |
-  | `kraken2_db_remote` | [Kraken 2 RefSeq Index Standard-8 (2022-09-12)](https://genome-idx.s3.amazonaws.com/kraken/k2_standard_08gb_20220926.tar.gz) | Any valid URL to a Kraken2 database in `.tar.gz` format | URL to a Kraken2 database |
-  | `kraken2_db_local` | `"$projectDir/bin/kraken"` | Any valid path | Path to the directory where the remote Kraken2 database should be saved to |
-  | `kraken2_memory_mapping` | `true` | `true` or `false` | Using the memory mapping option of Kraken2 or not. `true` means not loading the database into RAM, suitable for memory-limited or fast storage (e.g. SSD) environments |
-  | `ref_genome` | `"$projectDir/data/Streptococcus_pneumoniae_ATCC_700669_v1.fa"` | Any valid path to a `.fa` or `.fasta` file | Path to the reference genome for mapping |
-  | `ref_genome_bwa_db_local` | `"$projectDir/bin/bwa_ref_db"` | Any valid path | Path to the directory where the reference genome FM-index database for BWA should be saved to |
-  | `poppunk_db_remote` | [GPS v6](https://gps-project.cog.sanger.ac.uk/GPS_v6.tar.gz) | Any valid URL to a PopPUNK database in `.tar.gz` format | URL to a PopPUNK database |
-  | `poppunk_ext_clusters_remote` | [GPS v6 GPSC Designation](https://www.pneumogen.net/gps/GPS_v6_external_clusters.csv) | Any valid URL to a PopPUNK external clusters file in `.csv` format | URL to a PopPUNK external clusters file |
-  | `poppunk_db_local` | `"$projectDir/bin/poppunk"` | Any valid path | Path to the directory where the remote PopPUNK database and external clusters file should be saved to |
+  | `--reads` | `"$projectDir/input"` | Any valid path | Path to the input directory that contains the reads to be processed |
+  | `--output` | `"$projectDir/output"` | Any valid path | Path to the output directory that save the results |
+  | `--init` | `false` | `true` or `false` | Use alternative workflow for initialisation. Can be enabled by including `--init` without value |
+  | `--version` | `false` | `true` or `false` | Use alternative workflow for getting versions of pipeline and tools. Can be enabled by including `--version` without value |
+  | `--help` | `false` | `true` or `false` | Show help message. Can be enabled by including `--help` without value |
+  | `--assembler`| `"shovill"` | `"shovill"` or `"unicycler"` | SPAdes Assembler to assembly the reads |
+  | `--seroba_remote` | [SeroBA GitHub Repo](https://github.com/sanger-pathogens/seroba.git) | Any valid URL to a git remote repository | URL to a SeroBA git remote repository |
+  | `--seroba_local` | `"$projectDir/bin/seroba"` | Any valid path | Path to the directory where SeroBA local repository should be saved to |
+  | `--kraken2_db_remote` | [Kraken 2 RefSeq Index Standard-8 (2022-09-12)](https://genome-idx.s3.amazonaws.com/kraken/k2_standard_08gb_20220926.tar.gz) | Any valid URL to a Kraken2 database in `.tar.gz` format | URL to a Kraken2 database |
+  | `--kraken2_db_local` | `"$projectDir/bin/kraken"` | Any valid path | Path to the directory where the remote Kraken2 database should be saved to |
+  | `--kraken2_memory_mapping` | `true` | `true` or `false` | Using the memory mapping option of Kraken2 or not. `true` means not loading the database into RAM, suitable for memory-limited or fast storage (e.g. SSD) environments |
+  | `--ref_genome` | `"$projectDir/data/Streptococcus_pneumoniae_ATCC_700669_v1.fa"` | Any valid path to a `.fa` or `.fasta` file | Path to the reference genome for mapping |
+  | `--ref_genome_bwa_db_local` | `"$projectDir/bin/bwa_ref_db"` | Any valid path | Path to the directory where the reference genome FM-index database for BWA should be saved to |
+  | `--poppunk_db_remote` | [GPS v6](https://gps-project.cog.sanger.ac.uk/GPS_v6.tar.gz) | Any valid URL to a PopPUNK database in `.tar.gz` format | URL to a PopPUNK database |
+  | `--poppunk_ext_clusters_remote` | [GPS v6 GPSC Designation](https://www.pneumogen.net/gps/GPS_v6_external_clusters.csv) | Any valid URL to a PopPUNK external clusters file in `.csv` format | URL to a PopPUNK external clusters file |
+  | `--poppunk_db_local` | `"$projectDir/bin/poppunk"` | Any valid path | Path to the directory where the remote PopPUNK database and external clusters file should be saved to |
 
 &nbsp;
 ## Credits
