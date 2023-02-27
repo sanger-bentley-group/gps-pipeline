@@ -1,10 +1,6 @@
 #!/usr/bin/env nextflow
 
 
-// Version number of this release
-pipeline_version='0.6.0'
-
-
 // Import workflow modules
 include { PIPELINE } from "$projectDir/workflows/pipeline"
 include { INIT } from "$projectDir/workflows/init"
@@ -15,19 +11,19 @@ include { startMessage; workflowSelectMessage; endMessage } from "$projectDir/mo
 
 
 // Start message
-startMessage(pipeline_version)
+startMessage()
 
 
-// Main pipeline workflow
+// Select workflow with PIPELINE as default
 workflow {
     if (params.init) {
-        workflowSelectMessage("Alternative workflow for initialisation")
+        workflowSelectMessage("init")
         INIT()
     } else if (params.version) {
-        workflowSelectMessage("Alternative workflow for getting versions of pipeline and tools")
+        workflowSelectMessage("version")
         GET_VERSION()
     } else {
-        workflowSelectMessage("The main pipeline")
+        workflowSelectMessage("pipeline")
         PIPELINE()
     }
 }
@@ -35,15 +31,11 @@ workflow {
 
 // End message
 workflow.onComplete {
-    String selectedWorkflow; 
-
     if (params.init) {
-        selectedWorkflow = "init"
+        endMessage("init")
     } else if (params.version) {
-        selectedWorkflow = "version"
+        endMessage("version")
     } else {
-        selectedWorkflow = "pipeline"
+        endMessage("pipeline")
     }
-
-    endMessage(selectedWorkflow)
 }
