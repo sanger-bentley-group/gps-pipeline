@@ -12,7 +12,7 @@ def startMessage(version) {
 // Workflow selection message
 def workflowSelectMessage(workflowName) {
     log.info """\
-    The ${workflowName} is selected and will now be executed.
+    ${workflowName} is selected and will now be executed.
     """
     .stripIndent()
 }
@@ -32,6 +32,13 @@ def endMessage(selectedWorkflow) {
                 workflow.success ?
                 "\nInitialisation has been completed successfully.\nThe pipeline can now be used offline (unless any pipeline option is changed).\n" :
                 "\nInitialisation has failed.\nPlease ensure Docker is running and your machine is conneted to the Internet.\n"
+            )
+            break
+        case 'version':
+            log.info (
+                workflow.success ?
+                "\nAll the version information is printed above.\n" :
+                "\nFailed to get version information on all tools.\nIf you think it is caused by a bug, submit an issue at \"https://github.com/HarryHung/gps-unified-pipeline/issues\".\n"
             )
             break
     }
