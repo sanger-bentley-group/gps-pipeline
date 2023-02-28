@@ -1,6 +1,6 @@
 // Return PopPUNK database path
 // Check if GET_POPPUNK_DB has run successfully on the specific database.
-// If not: clean, download, and unzip to params.poppunk_db_local
+// If not: clean, download, and unzip to params.poppunk_local
 process GET_POPPUNK_DB {
     input:
     val db_remote
@@ -30,7 +30,7 @@ process GET_POPPUNK_DB {
 
 // Return PopPUNK External Clusters file path
 // Check if GET_POPPUNK_EXT_CLUSTERS has run successfully on the specific external clusters file.
-// If not: clean and download to params.poppunk_db_local
+// If not: clean and download to params.poppunk_local
 process GET_POPPUNK_EXT_CLUSTERS {
     input:
     val ext_clusters_remote
