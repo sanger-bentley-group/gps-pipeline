@@ -1,12 +1,10 @@
 # GPS Unified Pipeline
+[![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-22.10.4-23aa62.svg)](https://www.nextflow.io/)
+[![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)
 
-The GPS Unified Pipeline is a Nextflow pipeline for processing *Streptococcus pneumoniae* sequencing raw reads (FASTQ files). 
+The GPS Unified Pipeline is a Nextflow pipeline designed for processing raw reads (FASTQ files) of *Streptococcus pneumoniae* samples. The pipeline assesses the quality of the reads based on assembly, mapping, and taxonomy. If the sample passes all quality controls (QC), the pipeline also provides the sample's serotype, multi-locus sequence typing (MLST), lineage (based on the [Global Pneumococcal Sequence Cluster (GPSC)](https://www.pneumogen.net/gps/GPSC_lineages.html)), and antimicrobial resistance (AMR) against multiple antimicrobials.
 
-By supplying the FASTQ files of *Streptococcus pneumoniae* samples, this pipeline will assess the quality of the reads based on assembly, mapping and taxonomy. If a sample passed all quality controls (QC), the pipeline will also provide its serotype, multi-locus sequence typing (MLST), lineage (based on [Global Pneumococcal Sequence Cluster (GPSC)](https://www.pneumogen.net/gps/GPSC_lineages.html)) and antimicrobial resistance (AMR) against multiple antimicrobials. 
-
-The pipeline is designed to be easy-to-setup, easy-to-use, offline-capable and usable on local machines. It is also suitable when the FASTQ files being analysed should not leave the local machine. 
-
-The pipeline only downloads essential files to enable the analysis, and no data is being uploaded from the local machine. After initialisation or the first successful complete run, the pipeline can be used offline (unless any pipeline option is changed).
+The pipeline is designed to be easy to set up and use, and is suitable for use on local machines. It is also offline-capable, making it an ideal option for cases where the FASTQ files being analysed should not leave the local machine. Additionally, the pipeline only downloads essential files to enable the analysis, and no data is uploaded from the local machine. After initialisation or the first successful complete run, the pipeline can be used offline unless any pipeline option is changed.
 
 The development of this pipeline is part of the GPS Project ([Global Pneumococcal Sequencing Project](https://www.pneumogen.net/gps/)). 
 
@@ -17,16 +15,17 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 &nbsp;
 ## Usage
 ### Requirement
-- POSIX compatible system (e.g. Linux, macOS, Windows through [WSL](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux))
-- Java 11 (or later, up to 18) ([OpenJDK](https://openjdk.org/)/[Oracle Java](https://www.oracle.com/java/))
+- A POSIX-compatible system (e.g. Linux, macOS, Windows with [WSL](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux))
+- Java 11 or later (up to 18) ([OpenJDK](https://openjdk.org/)/[Oracle Java](https://www.oracle.com/java/))
 - [Docker](https://www.docker.com/)
-- Recommend to have at least 16GB RAM and 100GB free storage
+- It is recommended to have at least 16GB of RAM and 100GB of free storage
 ### Accepted inputs
-- Currently only support Illumina paired-end short reads
-- Each sample is expected to have a pair of raw reads following this file name pattern: `*_{,R}{1,2}{,_001}.{fq,fastq}{,.gz}` 
-  - example 1: `SampleName_R1_001.fastq.gz`, `SampleName_R2_001.fastq.gz`
-  - example 2: `SampleName_1.fastq.gz`, `SampleName_2.fastq.gz`
-  - example 3: `SampleName_R1.fq`, `SampleName_R2.fq`
+- Currently, only Illumina paired-end short reads are supported
+- Each sample is expected to be a pair of raw reads following this file name pattern: 
+  - `*_{,R}{1,2}{,_001}.{fq,fastq}{,.gz}` 
+    - example 1: `SampleName_R1_001.fastq.gz`, `SampleName_R2_001.fastq.gz`
+    - example 2: `SampleName_1.fastq.gz`, `SampleName_2.fastq.gz`
+    - example 3: `SampleName_R1.fq`, `SampleName_R2.fq`
 ### Setup 
 1. Clone the repository (if Git is installed on your system)
     ```
@@ -39,19 +38,19 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
     ```
     cd gps-unified-pipeline
     ```
-3. (Optional) You could perform initialisation to download all required additional files and Docker images, so the pipeline can be used at any time with or without the Internet afterward.
-   > ⚠️ Docker Desktop / Engine must be running, and Internet connection is required.
+3. (Optional) You could perform an initialisation to download all required additional files and Docker images, so the pipeline can be used at any time with or without the Internet afterward.
+   > ⚠️ Docker Desktop / Engine must be running, and an Internet connection is required.
     ```
     ./run_pipeline --init
     ```
 
 ### Run
-> ⚠️ Docker Desktop / Engine must be running. Internet connection is required in the first run (if initialisation was not performed).
+> ⚠️ Docker Desktop / Engine must be running. An Internet connection is required for the first run (if initialisation was not performed).
 - You can run the pipeline without options. It will attempt to get the raw reads from the default location (`input` directory inside the `gps-unified-pipeline` local repository)
   ```
   ./run_pipeline
   ```
-- You can also specify the location of the raw reads by adding the option `--reads`
+- You can also specify the location of the raw reads by adding the `--reads` option
   ```
   ./run_pipeline --reads /path/to/raw-reads-directory
   ```
