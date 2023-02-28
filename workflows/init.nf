@@ -19,8 +19,8 @@ workflow INIT {
     CREATE_SEROBA_DB(params.seroba_local, GET_SEROBA_DB.out.create_db)
 
     // Check to PopPUNK Database and External Clusters, download if necessary
-    GET_POPPUNK_DB(params.poppunk_db_remote, params.poppunk_db_local)
-    GET_POPPUNK_EXT_CLUSTERS(params.poppunk_ext_clusters_remote, params.poppunk_db_local)
+    GET_POPPUNK_DB(params.poppunk_db_remote, params.poppunk_local)
+    GET_POPPUNK_EXT_CLUSTERS(params.poppunk_ext_clusters_remote, params.poppunk_local)
 
     // Pull all Docker images mentioned in nextflow.config
     GET_DOCKER_COMPOSE(Channel.fromPath( "$projectDir/nextflow.config" ))
