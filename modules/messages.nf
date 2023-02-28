@@ -16,7 +16,7 @@ def helpMessage() {
         |This is a Nextflow Pipeline for processing Streptococcus pneumoniae sequencing raw reads (FASTQ files) 
         |
         |Usage: 
-        |./nextflow run main.nf [option] [value]
+        |./run_pipeline [option] [value]
         |
         |All options are optional, some common options:
         |--reads=PATH    Path to the input directory that contains the reads to be processed

@@ -42,22 +42,22 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 3. (Optional) You could perform initialisation to download all required additional files and Docker images, so the pipeline can be used at any time with or without the Internet afterward.
    > ⚠️ Docker Desktop / Engine must be running, and Internet connection is required.
     ```
-    ./nextflow run main.nf --init
+    ./run_pipeline --init
     ```
 
 ### Run
 > ⚠️ Docker Desktop / Engine must be running. Internet connection is required in the first run (if initialisation was not performed).
 - You can run the pipeline without options. It will attempt to get the raw reads from the default location (`input` directory inside the `gps-unified-pipeline` local repository)
   ```
-  ./nextflow run main.nf
+  ./run_pipeline
   ```
 - You can also specify the location of the raw reads by adding the option `--reads`
   ```
-  ./nextflow run main.nf --reads /path/to/raw-reads-directory
+  ./run_pipeline --reads /path/to/raw-reads-directory
   ```
 - For a test run, you could use the included test reads in the `test_input` directory
   ```
-  ./nextflow run main.nf --reads test_input
+  ./run_pipeline --reads test_input
   ```
   - `9870_5#52` will fail the Taxonomy QC and hence Overall QC, therefore without analysis results
   - `17175_7#59` and `21127_1#156` should pass Overall QC, therefore with analysis results
@@ -66,7 +66,7 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 - The table below contains the available options that can be used when you run the pipeline
 - Usage:
   ```
-  ./nextflow run main.nf [option] [value]
+  ./run_pipeline [option] [value]
   ```
 > ℹ️ `$projectDir` is the directory where the `gps-unified-pipeline` local repository is stored
 
@@ -93,7 +93,7 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 - By default, the pipeline outputs the results into the `output` directory inside the `gps-unified-pipeline` local repository
 - It can be changed by adding the option `--output`
   ```
-  ./nextflow run main.nf --output /path/to/output-directory
+  ./run_pipeline --output /path/to/output-directory
   ```
 - The following directories and files are output into the output directory
   | Directory / File | Description |
