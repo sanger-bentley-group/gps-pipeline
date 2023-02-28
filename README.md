@@ -6,12 +6,12 @@ By supplying the FASTQ files of *Streptococcus pneumoniae* samples, this pipelin
 
 The pipeline is designed to be easy-to-setup, easy-to-use, offline-capable and usable on local machines. It is also suitable when the FASTQ files being analysed should not leave the local machine. 
 
-The pipeline only downloads essential files to enable the analysis, and no data is being uploaded from the local machine. After the first successful complete run, the pipeline can be used offline (unless any pipeline option is changed).
+The pipeline only downloads essential files to enable the analysis, and no data is being uploaded from the local machine. After initialisation or the first successful complete run, the pipeline can be used offline (unless any pipeline option is changed).
 
 The development of this pipeline is part of the GPS Project ([Global Pneumococcal Sequencing Project](https://www.pneumogen.net/gps/)). 
 
 &nbsp;
-## Current Workflow
+## Workflow
 ![Workflow](doc/workflow.drawio.svg)
 
 &nbsp;
@@ -40,18 +40,13 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
     cd gps-unified-pipeline
     ```
 3. (Optional) You could perform initialisation to download all required additional files and Docker images, so the pipeline can be used at any time with or without the Internet afterward.
+   > ⚠️ Docker Desktop / Engine must be running, and Internet connection is required.
     ```
-    # Docker Desktop / Engine must be running, and an active Internet connection is required.
-    
     ./nextflow run main.nf --init
     ```
 
 ### Run
-> ⚠️ Important
-> 
-> Docker Desktop / Engine must be running.
-> 
-> An active Internet connection is required in the first run (if initialisation was not performed) to download additional files.
+> ⚠️ Docker Desktop / Engine must be running. Internet connection is required in the first run (if initialisation was not performed).
 - You can run the pipeline without options. It will attempt to get the raw reads from the default location (`input` directory inside the `gps-unified-pipeline` local repository)
   ```
   ./nextflow run main.nf
@@ -73,8 +68,8 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   ```
   ./nextflow run main.nf [option] [value]
   ```
-- `$projectDir` is the directory where the `gps-unified-pipeline` local repository is stored
-- Must not have a trailing slash ("`/`" at the end of the path) on all paths
+> ℹ️ `$projectDir` is the directory where the `gps-unified-pipeline` local repository is stored
+
   | Option | Values | Description |
   | --- | ---| --- |
   | `--reads` | Any valid path<br />(Default: `"$projectDir/input"`) | Path to the input directory that contains the reads to be processed. |
