@@ -2,6 +2,8 @@
 // Check if GET_REF_GENOME_BWA_DB_PREFIX has run successfully on the specific reference.
 // If not: construct the FM-index database of the reference genome for BWA
 process GET_REF_GENOME_BWA_DB_PREFIX {
+    label 'bwa_container'
+    
     input:
     path reference
     val local
@@ -27,6 +29,8 @@ process GET_REF_GENOME_BWA_DB_PREFIX {
 // Map the reads to reference using BWA-MEM algorithm
 // Return SAM
 process MAPPING {
+    label 'bwa_container'
+
     input:
     val reference_prefix
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
@@ -43,6 +47,8 @@ process MAPPING {
 // Convert SAM into BAM and sort it
 // Return sorted BAM
 process SAM_TO_SORTED_BAM {
+    label 'samtools_container'
+    
     input:
     tuple val(sample_id), path(sam)
 
@@ -61,6 +67,8 @@ process SAM_TO_SORTED_BAM {
 
 // Return reference coverage percentage by the reads
 process REF_COVERAGE {
+    label 'samtools_container'
+    
     input:
     tuple val(sample_id), path(bam)
 
@@ -76,6 +84,8 @@ process REF_COVERAGE {
 
 // Return .vcf by calling the SNPs
 process SNP_CALL {
+    label 'bcftools_container'
+    
     input:
     path reference
     tuple val(sample_id), path(bam)
@@ -91,6 +101,8 @@ process SNP_CALL {
 
 // Return non-cluster heterozygous SNP (Het-SNP) site count
 process HET_SNP_COUNT {
+    label 'python_container'
+
     input:
     tuple val(sample_id), path(vcf)
 
@@ -177,6 +189,8 @@ process HET_SNP_COUNT {
 
 // Return overall mapping QC result based on reference coverage and count of Het-SNP sites
 process MAPPING_QC {
+    label 'bash_container'
+
     input:
     tuple val(sample_id), val(ref_coverage), val(het_snp_count)
 

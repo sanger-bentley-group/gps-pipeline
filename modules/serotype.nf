@@ -2,6 +2,8 @@
 // Check if GET_SEROBA_DB and CREATE_SEROBA_DB has run successfully and pull to check if SeroBA database is up-to-date. 
 // If outdated or does not exist: clean and clone, set CREATE_DB to true
 process GET_SEROBA_DB {
+    label 'git_container'
+    
     input:
     val remote
     val local
@@ -26,6 +28,8 @@ process GET_SEROBA_DB {
 // Return SeroBA databases path
 // If create_db == true: re-create kmc and ariba databases
 process CREATE_SEROBA_DB {
+    label 'seroba_container'
+
     input:
     val local
     val create_db
@@ -44,6 +48,8 @@ process CREATE_SEROBA_DB {
 
 // Run SeroBA to serotype samples
 process SEROTYPE {
+    label 'seroba_container'
+
     input:
     val database
     tuple val(sample_id), path(read1), path(read2), path(unpaired)

@@ -1,5 +1,7 @@
 // Run fastp to preprocess the FASTQs 
 process PREPROCESS {
+    label 'fastp_container'
+
     input:
     tuple val(sample_id), path(reads)
 
@@ -15,6 +17,8 @@ process PREPROCESS {
 
 // Get total base count from fastp.json
 process GET_BASES {
+    label 'bash_container'
+
     input:
     tuple val(sample_id), path(json)
 

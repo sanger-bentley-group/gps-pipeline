@@ -2,6 +2,8 @@
 // Check if GET_POPPUNK_DB has run successfully on the specific database.
 // If not: clean, download, and unzip to params.poppunk_local
 process GET_POPPUNK_DB {
+    label 'bash_container'
+
     input:
     val db_remote
     val local
@@ -32,6 +34,8 @@ process GET_POPPUNK_DB {
 // Check if GET_POPPUNK_EXT_CLUSTERS has run successfully on the specific external clusters file.
 // If not: clean and download to params.poppunk_local
 process GET_POPPUNK_EXT_CLUSTERS {
+    label 'bash_container'
+
     input:
     val ext_clusters_remote
     val local
@@ -60,6 +64,8 @@ process GET_POPPUNK_EXT_CLUSTERS {
 // Add "prefix_" to all sample names in qfile to avoid poppunk_assign crashing due to sample name already exists in database
 // Remove "prefix_" from all sample names in the output
 process LINEAGE {
+    label 'poppunk_container'
+
     input:
     path poppunk_db
     path poppunk_ext_clusters
