@@ -2,6 +2,8 @@
 // Check if GET_KRAKEN_DB has run successfully on the specific database. 
 // If not: clean, download, and unzip to params.kraken2_db_local
 process GET_KRAKEN_DB {
+    label 'bash_container'
+
     input:
     val remote
     val local
@@ -28,6 +30,8 @@ process GET_KRAKEN_DB {
 
 // Run Kraken 2 to assess Streptococcus pneumoniae percentage in reads
 process TAXONOMY {
+    label 'kraken2_container'
+
     input:
     val kraken_db
     val kraken2_memory_mapping
@@ -49,6 +53,8 @@ process TAXONOMY {
 
 // Return Taxonomy QC result based on kraken_report.txt
 process TAXONOMY_QC {
+    label 'bash_container'
+
     input:
     tuple val(sample_id), path(kraken_report)
 

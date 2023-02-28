@@ -1,5 +1,7 @@
 // Run PBP AMR predictor to assign pbp genes and estimate samples' MIC (minimum inhibitory concentration) for 6 Beta-lactam antibiotics
 process PBP_RESISTANCE {
+    label 'spn_pbp_amr_container'
+
     input:
     tuple val(sample_id), path(assembly)
 
@@ -17,6 +19,8 @@ process PBP_RESISTANCE {
 // "=" character are replaced by "eq_sign" string to avoid issue when Nextflow attempt to capture string variables with "=" character 
 // Reported to Nextflow team via issue nextflow-io/nextflow#3553, and a fix will be released with version 23.04.0 in 2023 April (ETA) 
 process GET_PBP_RESISTANCE {
+    label 'bash_container'
+
     input:
     tuple val(sample_id), path(json)
 
@@ -58,6 +62,8 @@ process GET_PBP_RESISTANCE {
 
 // Run AMRsearch to infer resistance (also determinants if any) of other antimicrobials
 process OTHER_RESISTANCE {
+    label 'amrsearch_container'
+
     input:
     tuple val(sample_id), path(assembly)
 
@@ -72,6 +78,8 @@ process OTHER_RESISTANCE {
 
 // Extract the results from the result.json file of the AMRsearch
 process GET_OTHER_RESISTANCE {
+    label 'bash_container'
+
     input:
     tuple val(sample_id), path(json)
 

@@ -1,5 +1,7 @@
 // Return overall QC result based on Assembly QC, Mapping QC and Taxonomy QC
 process OVERALL_QC {
+    label 'bash_container'
+    
     input:
     tuple val(sample_id), val(ASSEMBLY_QC), val(MAPPING_QC), val(TAXONOMY_QC)
 

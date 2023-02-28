@@ -1,5 +1,7 @@
 // Run mlst to perform PubMLST typing on samples
 process MLST {
+    label 'mlst_container'
+
     input:
     tuple val(sample_id), path(assembly)
 
