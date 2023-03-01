@@ -3,7 +3,7 @@ import groovy.json.JsonSlurper
 
 
 // Extract containers information and saved into a JSON file
-process GET_IMAGES {
+process IMAGES {
     label 'bash_container'
 
     input:
@@ -179,7 +179,7 @@ process PRINT_VERSION {
 
 // Below processes get tool versions within Docker images by running their containers
 
-process GET_GIT_VERSION {
+process GIT_VERSION {
     label 'git_container'
 
     output:
@@ -191,7 +191,7 @@ process GET_GIT_VERSION {
     '''
 }
 
-process GET_PYTHON_VERSION {
+process PYTHON_VERSION {
     label 'python_container'
 
     output:
@@ -203,7 +203,7 @@ process GET_PYTHON_VERSION {
     '''
 }
 
-process GET_FASTP_VERSION {
+process FASTP_VERSION {
     label 'fastp_container'
 
     output:
@@ -215,7 +215,7 @@ process GET_FASTP_VERSION {
     '''
 }
 
-process GET_UNICYCLER_VERSION {
+process UNICYCLER_VERSION {
     label 'unicycler_container'
 
     output:
@@ -227,7 +227,7 @@ process GET_UNICYCLER_VERSION {
     '''
 }
 
-process GET_SHOVILL_VERSION {
+process SHOVILL_VERSION {
     label 'shovill_container'
 
     output:
@@ -239,7 +239,7 @@ process GET_SHOVILL_VERSION {
     '''
 }
 
-process GET_QUAST_VERSION {
+process QUAST_VERSION {
     label 'quast_container'
 
     output:
@@ -251,7 +251,7 @@ process GET_QUAST_VERSION {
     '''
 }
 
-process GET_BWA_VERSION {
+process BWA_VERSION {
     label 'bwa_container'
 
     output:
@@ -263,7 +263,7 @@ process GET_BWA_VERSION {
     '''
 }
 
-process GET_SAMTOOLS_VERSION {
+process SAMTOOLS_VERSION {
     label 'samtools_container'
 
     output:
@@ -275,7 +275,7 @@ process GET_SAMTOOLS_VERSION {
     '''
 }
 
-process GET_BCFTOOLS_VERSION {
+process BCFTOOLS_VERSION {
     label 'bcftools_container'
 
     output:
@@ -287,7 +287,7 @@ process GET_BCFTOOLS_VERSION {
     '''
 }
 
-process GET_POPPUNK_VERSION {
+process POPPUNK_VERSION {
     label 'poppunk_container'
 
     output:
@@ -299,7 +299,7 @@ process GET_POPPUNK_VERSION {
     '''
 }
 
-process GET_MLST_VERSION {
+process MLST_VERSION {
     label 'mlst_container'
 
     output:
@@ -311,7 +311,7 @@ process GET_MLST_VERSION {
     '''
 }
 
-process GET_KRAKEN2_VERSION {
+process KRAKEN2_VERSION {
     label 'kraken2_container'
 
     output:
@@ -323,7 +323,7 @@ process GET_KRAKEN2_VERSION {
     '''
 }
 
-process GET_SEROBA_VERSION {
+process SEROBA_VERSION {
     label 'seroba_container'
 
     output:
