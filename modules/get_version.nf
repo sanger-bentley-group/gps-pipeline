@@ -163,7 +163,7 @@ process PRINT_VERSION {
         |SeroBA: ${json.seroba.container}
         """.stripMargin()
 
-    if ("${version}") {
+    if ("${version}" === "true") {
 
         log.info("${infoText}")
         
