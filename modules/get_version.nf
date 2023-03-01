@@ -140,7 +140,7 @@ process PRINT_VERSION {
         |PopPUNK: ${json.poppunk.version}
         |SPN_PBP_AMR: no version information available
         |AMRSEARCH: no version information available
-        |mlst:${json.mlst.version}
+        |mlst: ${json.mlst.version}
         |Kraken 2: ${json.kraken2.version}
         |SeroBA: ${json.seroba.version}
         |
@@ -158,7 +158,7 @@ process PRINT_VERSION {
         |PopPUNK: ${json.poppunk.container}
         |SPN_PBP_AMR: ${json.spn_pbp_amr.container}
         |AMRSEARCH: ${json.amrsearch.container}
-        |mlst:${json.mlst.container}
+        |mlst: ${json.mlst.container}
         |Kraken 2: ${json.kraken2.container}
         |SeroBA: ${json.seroba.container}
         """.stripMargin()
