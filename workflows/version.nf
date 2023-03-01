@@ -1,51 +1,40 @@
+include { GET_IMAGES; COMBINE_INFO; GET_GIT_VERSION; GET_PYTHON_VERSION; GET_FASTP_VERSION; GET_UNICYCLER_VERSION; GET_SHOVILL_VERSION; GET_QUAST_VERSION; GET_BWA_VERSION; GET_SAMTOOLS_VERSION; GET_BCFTOOLS_VERSION; GET_POPPUNK_VERSION; GET_MLST_VERSION; GET_KRAKEN2_VERSION; GET_SEROBA_VERSION } from "$projectDir/modules/get_version"
+
 // Alternative workflow for getting versions of pipeline and tools
 workflow GET_VERSION {
-    /* 
-    Command to get tool verion within containers
+    GET_IMAGES(Channel.fromPath( "$projectDir/nextflow.config" ))
 
-    bitnami/git:2.39.0 
-    git -v | sed -r "s/.*\s(.+)/\\1/"
+    GET_GIT_VERSION()
+    GET_PYTHON_VERSION()
+    GET_FASTP_VERSION()
+    GET_UNICYCLER_VERSION()
+    GET_SHOVILL_VERSION()
+    GET_QUAST_VERSION()
+    GET_BWA_VERSION()
+    GET_SAMTOOLS_VERSION()
+    GET_BCFTOOLS_VERSION()
+    GET_POPPUNK_VERSION()
+    GET_MLST_VERSION()
+    GET_KRAKEN2_VERSION()
+    GET_SEROBA_VERSION()
 
-    python:3.11.1-bullseye
-    python --version | sed -r "s/.*\s(.+)/\\1/"
+    COMBINE_INFO(
+        params.pipeline_version,
+        GET_IMAGES.out.json, 
+        GET_GIT_VERSION.out, 
+        GET_PYTHON_VERSION.out, 
+        GET_FASTP_VERSION.out, 
+        GET_UNICYCLER_VERSION.out,
+        GET_SHOVILL_VERSION.out,
+        GET_QUAST_VERSION.out,
+        GET_BWA_VERSION.out,
+        GET_SAMTOOLS_VERSION.out,
+        GET_BCFTOOLS_VERSION.out,
+        GET_POPPUNK_VERSION.out,
+        GET_MLST_VERSION.out,
+        GET_KRAKEN2_VERSION.out,
+        GET_SEROBA_VERSION.out
+    )
 
-    staphb/fastp:0.23.2
-    fastp -v 2>&1 | sed -r "s/.*\s(.+)/\\1/"
-
-    staphb/unicycler:0.5.0
-    unicycler --version | sed -r "s/.*\sv(.+)/\\1/"
-
-    staphb/shovill:1.1.0-2022Dec
-    shovill -v | sed -r "s/.*\s(.+)/\\1/"
-
-    staphb/quast:5.0.2
-    quast.py -v | sed -r "s/.*\sv(.+)/\\1/"
-
-    staphb/bwa:0.7.17
-    bwa 2>&1 | grep Version | sed -r "s/.*:\s(.+)/\\1/"
-
-    staphb/samtools:1.16
-    samtools 2>&1 | grep Version | sed -r "s/.*:\s(.+)/\\1/"
-
-    staphb/bcftools:1.16
-    bcftools 2>&1 | grep Version | sed -r "s/.*:\s(.+)/\\1/"
-
-    staphb/poppunk:2.5.0
-    poppunk --version | sed -r "s/.*\s(.+)/\\1/"
-
-    harryhungch/spn-pbp-amr:23.01.16
-    -
-
-    harryhungch/amrsearch:23.02.23
-    -
-
-    staphb/mlst:2.23.0
-    mlst -v | sed -r "s/.*\s(.+)/\\1/" 
-
-    staphb/kraken2:2.1.2-no-db
-    kraken2 -v | grep version | sed -r "s/.*\s(.+)/\\1/"
-
-    staphb/seroba:1.0.2
-    seroba version
-    */
+    COMBINE_INFO.out.json.view()
 }
