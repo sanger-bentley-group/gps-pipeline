@@ -193,6 +193,8 @@ process MAPPING_QC {
 
     input:
     tuple val(sample_id), val(ref_coverage), val(het_snp_count)
+    val(qc_ref_coverage)
+    val(qc_het_snp_site)
 
     output:
     tuple val(sample_id), env(COVERAGE), env(HET_SNP), env(MAPPING_QC), emit: detailed_result
@@ -203,7 +205,7 @@ process MAPPING_QC {
     COVERAGE=$(printf %.2f !{ref_coverage})
     HET_SNP=!{het_snp_count}
     
-    if (( $(echo "$COVERAGE > 60.00" | bc -l) )) && (( $HET_SNP < 220 )); then
+    if (( $(echo "$COVERAGE > !{qc_ref_coverage}" | bc -l) )) && (( $HET_SNP < !{qc_het_snp_site} )); then
         MAPPING_QC="PASS"
     else
         MAPPING_QC="FAIL"

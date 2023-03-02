@@ -54,7 +54,11 @@ workflow PIPELINE {
     // Output into Channels ASSEMBLY_QC.out.detailed_result & ASSEMBLY_QC.out.result
     ASSEMBLY_QC(
         ASSEMBLY_ASSESS.out.report
-        .join(GET_BASES(PREPROCESS.out.json), failOnDuplicate: true, failOnMismatch: true)
+        .join(GET_BASES(PREPROCESS.out.json), failOnDuplicate: true, failOnMismatch: true),
+        params.contigs,
+        params.length_low,
+        params.length_high,
+        params.depth
     )
     
     // From Channel PREPROCESS.out.processed_reads map reads to reference
@@ -74,7 +78,9 @@ workflow PIPELINE {
     // Output into Channels MAPPING_QC.out.detailed_result & MAPPING_QC.out.result
     MAPPING_QC(
         REF_COVERAGE.out.result
-        .join(HET_SNP_COUNT.out.result, failOnDuplicate: true, failOnMismatch: true)
+        .join(HET_SNP_COUNT.out.result, failOnDuplicate: true, failOnMismatch: true),
+        params.ref_coverage,
+        params.het_snp_site
     )
 
     // From Channel PREPROCESS.out.processed_reads assess Streptococcus pneumoniae percentage in reads
@@ -83,7 +89,7 @@ workflow PIPELINE {
 
     // From Channel TAXONOMY.out.report, provide taxonomy QC status
     // Output into Channels TAXONOMY_QC.out.detailed_result & TAXONOMY_QC.out.result report
-    TAXONOMY_QC(TAXONOMY.out.report)
+    TAXONOMY_QC(TAXONOMY.out.report, params.spneumo_percentage)
 
     // Merge Channels ASSEMBLY_QC.out.result & MAPPING_QC.out.result & TAXONOMY_QC.out.result to provide Overall QC Status
     // Output into Channel OVERALL_QC.out.result

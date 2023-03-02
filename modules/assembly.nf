@@ -60,6 +60,10 @@ process ASSEMBLY_QC {
 
     input:
     tuple val(sample_id), path(report), val(bases)
+    val(qc_contigs)
+    val(qc_length_low)
+    val(qc_length_high)
+    val(qc_depth)
 
     output:
     tuple val(sample_id), env(CONTIGS), env(LENGTH), env(DEPTH), env(ASSEMBLY_QC), emit: detailed_result
@@ -71,7 +75,7 @@ process ASSEMBLY_QC {
     LENGTH=$(awk -F'\t' '$1 == "Total length" { print $2 }' !{report})
     DEPTH=$(printf %.2f $(echo "!{bases} / $LENGTH" | bc -l) )
     
-    if (( $CONTIGS < 500 )) && (( $LENGTH >= 1900000 )) && (( $LENGTH <= 2300000 )) && (( $(echo "$DEPTH >= 20.00" | bc -l) )); then
+    if (( $CONTIGS < !{qc_contigs} )) && (( $LENGTH >= !{qc_length_low} )) && (( $LENGTH <= !{qc_length_high} )) && (( $(echo "$DEPTH >= !{qc_depth}" | bc -l) )); then
         ASSEMBLY_QC="PASS"
     else
         ASSEMBLY_QC="FAIL"
