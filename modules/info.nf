@@ -124,9 +124,12 @@ process PRINT_VERSION {
     
     def json = jsonSlurper.parse(new File("${json_file}")) 
 
-    String infoText = """
-        |GPS Unified Pipeline version: ${json.pipeline.version}
-        |
+    String titleText = """\
+        |=== GPS Unified Pipeline version ===
+        |${json.pipeline.version}
+        """.stripMargin()
+    
+    String toolText = """\
         |=== Tool Verions ===
         |Git: ${json.git.version}
         |Python: ${json.python.version}
@@ -143,7 +146,9 @@ process PRINT_VERSION {
         |mlst: ${json.mlst.version}
         |Kraken 2: ${json.kraken2.version}
         |SeroBA: ${json.seroba.version}
-        |
+        """.stripMargin()
+    
+    String imageText = """\
         |=== Docker Images ===
         |Bash: ${json.bash.container}
         |Git: ${json.git.container}
@@ -165,14 +170,35 @@ process PRINT_VERSION {
 
     if ("${version}" == "true") {
 
-        log.info("${infoText}")
+        log.info(
+            """
+            |
+            |========== Version Information ==========
+            |
+            |${titleText}
+            |${toolText}
+            |${imageText}
+            """.stripMargin()
+        )
         
     } else {
         File output_dir = new File("${output}")
         output_dir.mkdirs()
 
-        File output = new File("${output}/version.txt")
-        output.write("${infoText}")
+        String assemblerText = """\
+        |=== Selected assembler ===
+        |${params.assembler.capitalize()}
+        """.stripMargin()
+
+        File output = new File("${output}/info.txt")
+        output.write(
+            """\
+            |${titleText}
+            |${assemblerText}
+            |${toolText}
+            |${imageText}
+            """.stripMargin()
+        )
     }
 }
 
