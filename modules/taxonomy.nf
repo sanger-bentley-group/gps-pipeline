@@ -57,6 +57,7 @@ process TAXONOMY_QC {
 
     input:
     tuple val(sample_id), path(kraken_report)
+    val(qc_spneumo_percentage)
 
     output:
     tuple val(sample_id), env(PERCENTAGE), env(TAXONOMY_QC), emit: detailed_result
@@ -70,7 +71,7 @@ process TAXONOMY_QC {
         PERCENTAGE="0.00"
     fi
 
-    if (( $(echo "$PERCENTAGE > 60.00" | bc -l) )); then
+    if (( $(echo "$PERCENTAGE > !{qc_spneumo_percentage}" | bc -l) )); then
         TAXONOMY_QC="PASS"
     else
         TAXONOMY_QC="FAIL"
