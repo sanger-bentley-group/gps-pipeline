@@ -24,7 +24,7 @@ def helpMessage() {
         |--init          Alternative workflow for initialisation
         |--version       Alternative workflow for getting versions of pipeline and tools
         |
-        |For all available options, refer to https://github.com/HarryHung/gps-unified-pipeline/blob/master/README.md
+        |For all available options, please refer to README.md
         """.stripMargin()
     )
 }
