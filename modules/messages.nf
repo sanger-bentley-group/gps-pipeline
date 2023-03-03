@@ -1,9 +1,9 @@
 // Start message
-def startMessage() {
+def startMessage(pipeline_version) {
     log.info """
         |
         |=================================================
-        |G P S   U N I F I E D   P I P E L I N E   v ${params.pipeline_version} 
+        |G P S   U N I F I E D   P I P E L I N E   v ${pipeline_version} 
         |=================================================
        """.stripMargin()
 } 

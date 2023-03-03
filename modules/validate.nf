@@ -1,6 +1,5 @@
 // Map of valid parameters and their value types
 validParams = [
-    pipeline_version: "alphanumeric",
     help: "boolean",
     init: "boolean",
     version: "boolean",
