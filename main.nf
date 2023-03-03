@@ -1,6 +1,10 @@
 #!/usr/bin/env nextflow
 
 
+// Version of this release
+pipeline_version='0.6.0'
+
+
 // Import workflow modules
 include { PIPELINE } from "$projectDir/workflows/pipeline"
 include { INIT } from "$projectDir/workflows/init"
@@ -12,7 +16,7 @@ include { validate } from "$projectDir/modules/validate"
 
 
 // Start message
-startMessage()
+startMessage(pipeline_version)
 
 // Validate parameters
 validate(params)
@@ -26,7 +30,7 @@ workflow {
         INIT()
     } else if (params.version) {
         workflowSelectMessage("version")
-        GET_VERSION()
+        GET_VERSION(pipeline_version)
     } else {
         workflowSelectMessage("pipeline")
         PIPELINE()
