@@ -9,9 +9,6 @@ include { GET_SEROBA_DB; CREATE_SEROBA_DB; SEROTYPE } from "$projectDir/modules/
 include { MLST } from "$projectDir/modules/mlst"
 include { PBP_RESISTANCE; GET_PBP_RESISTANCE; OTHER_RESISTANCE; GET_OTHER_RESISTANCE } from "$projectDir/modules/amr"
 
-// Include GET_VERSION workflow module
-include { GET_VERSION } from "$projectDir/workflows/version" 
-
 
 // Main pipeline workflow
 workflow PIPELINE {
@@ -135,9 +132,7 @@ workflow PIPELINE {
     // Output into Channel GET_OTHER_RESISTANCE.out.result
     OTHER_RESISTANCE(QC_PASSED_ASSEMBLIES_ch)
     GET_OTHER_RESISTANCE(OTHER_RESISTANCE.out.json)
-
-    // Save version information to version.txt
-    GET_VERSION()
+    
 
     // Generate summary.csv by sorted sample_id based on merged Channels 
     // ASSEMBLY_QC.out.detailed_result,
