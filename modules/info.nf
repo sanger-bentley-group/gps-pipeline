@@ -190,11 +190,26 @@ process PRINT_VERSION {
         |${params.assembler.capitalize()}
         """.stripMargin()
 
+        String qcText= """\
+        |=== QC Parameters ===
+        |= Taxonomy QC =
+        |Minimum S. pneumoniae percentage in reads: ${params.spneumo_percentage}
+        |= Mapping QC =
+        |Minimum reference coverage percentage by the reads: ${params.ref_coverage}
+        |Maximum non-cluster heterozygous SNP (Het-SNP) site count: ${params.het_snp_site}
+        |= Assembly QC =
+        |Maximum contig count in assembly: ${params.contigs}
+        |Minimum assembly length: ${params.length_low}
+        |Maximum assembly length: ${params.length_high}
+        |Minimum sequencing depth: ${params.depth}
+        """.stripMargin()
+
         File output = new File("${output}/info.txt")
         output.write(
             """\
             |${titleText}
             |${assemblerText}
+            |${qcText}
             |${toolText}
             |${imageText}
             """.stripMargin()

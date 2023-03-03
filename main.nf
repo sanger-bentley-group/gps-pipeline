@@ -34,6 +34,7 @@ workflow {
     } else {
         workflowSelectMessage("pipeline")
         PIPELINE()
+        GET_VERSION(pipeline_version)
     }
 }
 
