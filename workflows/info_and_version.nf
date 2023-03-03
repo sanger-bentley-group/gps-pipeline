@@ -1,8 +1,27 @@
-include { IMAGES; COMBINE_INFO; PRINT_VERSION; GIT_VERSION; PYTHON_VERSION; FASTP_VERSION; UNICYCLER_VERSION; SHOVILL_VERSION; QUAST_VERSION; BWA_VERSION; SAMTOOLS_VERSION; BCFTOOLS_VERSION; POPPUNK_VERSION; MLST_VERSION; KRAKEN2_VERSION; SEROBA_VERSION } from "$projectDir/modules/info"
+include { IMAGES; COMBINE_INFO; PARSE; PRINT; SAVE; GIT_VERSION; PYTHON_VERSION; FASTP_VERSION; UNICYCLER_VERSION; SHOVILL_VERSION; QUAST_VERSION; BWA_VERSION; SAMTOOLS_VERSION; BCFTOOLS_VERSION; POPPUNK_VERSION; MLST_VERSION; KRAKEN2_VERSION; SEROBA_VERSION } from "$projectDir/modules/info"
 
-// Alternative workflow for getting versions of pipeline and tools
+// Alternative workflow that prints versions of pipeline and tools
+workflow PRINT_VERSION {
+    take: 
+        pipeline_version
+
+    main:
+       GET_VERSION(pipeline_version) | PARSE | PRINT
+}
+
+// Sub-workflow of PIPELINE workflow the save versions of pipeline and tools, and QC parameters to info.txt at output dir
+workflow SAVE_INFO {
+    take: 
+        pipeline_version
+
+    main:
+       GET_VERSION(pipeline_version) | PARSE | SAVE
+}
+
+// Sub-workflow for generating a json that contains versions of pipeline and tools
 workflow GET_VERSION {
-    take: pipeline_version
+    take: 
+        pipeline_version
 
     main:
         IMAGES(Channel.fromPath( "$projectDir/nextflow.config" ))
@@ -38,6 +57,7 @@ workflow GET_VERSION {
             KRAKEN2_VERSION.out,
             SEROBA_VERSION.out
         )
-        
-        PRINT_VERSION(COMBINE_INFO.out.json, params.version, params.output)
+    
+    emit:
+        COMBINE_INFO.out.json
 }

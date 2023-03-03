@@ -8,7 +8,7 @@ pipeline_version='0.6.0'
 // Import workflow modules
 include { PIPELINE } from "$projectDir/workflows/pipeline"
 include { INIT } from "$projectDir/workflows/init"
-include { GET_VERSION } from "$projectDir/workflows/version"
+include { PRINT_VERSION; SAVE_INFO } from "$projectDir/workflows/info_and_version"
 
 // Import supporting modules
 include { startMessage; helpMessage; workflowSelectMessage; endMessage } from "$projectDir/modules/messages" 
@@ -30,11 +30,11 @@ workflow {
         INIT()
     } else if (params.version) {
         workflowSelectMessage("version")
-        GET_VERSION(pipeline_version)
+        PRINT_VERSION(pipeline_version)
     } else {
         workflowSelectMessage("pipeline")
         PIPELINE()
-        GET_VERSION(pipeline_version)
+        SAVE_INFO(pipeline_version)
     }
 }
 

@@ -1,4 +1,4 @@
-// Import for PRINT_VERSION
+// Import for PARSE
 import groovy.json.JsonSlurper
 
 
@@ -112,24 +112,27 @@ process COMBINE_INFO {
     '''
 }
 
-// Print version to log.info or save to ${params.output}/version.txt depending on running workflow
-process PRINT_VERSION {
+// Parse information from JSON into human-readable format
+process PARSE {
     input:
     val json_file
-    val version
-    val output
+
+    output:
+    val titleText
+    val toolText
+    val imageText
 
     exec:
     def jsonSlurper = new JsonSlurper()
     
     def json = jsonSlurper.parse(new File("${json_file}")) 
 
-    String titleText = """\
+    titleText = """\
         |=== GPS Unified Pipeline version ===
         |${json.pipeline.version}
         """.stripMargin()
     
-    String toolText = """\
+    toolText = """\
         |=== Tool Verions ===
         |Git: ${json.git.version}
         |Python: ${json.python.version}
@@ -148,7 +151,7 @@ process PRINT_VERSION {
         |SeroBA: ${json.seroba.version}
         """.stripMargin()
     
-    String imageText = """\
+    imageText = """\
         |=== Docker Images ===
         |Bash: ${json.bash.container}
         |Git: ${json.git.container}
@@ -167,54 +170,68 @@ process PRINT_VERSION {
         |Kraken 2: ${json.kraken2.container}
         |SeroBA: ${json.seroba.container}
         """.stripMargin()
+}
 
-    if ("${version}" == "true") {
+// Print version information
+process PRINT {
+    input:
+    val titleText
+    val toolText
+    val imageText
 
-        log.info(
-            """
-            |
-            |========== Version Information ==========
-            |
-            |${titleText}
-            |${toolText}
-            |${imageText}
-            """.stripMargin()
-        )
-        
-    } else {
-        File output_dir = new File("${output}")
-        output_dir.mkdirs()
-
-        String assemblerText = """\
-        |=== Selected assembler ===
-        |${params.assembler.capitalize()}
+    exec:
+    log.info(
+        """
+        |
+        |========== Version Information ==========
+        |
+        |${titleText}
+        |${toolText}
+        |${imageText}
         """.stripMargin()
+    )
+}
 
-        String qcText= """\
-        |=== QC Parameters ===
-        |= Taxonomy QC =
-        |Minimum S. pneumoniae percentage in reads: ${params.spneumo_percentage}
-        |= Mapping QC =
-        |Minimum reference coverage percentage by the reads: ${params.ref_coverage}
-        |Maximum non-cluster heterozygous SNP (Het-SNP) site count: ${params.het_snp_site}
-        |= Assembly QC =
-        |Maximum contig count in assembly: ${params.contigs}
-        |Minimum assembly length: ${params.length_low}
-        |Maximum assembly length: ${params.length_high}
-        |Minimum sequencing depth: ${params.depth}
+// Save version and QC parameters information to info.txt at output dir
+process SAVE {
+    input:
+    val titleText
+    val toolText
+    val imageText
+
+    exec:
+    File output_dir = new File("${params.output}")
+    output_dir.mkdirs()
+
+    assemblerText = """\
+    |=== Selected assembler ===
+    |${params.assembler.capitalize()}
+    """.stripMargin()
+
+    qcText= """\
+    |=== QC Parameters ===
+    |= Taxonomy QC =
+    |Minimum S. pneumoniae percentage in reads: ${params.spneumo_percentage}
+    |= Mapping QC =
+    |Minimum reference coverage percentage by the reads: ${params.ref_coverage}
+    |Maximum non-cluster heterozygous SNP (Het-SNP) site count: ${params.het_snp_site}
+    |= Assembly QC =
+    |Maximum contig count in assembly: ${params.contigs}
+    |Minimum assembly length: ${params.length_low}
+    |Maximum assembly length: ${params.length_high}
+    |Minimum sequencing depth: ${params.depth}
+    """.stripMargin()
+
+    File output = new File("${params.output}/info.txt")
+    output.write(
+        """\
+        |${titleText}
+        |${assemblerText}
+        |${qcText}
+        |${toolText}
+        |${imageText}
         """.stripMargin()
-
-        File output = new File("${output}/info.txt")
-        output.write(
-            """\
-            |${titleText}
-            |${assemblerText}
-            |${qcText}
-            |${toolText}
-            |${imageText}
-            """.stripMargin()
-        )
-    }
+    )
 }
 
 
