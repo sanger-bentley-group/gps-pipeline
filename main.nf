@@ -8,11 +8,14 @@ include { GET_VERSION } from "$projectDir/workflows/version"
 
 // Import supporting modules
 include { startMessage; helpMessage; workflowSelectMessage; endMessage } from "$projectDir/modules/messages" 
+include { validate } from "$projectDir/modules/validate"
 
 
 // Start message
 startMessage()
 
+// Validate parameters
+validate(params)
 
 // Select workflow with PIPELINE as default
 workflow {
