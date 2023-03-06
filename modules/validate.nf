@@ -27,6 +27,26 @@ validParams = [
 
 // Validate whether all provided parameters are valid
 def validate(params) {
+    // Skip validation when help option is used
+    if (params.help) {
+        return
+    }
+
+    // For initalisation, skip input and output directories checks
+    // For version, skip all file paths related checks
+    skippedParams = []
+    if (params.init) {
+        skippedParams = ['reads', 'output']
+    } else if (params.version) {
+        validParams.each{
+            key, value ->
+            if (["path", "path_exist", "path_fasta"].contains(value) ) {
+                skippedParams.add(key)
+            }
+        }
+    }
+    skippedParams.each { key -> validParams[key] = 'skip' }
+
     invalidParams = []
     invalidValues = [:]
 
@@ -40,6 +60,9 @@ def validate(params) {
         valueType = validParams[key]
         
         switch(valueType){
+            case 'skip':
+                break
+
             case 'boolean':
                 if (value !instanceof Boolean) {
                     invalidValues[key] = [value, "boolean value"]
@@ -73,7 +96,7 @@ def validate(params) {
 
             case 'path':
                 File dir = new File(value)
-                if (!dir.canWrite()) {
+                if (!(dir.exists() || dir.mkdirs())) {
                     invalidValues[key] = [value, "directory path (invalid path or insufficient permissions)"]
                 }
                 break
@@ -95,13 +118,13 @@ def validate(params) {
             
             case 'url_targz':
                 if (!(value ==~ /^(https?:\/\/)?(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)\.tar\.gz$/)) {
-                    invalidValues[key] = [value, "URL that points a Git remote repository (valid URL ending with .git)"]
+                    invalidValues[key] = [value, "URL that points a Git remote repository (valid URL ending with .tar.gz)"]
                 }
                 break
 
             case 'url_csv':
                 if (!(value ==~ /^(https?:\/\/)?(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)\.csv$/)) {
-                    invalidValues[key] = [value, "URL that points a Git remote repository (valid URL ending with .git)"]
+                    invalidValues[key] = [value, "URL that points a Git remote repository (valid URL ending with .csv)"]
                 }
                 break
             
