@@ -35,15 +35,16 @@ workflow PIPELINE {
 
     // From Channel PREPROCESS.out.processed_reads, assemble the preprocess read pairs
     // Output into Channel ASSEMBLY_ch, and hardlink the assemblies to $params.output directory
-    if ( params.assembler == "shovill" ) {
-        ASSEMBLY_ch = ASSEMBLY_SHOVILL(PREPROCESS.out.processed_reads)
-    } else if ( params.assembler == "unicycler" ) {
-        ASSEMBLY_ch = ASSEMBLY_UNICYCLER(PREPROCESS.out.processed_reads)
-    } else {
-        println "Provided assembler option is not valid. Supported value: shovill, unicycler"
-        System.exit(0)
-    }
+    switch(params.assembler){
+        case 'shovill':
+            ASSEMBLY_ch = ASSEMBLY_SHOVILL(PREPROCESS.out.processed_reads)
+            break
 
+        case "unicycler":
+            ASSEMBLY_ch = ASSEMBLY_UNICYCLER(PREPROCESS.out.processed_reads)
+            break
+    }
+    
     // From Channel ASSEMBLY_ch, assess assembly quality
     ASSEMBLY_ASSESS(ASSEMBLY_ch)
 
