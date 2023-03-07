@@ -4,4 +4,4 @@
 
 pipelineDir=$(dirname -- "$(readlink -f -- "$0")")
 
-$pipelineDir/nextflow run $pipelineDir/main.nf "$@"
+$pipelineDir/nextflow -C $pipelineDir/nextflow.config run $pipelineDir/main.nf "$@"
