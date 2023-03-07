@@ -47,19 +47,22 @@ def validate(params) {
     }
     skippedParams.each { key -> validParams[key] = 'skip' }
 
+    // To save invalid parameters in this list
     invalidParams = []
+    // To save invalid parameter values as "parameter : [value, issue]" in this map
     invalidValues = [:]
 
     params.each{
         key, value -> 
+
+        // If parameter is invalid, add it to invalidParams list and skip the following checks
         if (!validParams.keySet().contains(key)) {
             invalidParams.add(key)
             return
         }
-
-        valueType = validParams[key]
         
-        switch(valueType){
+        // Based on the value type of the parameter, perform the appropriate check
+        switch(validParams[key]){
             case 'skip':
                 break
 
@@ -118,16 +121,17 @@ def validate(params) {
             
             case 'url_targz':
                 if (!(value ==~ /^(https?:\/\/)?(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)\.tar\.gz$/)) {
-                    invalidValues[key] = [value, "URL that points a Git remote repository (valid URL ending with .tar.gz)"]
+                    invalidValues[key] = [value, "URL that points a .tar.gz file (valid URL ending with .tar.gz)"]
                 }
                 break
 
             case 'url_csv':
                 if (!(value ==~ /^(https?:\/\/)?(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)\.csv$/)) {
-                    invalidValues[key] = [value, "URL that points a Git remote repository (valid URL ending with .csv)"]
+                    invalidValues[key] = [value, "URL that points a .csv file (valid URL ending with .csv)"]
                 }
                 break
             
+            // Should only reach this statement if a new value type is added to validParams without adding its case above
             default:
                 log.error("""
                     |Unknown value type \"${valueType}\"
@@ -137,6 +141,7 @@ def validate(params) {
         }
     }
 
+    // If invalidParams list or invalidValues map is not empty, log error messages and terminate the pipeline
     if (invalidParams || invalidValues){
         log.error("The pipeline will now be terminated due to the following critical error(s):")
 
@@ -150,7 +155,6 @@ def validate(params) {
                 log.error("The provided value \"${values[0]}\" for option --${key} is not a valid ${values[1]}.")
             }
         }
-
 
         System.exit(0)
     }
