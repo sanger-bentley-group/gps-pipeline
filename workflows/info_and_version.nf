@@ -24,7 +24,7 @@ workflow GET_VERSION {
         pipeline_version
 
     main:
-        IMAGES(Channel.fromPath( "$projectDir/nextflow.config" ))
+        IMAGES(Channel.fromPath( "${workflow.configFiles[0]}" ))
 
         nextflow_version = "$nextflow.version"
 
