@@ -26,6 +26,8 @@ workflow GET_VERSION {
     main:
         IMAGES(Channel.fromPath( "$projectDir/nextflow.config" ))
 
+        nextflow_version = "$nextflow.version"
+
         GIT_VERSION()
         PYTHON_VERSION()
         FASTP_VERSION()
@@ -42,6 +44,7 @@ workflow GET_VERSION {
 
         COMBINE_INFO(
             pipeline_version,
+            nextflow_version,
             IMAGES.out.json,
             GIT_VERSION.out,
             PYTHON_VERSION.out,

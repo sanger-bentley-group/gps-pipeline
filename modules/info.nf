@@ -66,6 +66,7 @@ process COMBINE_INFO {
 
     input:
     val pipeline_version
+    val nextflow_version
     path(images)
     val(git_version)
     val(python_version)
@@ -93,6 +94,8 @@ process COMBINE_INFO {
     }
 
     add_version pipeline "!{pipeline_version}"
+
+    add_version nextflow "!{nextflow_version}"
 
     add_version git "!{git_version}"
     add_version python "!{python_version}"
@@ -130,6 +133,9 @@ process PARSE {
     titleText = """\
         |=== GPS Unified Pipeline version ===
         |${json.pipeline.version}
+        |
+        |=== Nextflow version ===
+        |${json.nextflow.version}
         """.stripMargin()
     
     toolText = """\
