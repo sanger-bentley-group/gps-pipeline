@@ -6,7 +6,7 @@ process GET_SEROBA_DB {
     
     input:
     val remote
-    val local
+    path local
 
     output:
     env CREATE_DB, emit: create_db
@@ -15,7 +15,7 @@ process GET_SEROBA_DB {
     '''
     # Assume up-to-date if done_seroba exists and the host cannot be resolved (often means the Internet is not available)
     if [ ! -f !{local}/done_seroba ] || !((git -C !{local} pull || echo 'Already up-to-date') | grep -q 'Already up[- ]to[- ]date'); then
-        rm -rf !{local}
+        rm -rf !{local}/{,.[!.],..?}*
         git clone !{remote} !{local}
 
         CREATE_DB=true
@@ -31,17 +31,19 @@ process CREATE_SEROBA_DB {
     label 'seroba_container'
 
     input:
-    val local
+    path seroba_dir
     val create_db
 
     output:
-    val "$local/database"
+    tuple path(seroba_dir), env(DATABASE)
 
     shell:
     '''
+    DATABASE=database
+
     if [ !{create_db} = true ]; then
-        seroba createDBs !{local}/database/ 71
-        touch !{local}/done_seroba
+        seroba createDBs !{seroba_dir}/$DATABASE/ 71
+        touch !{seroba_dir}/done_seroba
     fi
     '''
 }
@@ -51,7 +53,7 @@ process SEROTYPE {
     label 'seroba_container'
 
     input:
-    val database
+    tuple path(seroba_dir), val(database)
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
 
     output:
@@ -59,7 +61,7 @@ process SEROTYPE {
 
     shell:
     '''
-    seroba runSerotyping !{database} !{read1} !{read2} !{sample_id}
+    seroba runSerotyping !{seroba_dir}/!{database} !{read1} !{read2} !{sample_id}
 
     SEROTYPE=$(awk -F'\t' '{ print $2 }' !{sample_id}/pred.tsv)
     SEROBA_COMMENT=$(awk -F'\t' '$3!=""{ print $3 } $3==""{ print "_" }' !{sample_id}/pred.tsv)

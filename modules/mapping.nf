@@ -6,20 +6,21 @@ process GET_REF_GENOME_BWA_DB_PREFIX {
     
     input:
     path reference
-    val local
+    path local
 
     output:
-    val "$local/ref"
+    tuple path(local), env(PREFIX)
 
     shell:
     '''
-    if [ ! -f !{local}/done_bwa_db_!{reference} ] || [ ! -f !{local}/ref.amb ] || [ ! -f !{local}/ref.ann ] || [ ! -f !{local}/ref.bwt ] || [ ! -f !{local}/ref.pac ] || [ ! -f !{local}/ref.sa ] ; then
-        rm -rf !{local}
-        mkdir -p !{local}
+    PREFIX=ref
+    
+    if [ ! -f !{local}/done_bwa_db_!{reference} ] || [ ! -f !{local}/$PREFIX.amb ] || [ ! -f !{local}/$PREFIX.ann ] || [ ! -f !{local}/$PREFIX.bwt ] || [ ! -f !{local}/$PREFIX.pac ] || [ ! -f !{local}/$PREFIX.sa ] ; then
+        rm -rf !{local}/{,.[!.],..?}*
 
-        bwa index -p ref !{reference}
+        bwa index -p $PREFIX !{reference}
         
-        mv ref.amb ref.ann ref.bwt ref.pac ref.sa -t !{local}
+        mv $PREFIX.amb $PREFIX.ann $PREFIX.bwt $PREFIX.pac $PREFIX.sa -t !{local}
         
         touch !{local}/done_bwa_db_!{reference}
     fi 
@@ -32,7 +33,7 @@ process MAPPING {
     label 'bwa_container'
 
     input:
-    val reference_prefix
+    tuple path(bwa_ref_db_dir), val(prefix)
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
 
     output:
@@ -40,7 +41,7 @@ process MAPPING {
 
     shell:
     '''
-    bwa mem -t $(nproc) !{reference_prefix} <(zcat -f -- < !{read1}) <(zcat -f -- < !{read2}) > !{sample_id}_mapped.sam
+    bwa mem -t $(nproc) !{bwa_ref_db_dir}/!{prefix} <(zcat -f -- < !{read1}) <(zcat -f -- < !{read2}) > !{sample_id}_mapped.sam
     '''
 }
 
