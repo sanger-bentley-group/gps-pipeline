@@ -6,18 +6,17 @@ process GET_KRAKEN_DB {
 
     input:
     val remote
-    val local
+    path local
 
     output:
-    val local
+    path local
 
     shell:
     '''
     DB_NAME=$(basename !{remote})
 
     if [ ! -f !{local}/done_kraken_${DB_NAME} ] || [ ! -f !{local}/hash.k2d ]; then
-        rm -rf !{local}
-        mkdir -p !{local}
+        rm -rf !{local}/{,.[!.],..?}*
 
         wget !{remote} -O kraken_db.tar.gz
         tar -xzf kraken_db.tar.gz -C !{local}
@@ -33,7 +32,7 @@ process TAXONOMY {
     label 'kraken2_container'
 
     input:
-    val kraken_db
+    path kraken_db
     val kraken2_memory_mapping
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
 
