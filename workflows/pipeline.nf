@@ -19,8 +19,8 @@ workflow PIPELINE {
     kraken2_db = GET_KRAKEN_DB(params.kraken2_db_remote, params.kraken2_db_local)
 
     // Get path to SeroBA Databases, clone and rebuild if necessary
-    GET_SEROBA_DB(params.seroba_remote, params.seroba_local)
-    seroba_db = CREATE_SEROBA_DB(params.seroba_local, GET_SEROBA_DB.out.create_db, params.seroba_kmer)
+    GET_SEROBA_DB(params.seroba_remote, params.seroba_local, params.seroba_kmer)
+    seroba_db = CREATE_SEROBA_DB(params.seroba_remote, params.seroba_local, GET_SEROBA_DB.out.create_db, params.seroba_kmer)
 
     // Get paths to PopPUNK Database and External Clusters, download if necessary
     poppunk_db = GET_POPPUNK_DB(params.poppunk_db_remote, params.poppunk_local)
