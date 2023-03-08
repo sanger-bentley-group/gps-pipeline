@@ -15,14 +15,22 @@ process GET_REF_GENOME_BWA_DB_PREFIX {
     '''
     PREFIX=ref
     
-    if [ ! -f !{local}/done_bwa_db_!{reference} ] || [ ! -f !{local}/$PREFIX.amb ] || [ ! -f !{local}/$PREFIX.ann ] || [ ! -f !{local}/$PREFIX.bwt ] || [ ! -f !{local}/$PREFIX.pac ] || [ ! -f !{local}/$PREFIX.sa ] ; then
+    if  [ ! -f !{local}/done_bwa_db.json ] || \
+        [ ! "$(grep 'reference' !{local}/done_bwa_db.json | sed -r 's/.+: "(.*)",/\\1/')" == "!{reference}" ] || \
+        [ ! -f !{local}/${PREFIX}.amb ] || \
+        [ ! -f !{local}/${PREFIX}.ann ] || \
+        [ ! -f !{local}/${PREFIX}.bwt ] || \
+        [ ! -f !{local}/${PREFIX}.pac ] || \
+        [ ! -f !{local}/${PREFIX}.sa ] ; then
+
         rm -rf !{local}/{,.[!.],..?}*
 
-        bwa index -p $PREFIX !{reference}
+        bwa index -p ${PREFIX} !{reference}
         
-        mv $PREFIX.amb $PREFIX.ann $PREFIX.bwt $PREFIX.pac $PREFIX.sa -t !{local}
-        
-        touch !{local}/done_bwa_db_!{reference}
+        mv ${PREFIX}.amb ${PREFIX}.ann ${PREFIX}.bwt ${PREFIX}.pac ${PREFIX}.sa -t !{local}
+
+        echo -e '{\n  "reference": "!{reference}",\n  "create_time": "'"$(date +"%Y-%m-%d %H:%M:%S")"'"\n}' > !{local}/done_bwa_db.json
+
     fi 
     '''
 }
