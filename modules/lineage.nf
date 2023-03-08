@@ -1,4 +1,4 @@
-// Return PopPUNK database path
+// Return PopPUNK database path and database name
 // Check if GET_POPPUNK_DB has run successfully on the specific database.
 // If not: clean, download, and unzip to params.poppunk_local
 process GET_POPPUNK_DB {
@@ -14,20 +14,35 @@ process GET_POPPUNK_DB {
     shell:
     '''
     DB_NAME=$(basename !{db_remote} .tar.gz)
+    DB_PATH=!{local}/${DB_NAME}
 
-    if [ ! -f !{local}/$DB_NAME/done_poppunk_$DB_NAME ] || [ ! -f !{local}/$DB_NAME/$DB_NAME.h5 ]; then
-        rm -rf !{local}/$DB_NAME
+    if  [ ! -f ${DB_PATH}/done_poppunk.json ] || \
+        [ ! "!{db_remote}" == "$(jq -r .url ${DB_PATH}/done_poppunk.json)"  ] || \
+        [ ! -f ${DB_PATH}/${DB_NAME}.h5 ] || \
+        [ ! -f ${DB_PATH}/${DB_NAME}.dists.npy ] || \
+        [ ! -f ${DB_PATH}/${DB_NAME}.dists.pkl ] || \
+        [ ! -f ${DB_PATH}/${DB_NAME}_fit.npz ] || \
+        [ ! -f ${DB_PATH}/${DB_NAME}_fit.pkl ] || \
+        [ ! -f ${DB_PATH}/${DB_NAME}_graph.gt ] || \
+        [ ! -f ${DB_PATH}/${DB_NAME}_clusters.csv ] || \
+        [ ! -f ${DB_PATH}/${DB_NAME}.refs ]; then
+        
+        rm -rf ${DB_PATH}
 
         wget !{db_remote} -O poppunk_db.tar.gz
         tar -xzf poppunk_db.tar.gz -C !{local}
         rm poppunk_db.tar.gz
 
-        touch !{local}/$DB_NAME/done_poppunk_$DB_NAME
+        jq -n \
+            --arg url "!{db_remote}" \
+            --arg save_time "$(date +"%Y-%m-%d %H:%M:%S")" \
+            '{"url" : $url, "save_time": $save_time}' > ${DB_PATH}/done_poppunk.json
+
     fi
     '''
 }
 
-// Return PopPUNK External Clusters file path
+// Return PopPUNK External Clusters file name
 // Check if GET_POPPUNK_EXT_CLUSTERS has run successfully on the specific external clusters file.
 // If not: clean and download to params.poppunk_local
 process GET_POPPUNK_EXT_CLUSTERS {
@@ -38,18 +53,26 @@ process GET_POPPUNK_EXT_CLUSTERS {
     path local
 
     output:
-    env EXT_CLUSTERS_FILE
+    env EXT_CLUSTERS_CSV
 
     shell:
     '''
-    EXT_CLUSTERS_FILE=$(basename !{ext_clusters_remote})
+    EXT_CLUSTERS_CSV=$(basename !{ext_clusters_remote})
+    EXT_CLUSTERS_NAME=$(basename !{ext_clusters_remote} .csv)
 
-    if [ ! -f !{local}/$EXT_CLUSTERS_FILE ] || [ ! -f !{local}/done_$EXT_CLUSTERS_FILE ]; then
-        rm -f !{local}/$EXT_CLUSTERS_FILE !{local}/done_$EXT_CLUSTERS_FILE
+    if  [ ! -f !{local}/done_poppunk_ext.json ] || \
+        [ ! "!{ext_clusters_remote}" == "$(jq -r .url !{local}/done_poppunk_ext.json)"  ] || \
+        [ ! -f !{local}/${EXT_CLUSTERS_CSV} ]; then
 
-        wget !{ext_clusters_remote} -O !{local}/$EXT_CLUSTERS_FILE
+        rm -f !{local}/${EXT_CLUSTERS_CSV} !{local}/done_${EXT_CLUSTERS_NAME}.json
 
-        touch !{local}/done_$EXT_CLUSTERS_FILE
+        wget !{ext_clusters_remote} -O !{local}/${EXT_CLUSTERS_CSV}
+
+        jq -n \
+            --arg url "!{ext_clusters_remote}" \
+            --arg save_time "$(date +"%Y-%m-%d %H:%M:%S")" \
+            '{"url" : $url, "save_time": $save_time}' > !{local}/done_poppunk_ext.json
+            
     fi
     '''
 }
