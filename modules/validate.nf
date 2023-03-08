@@ -137,7 +137,7 @@ def validate(params) {
                     |Unknown value type \"${valueType}\"
                     |Please submit an issue at \"https://github.com/HarryHung/gps-unified-pipeline/issues\"}
                     """.stripMargin())
-                System.exit(0)
+                System.exit(1)
         }
     }
 
@@ -156,6 +156,6 @@ def validate(params) {
             }
         }
 
-        System.exit(0)
+        System.exit(1)
     }
 }
