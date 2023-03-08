@@ -7,6 +7,7 @@ process GET_SEROBA_DB {
     input:
     val remote
     path local
+    val kmer
 
     output:
     env CREATE_DB, emit: create_db
@@ -14,7 +15,9 @@ process GET_SEROBA_DB {
     shell:
     '''
     # Assume up-to-date if done_seroba exists and the host cannot be resolved (often means the Internet is not available)
-    if  [ ! -f !{local}/done_seroba ] || \
+    if  [ ! -f !{local}/done_seroba.json ] || \
+        [ ! "$(grep 'git' !{local}/done_seroba.json | sed -r 's/.+: "(.*)",/\\1/')" == "!{remote}" ] || \
+        [ ! "$(grep 'kmer' !{local}/done_seroba.json | sed -r 's/.+: "(.*)",/\\1/')" == "!{kmer}" ] || \
         !((git -C !{local} pull || echo 'Already up-to-date') | grep -q 'Already up[- ]to[- ]date'); then
 
         rm -rf !{local}/{,.[!.],..?}*
@@ -36,9 +39,10 @@ process CREATE_SEROBA_DB {
     label 'seroba_container'
 
     input:
+    val remote
     path seroba_dir
     val create_db
-    val seroba_kmer
+    val kmer
 
     output:
     tuple path(seroba_dir), env(DATABASE)
@@ -49,8 +53,9 @@ process CREATE_SEROBA_DB {
 
     if [ !{create_db} = true ]; then
 
-        seroba createDBs !{seroba_dir}/${DATABASE}/ !{seroba_kmer}
-        touch !{seroba_dir}/done_seroba
+        seroba createDBs !{seroba_dir}/${DATABASE}/ !{kmer}
+
+        echo -e '{\n  "git": "!{remote}",\n  "kmer": "!{kmer}",\n  "create_time": "'"$(date +"%Y-%m-%d %H:%M:%S")"'"\n}' > !{seroba_dir}/done_seroba.json
 
     fi
     '''
