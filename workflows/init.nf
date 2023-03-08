@@ -16,7 +16,7 @@ workflow INIT {
 
     // Check SeroBA Databases, clone and rebuild if necessary
     GET_SEROBA_DB(params.seroba_remote, params.seroba_local)
-    CREATE_SEROBA_DB(params.seroba_local, GET_SEROBA_DB.out.create_db)
+    CREATE_SEROBA_DB(params.seroba_local, GET_SEROBA_DB.out.create_db, params.seroba_kmer)
 
     // Check to PopPUNK Database and External Clusters, download if necessary
     GET_POPPUNK_DB(params.poppunk_db_remote, params.poppunk_local)

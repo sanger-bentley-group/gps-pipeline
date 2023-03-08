@@ -8,6 +8,7 @@ validParams = [
     assembler: "assembler",
     seroba_remote: "url_git",
     seroba_local: "path",
+    seroba_kmer: "int",
     kraken2_db_remote: "url_targz",
     kraken2_db_local: "path",
     kraken2_memory_mapping: "boolean",

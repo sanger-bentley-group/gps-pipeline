@@ -79,6 +79,7 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | `--assembler` | `"shovill"` or `"unicycler"`<br />(Default: `"shovill"`)| SPAdes Assembler to assembly the reads. |
   | `--seroba_remote` | Any valid URL to a Git remote repository<br />(Default: [SeroBA GitHub Repo](https://github.com/sanger-pathogens/seroba.git))| URL to a SeroBA Git remote repository. |
   | `--seroba_local` | Any valid path<br />(Default: `"$projectDir/bin/seroba"`) | Path to the directory where SeroBA local repository should be saved to. |
+  | `--seroba_kmer` | Any integer value<br />(Default: `71`) | Kmer size for creating the KMC database of SeroBA. |
   | `--kraken2_db_remote` | Any valid URL to a Kraken2 database in `.tar.gz` format<br />(Default: [Kraken 2 RefSeq Index Standard-8 (2022-09-12)](https://genome-idx.s3.amazonaws.com/kraken/k2_standard_08gb_20220926.tar.gz)) | URL to a Kraken2 database. |
   | `--kraken2_db_local` | Any valid path<br />(Default: `"$projectDir/bin/kraken"`) | Path to the directory where the remote Kraken2 database should be saved to. |
   | `--kraken2_memory_mapping` | `true` or `false`<br />(Default: `true`) | Using the memory mapping option of Kraken2 or not.<br />`true` means not loading the database into RAM, suitable for memory-limited or fast storage environments. |
