@@ -15,14 +15,23 @@ process GET_KRAKEN_DB {
     '''
     DB_NAME=$(basename !{remote})
 
-    if [ ! -f !{local}/done_kraken_${DB_NAME} ] || [ ! -f !{local}/hash.k2d ]; then
+    if  [ ! -f !{local}/done_kraken.json ] || \
+        [ ! "!{remote}" == "$(jq -r .url !{local}/done_kraken.json)"  ] || \
+        [ ! -f !{local}/hash.k2d ] || \
+        [ ! -f !{local}/opts.k2d ] || \
+        [ ! -f !{local}/taxo.k2d ]; then
+
         rm -rf !{local}/{,.[!.],..?}*
 
         wget !{remote} -O kraken_db.tar.gz
         tar -xzf kraken_db.tar.gz -C !{local}
         rm -f kraken_db.tar.gz
 
-        touch !{local}/done_kraken_${DB_NAME}
+        jq -n \
+            --arg url "!{remote}" \
+            --arg save_time "$(date +"%Y-%m-%d %H:%M:%S")" \
+            '{"url" : $url, "save_time": $save_time}' > !{local}/done_kraken.json
+
     fi 
     '''
 }
@@ -66,7 +75,7 @@ process TAXONOMY_QC {
     '''
     PERCENTAGE=$(awk -F"\t" '$4 ~ /^S$/ && $6 ~ /Streptococcus pneumoniae$/ { gsub(/^[ \t]+/, "", $1); printf "%.2f", $1 }' !{kraken_report})
 
-    if [ -z "${PERCENTAGE}" ]; then
+    if [ -z "$PERCENTAGE" ]; then
         PERCENTAGE="0.00"
     fi
 
