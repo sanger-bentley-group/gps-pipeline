@@ -14,25 +14,31 @@ process GET_SEROBA_DB {
     shell:
     '''
     # Assume up-to-date if done_seroba exists and the host cannot be resolved (often means the Internet is not available)
-    if [ ! -f !{local}/done_seroba ] || !((git -C !{local} pull || echo 'Already up-to-date') | grep -q 'Already up[- ]to[- ]date'); then
+    if  [ ! -f !{local}/done_seroba ] || \
+        !((git -C !{local} pull || echo 'Already up-to-date') | grep -q 'Already up[- ]to[- ]date'); then
+
         rm -rf !{local}/{,.[!.],..?}*
         git clone !{remote} !{local}
 
         CREATE_DB=true
+
     else
+
         CREATE_DB=false
+    
     fi
     '''
 }
 
 // Return SeroBA databases path
-// If create_db == true: re-create kmc and ariba databases
+// If create_db == true: re-create KMC and ARIBA databases
 process CREATE_SEROBA_DB {
     label 'seroba_container'
 
     input:
     path seroba_dir
     val create_db
+    val seroba_kmer
 
     output:
     tuple path(seroba_dir), env(DATABASE)
@@ -42,8 +48,10 @@ process CREATE_SEROBA_DB {
     DATABASE=database
 
     if [ !{create_db} = true ]; then
-        seroba createDBs !{seroba_dir}/$DATABASE/ 71
+
+        seroba createDBs !{seroba_dir}/${DATABASE}/ !{seroba_kmer}
         touch !{seroba_dir}/done_seroba
+
     fi
     '''
 }
