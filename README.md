@@ -1,4 +1,5 @@
-# GPS Unified Pipeline
+# GPS Unified Pipeline <!-- omit in toc -->
+
 [![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-22.10.4-23aa62.svg)](https://www.nextflow.io/)
 [![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)
 
@@ -9,24 +10,49 @@ The pipeline is designed to be easy to set up and use, and is suitable for use o
 The development of this pipeline is part of the GPS Project ([Global Pneumococcal Sequencing Project](https://www.pneumogen.net/gps/)). 
 
 &nbsp;
-## Workflow
+# Table of contents <!-- omit in toc -->
+- [Workflow](#workflow)
+- [Usage](#usage)
+  - [Requirement](#requirement)
+  - [Accepted Inputs](#accepted-inputs)
+  - [Setup](#setup)
+  - [Run](#run)
+  - [Resume](#resume)
+  - [Clean Up](#clean-up)
+- [Pipeline Options](#pipeline-options)
+  - [Workflow](#workflow-1)
+  - [Input and Ouput](#input-and-ouput)
+  - [QC Parameters](#qc-parameters)
+  - [Assembly](#assembly)
+  - [Mapping](#mapping)
+  - [Taxonomy](#taxonomy)
+  - [Serotype](#serotype)
+  - [Lineage](#lineage)
+- [Output](#output)
+  - [Output Content](#output-content)
+  - [Details of `summary.csv`](#details-of-summarycsv)
+- [Credits](#credits)
+
+
+&nbsp;
+# Workflow
 ![Workflow](doc/workflow.drawio.svg)
 
 &nbsp;
-## Usage
-### Requirement
+# Usage
+## Requirement
 - A POSIX-compatible system (e.g. Linux, macOS, Windows with [WSL](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux))
 - Java 11 or later (up to 18) ([OpenJDK](https://openjdk.org/)/[Oracle Java](https://www.oracle.com/java/))
 - [Docker](https://www.docker.com/)
 - It is recommended to have at least 16GB of RAM and 100GB of free storage
-### Accepted inputs
+## Accepted Inputs
 - Currently, only Illumina paired-end short reads are supported
 - Each sample is expected to be a pair of raw reads following this file name pattern: 
   - `*_{,R}{1,2}{,_001}.{fq,fastq}{,.gz}` 
     - example 1: `SampleName_R1_001.fastq.gz`, `SampleName_R2_001.fastq.gz`
     - example 2: `SampleName_1.fastq.gz`, `SampleName_2.fastq.gz`
     - example 3: `SampleName_R1.fq`, `SampleName_R2.fq`
-### Setup 
+## Setup 
 1. Clone the repository (if Git is installed on your system)
     ```
     git clone https://github.com/HarryHung/gps-unified-pipeline.git
@@ -44,7 +70,7 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
     ./run_pipeline --init
     ```
 
-### Run
+## Run
 > ⚠️ Docker Desktop / Engine must be running. An Internet connection is required for the first run (if initialisation was not performed).
 - You can run the pipeline without options. It will attempt to get the raw reads from the default location (`input` directory inside the `gps-unified-pipeline` local repository)
   ```
@@ -61,33 +87,56 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   - `9870_5#52` will fail the Taxonomy QC and hence Overall QC, therefore without analysis results
   - `17175_7#59` and `21127_1#156` should pass Overall QC, therefore with analysis results
 
-### Options
-- The table below contains the available options that can be used when you run the pipeline
+## Resume
+- If the pipeline is interrupted mid-run, Nextflow's built-in `-resume` option can be used to resume the pipeline execution instead of starting from scratch again
+- You should use the same command of the original run, only add `-resume` at the end (i.e. all pipeline options should be identical) 
+  > ℹ️ Nextflow options only have one leading `-`, instead of `--` of pipeline options
+  ```
+  # original command
+  ./run_pipeline --reads /path/to/raw-reads-directory
+
+  # command to resume the pipeline execution
+  ./run_pipeline --reads /path/to/raw-reads-directory -resume
+  ```
+
+## Clean Up
+- During the run of the pipeline, Nextflow generates a considerable amount of intermediate files
+- If the run has been completed and you do not intend to use the `-resume` option, you can remove the intermediate files by one of following two ways:
+  - Manual removal - remove the `work` directory within the `gps-unified-pipeline` local repository
+    ```
+    rm -rf work
+    ```
+  - `nextflow clean` command - use this built-in command to clean up cache and work directories  (default: the latest run only)
+    ```
+    ./nextflow clean
+    ```
+    For options of `nextflow clean`, refer to the [Nextflow documentation](https://www.nextflow.io/docs/latest/cli.html#clean)
+    
+&nbsp;
+# Pipeline Options
+- The tables below contains the available options that can be used when you run the pipeline
 - Usage:
   ```
   ./run_pipeline [option] [value]
   ```
-> ℹ️ `$projectDir` is the directory where the `gps-unified-pipeline` local repository is stored
+> ℹ️ `$projectDir` is the directory where the `gps-unified-pipeline` local repository is stored, it is a [Nextflow built-in implicit variables](https://www.nextflow.io/docs/latest/script.html?highlight=projectdir#implicit-variables).
 
+## Workflow
+  | Option | Values | Description |
+  | --- | ---| --- |
+  | `--init` | `true` or `false`<br />(Default: `false`) | Use alternative workflow for initialisation.<br />Can be enabled by including `--init` without value. |
+  | `--version` | `true` or `false`<br />(Default: `false`)| Use alternative workflow for getting versions of pipeline and tools.<br />Can be enabled by including `--version` without value. |
+  | `--help` | `true` or `false`<br />(Default: `false`)| Show help message.<br />Can be enabled by including `--help` without value. |
+
+## Input and Ouput
   | Option | Values | Description |
   | --- | ---| --- |
   | `--reads` | Any valid path<br />(Default: `"$projectDir/input"`) | Path to the input directory that contains the reads to be processed. |
   | `--output` | Any valid path<br />(Default: `"$projectDir/output"`)| Path to the output directory that save the results. |
-  | `--init` | `true` or `false`<br />(Default: `false`) | Use alternative workflow for initialisation.<br />Can be enabled by including `--init` without value. |
-  | `--version` | `true` or `false`<br />(Default: `false`)| Use alternative workflow for getting versions of pipeline and tools.<br />Can be enabled by including `--version` without value. |
-  | `--help` | `true` or `false`<br />(Default: `false`)| Show help message.<br />Can be enabled by including `--help` without value. |
-  | `--assembler` | `"shovill"` or `"unicycler"`<br />(Default: `"shovill"`)| SPAdes Assembler to assembly the reads. |
-  | `--seroba_remote` | Any valid URL to a Git remote repository<br />(Default: [SeroBA GitHub Repo](https://github.com/sanger-pathogens/seroba.git))| URL to a SeroBA Git remote repository. |
-  | `--seroba_local` | Any valid path<br />(Default: `"$projectDir/bin/seroba"`) | Path to the directory where SeroBA local repository should be saved to. |
-  | `--seroba_kmer` | Any integer value<br />(Default: `71`) | Kmer size for creating the KMC database of SeroBA. |
-  | `--kraken2_db_remote` | Any valid URL to a Kraken2 database in `.tar.gz` format<br />(Default: [Kraken 2 RefSeq Index Standard-8 (2022-09-12)](https://genome-idx.s3.amazonaws.com/kraken/k2_standard_08gb_20220926.tar.gz)) | URL to a Kraken2 database. |
-  | `--kraken2_db_local` | Any valid path<br />(Default: `"$projectDir/bin/kraken"`) | Path to the directory where the remote Kraken2 database should be saved to. |
-  | `--kraken2_memory_mapping` | `true` or `false`<br />(Default: `true`) | Using the memory mapping option of Kraken2 or not.<br />`true` means not loading the database into RAM, suitable for memory-limited or fast storage environments. |
-  | `--ref_genome` | Any valid path to a `.fa` or `.fasta` file<br />(Default: `"$projectDir/data/ATCC_700669_v1.fa"`) | Path to the reference genome for mapping. |
-  | `--ref_genome_bwa_db_local` | Any valid path<br />(Default: `"$projectDir/bin/bwa_ref_db"`) | Path to the directory where the reference genome FM-index database for BWA should be saved to. |
-  | `--poppunk_db_remote` | Any valid URL to a PopPUNK database in `.tar.gz` format<br />(Default: [GPS v6](https://gps-project.cog.sanger.ac.uk/GPS_v6.tar.gz)) | URL to a PopPUNK database. |
-  | `--poppunk_ext_remote` | Any valid URL to a PopPUNK external clusters file in `.csv` format<br />(Default: [GPS v6 GPSC Designation](https://www.pneumogen.net/gps/GPS_v6_external_clusters.csv)) | URL to a PopPUNK external clusters file. |
-  | `--poppunk_local` | Any valid path<br />(Default: `"$projectDir/bin/poppunk"`) | Path to the directory where the remote PopPUNK database and external clusters file should be saved to. |
+
+## QC Parameters
+  | Option | Values | Description |
+  | --- | ---| --- |
   | `--spneumo_percentage` | Any integer or float value<br />(Default: `60.00`) | Minimum *S. pneumoniae* percentage in reads to pass Taxonomy QC. |
   | `--ref_coverage` | Any integer or float value<br />(Default: `60.00`) | Minimum reference coverage percentage by the reads to pass Mapping QC. |
   | `--het_snp_site` | Any integer value<br />(Default: `220`) | Maximum non-cluster heterozygous SNP (Het-SNP) site count to pass Mapping QC. |
@@ -95,19 +144,56 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | `--length_low` | Any integer value<br />(Default: `1900000`) | Minimum assembly length to pass Assembly QC. |
   | `--length_high` | Any integer value<br />(Default: `2300000`) | Maximum assembly length to pass Assembly QC. |
   | `--depth` | Any integer or float value<br />(Default: `20.00`) | Minimum sequencing depth to pass Assembly QC. |
+  
+## Assembly
+  | Option | Values | Description |
+  | --- | ---| --- |
+  | `--assembler` | `"shovill"` or `"unicycler"`<br />(Default: `"shovill"`)| SPAdes Assembler to assembly the reads. |
 
-### Output
+## Mapping
+  | Option | Values | Description |
+  | --- | ---| --- |
+  | `--ref_genome` | Any valid path to a `.fa` or `.fasta` file<br />(Default: `"$projectDir/data/ATCC_700669_v1.fa"`) | Path to the reference genome for mapping. |
+  | `--ref_genome_bwa_db_local` | Any valid path<br />(Default: `"$projectDir/bin/bwa_ref_db"`) | Path to the directory where the reference genome FM-index database for BWA should be saved to. |
+
+## Taxonomy 
+  | Option | Values | Description |
+  | --- | ---| --- |
+  | `--kraken2_db_remote` | Any valid URL to a Kraken2 database in `.tar.gz` format<br />(Default: [Kraken 2 RefSeq Index Standard-8 (2022-09-12)](https://genome-idx.s3.amazonaws.com/kraken/k2_standard_08gb_20220926.tar.gz)) | URL to a Kraken2 database. |
+  | `--kraken2_db_local` | Any valid path<br />(Default: `"$projectDir/bin/kraken"`) | Path to the directory where the remote Kraken2 database should be saved to. |
+  | `--kraken2_memory_mapping` | `true` or `false`<br />(Default: `true`) | Using the memory mapping option of Kraken2 or not.<br />`true` means not loading the database into RAM, suitable for memory-limited or fast storage environments. |
+
+## Serotype
+  | Option | Values | Description |
+  | --- | ---| --- |
+  | `--seroba_remote` | Any valid URL to a Git remote repository<br />(Default: [SeroBA GitHub Repo](https://github.com/sanger-pathogens/seroba.git))| URL to a SeroBA Git remote repository. |
+  | `--seroba_local` | Any valid path<br />(Default: `"$projectDir/bin/seroba"`) | Path to the directory where SeroBA local repository should be saved to. |
+  | `--seroba_kmer` | Any integer value<br />(Default: `71`) | Kmer size for creating the KMC database of SeroBA. |
+
+## Lineage
+  | Option | Values | Description |
+  | --- | ---| --- |
+  | `--poppunk_db_remote` | Any valid URL to a PopPUNK database in `.tar.gz` format<br />(Default: [GPS v6](https://gps-project.cog.sanger.ac.uk/GPS_v6.tar.gz)) | URL to a PopPUNK database. |
+  | `--poppunk_ext_remote` | Any valid URL to a PopPUNK external clusters file in `.csv` format<br />(Default: [GPS v6 GPSC Designation](https://www.pneumogen.net/gps/GPS_v6_external_clusters.csv)) | URL to a PopPUNK external clusters file. |
+  | `--poppunk_local` | Any valid path<br />(Default: `"$projectDir/bin/poppunk"`) | Path to the directory where the remote PopPUNK database and external clusters file should be saved to. |
+
+
+&nbsp;
+# Output
 - By default, the pipeline outputs the results into the `output` directory inside the `gps-unified-pipeline` local repository
 - It can be changed by adding the option `--output`
   ```
   ./run_pipeline --output /path/to/output-directory
   ```
+## Output Content  
 - The following directories and files are output into the output directory
   | Directory / File | Description |
   | --- | ---|
   | `assemblies` | This directory contains all assemblies (`.fasta`) generated by the pipeline |
   | `summary.csv` | This file contains all the information generated by the pipeline on each sample |
   | `info.txt` | This file contains information regarding the pipeline and parameters of the run |
+
+## Details of `summary.csv`
 - The following fields can be found in the output `summary.csv`
   | Field | Type | Description |
   | --- | --- | --- |
@@ -173,7 +259,7 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | `SXT_Determinant` | Other AMR | Known determinants that inferred the SXT resistance |
 
 &nbsp;
-## Credits
+# Credits
 This project uses open-source components. You can find the homepage or source code of their open-source projects along with license information below. I acknowledge and am grateful to these developers for their contributions to open source.
 
 [AMRsearch](https://github.com/pathogenwatch-oss/amr-search)
