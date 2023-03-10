@@ -1,4 +1,4 @@
-include { IMAGES; COMBINE_INFO; PARSE; PRINT; SAVE; GIT_VERSION; PYTHON_VERSION; FASTP_VERSION; UNICYCLER_VERSION; SHOVILL_VERSION; QUAST_VERSION; BWA_VERSION; SAMTOOLS_VERSION; BCFTOOLS_VERSION; POPPUNK_VERSION; MLST_VERSION; KRAKEN2_VERSION; SEROBA_VERSION } from "$projectDir/modules/info"
+include { IMAGES; DATABASES; COMBINE_INFO; PARSE; PRINT; SAVE; GIT_VERSION; PYTHON_VERSION; FASTP_VERSION; UNICYCLER_VERSION; SHOVILL_VERSION; QUAST_VERSION; BWA_VERSION; SAMTOOLS_VERSION; BCFTOOLS_VERSION; POPPUNK_VERSION; MLST_VERSION; KRAKEN2_VERSION; SEROBA_VERSION } from "$projectDir/modules/info"
 
 // Alternative workflow that prints versions of pipeline and tools
 workflow PRINT_VERSION {
@@ -27,6 +27,13 @@ workflow GET_VERSION {
     main:
         IMAGES(Channel.fromPath( "${workflow.configFiles[0]}" ))
 
+        DATABASES(
+            params.ref_genome_bwa_db_local,
+            params.kraken2_db_local,
+            params.seroba_local,
+            params.poppunk_local
+        )
+
         nextflow_version = "$nextflow.version"
 
         GIT_VERSION()
@@ -46,6 +53,7 @@ workflow GET_VERSION {
         COMBINE_INFO(
             pipeline_version,
             nextflow_version,
+            DATABASES.out.json,
             IMAGES.out.json,
             GIT_VERSION.out,
             PYTHON_VERSION.out,
