@@ -12,6 +12,7 @@ workflow PRINT_VERSION {
 // Sub-workflow of PIPELINE workflow the save versions of pipeline and tools, and QC parameters to info.txt at output dir
 workflow SAVE_INFO {
     take: 
+        pipeline_completed
         pipeline_version
 
     main:

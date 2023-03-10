@@ -12,6 +12,7 @@ include { PBP_RESISTANCE; GET_PBP_RESISTANCE; OTHER_RESISTANCE; GET_OTHER_RESIST
 
 // Main pipeline workflow
 workflow PIPELINE {
+    main:
     // Get path to prefix of Reference Genome BWA Database, generate from assembly if necessary
     ref_genome_bwa_db_prefix = GET_REF_GENOME_BWA_DB_PREFIX(params.ref_genome, params.ref_genome_bwa_db_local)
 
@@ -180,4 +181,7 @@ workflow PIPELINE {
         sort: { it -> it.split(",")[0] },
         newLine: true
     )
+
+    emit: 
+    completed = Channel.value('completed')
 }
