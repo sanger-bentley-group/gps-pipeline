@@ -182,6 +182,14 @@ workflow PIPELINE {
         newLine: true
     )
 
+    // Pass to SAVE_INFO sub-workflow
+    DATABASES_INFO = ref_genome_bwa_db_prefix.map { it -> it[0]}
+                .merge(kraken2_db)
+                .merge(seroba_db.map {it -> it[0]})
+                .merge(poppunk_db.map {it -> it[0]})
+                .merge(poppunk_ext_clusters)
+
     emit: 
-    completed = Channel.value('completed')
+    databases_info = DATABASES_INFO
+    
 }
