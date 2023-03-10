@@ -22,7 +22,7 @@ def helpMessage() {
         |--reads [PATH]    Path to the input directory that contains the reads to be processed
         |--output [PATH]   Path to the output directory that save the results
         |--init          Alternative workflow for initialisation
-        |--version       Alternative workflow for getting versions of pipeline and tools
+        |--version       Alternative workflow for getting versions of pipeline, tools and databases
         |
         |For all available options, please refer to README.md
         """.stripMargin()
@@ -42,7 +42,7 @@ def workflowSelectMessage(selectedWorkflow) {
             message = "The alternative workflow for initialisation was selected."
             break
         case 'version':
-            message = "The alternative workflow for getting versions of pipeline and tools was selected."
+            message = "The alternative workflow for getting versions of pipeline, tools and databases was selected."
             break
     }
 
@@ -91,7 +91,7 @@ def endMessage(selectedWorkflow) {
                 |All the version information is printed above.
                 """.stripMargin()
             failMessage = """
-                |Failed to get version information on all tools.
+                |Failed to get version information on pipeline, tools or databases.
                 |If you think it is caused by a bug, submit an issue at \"https://github.com/HarryHung/gps-unified-pipeline/issues\"
                 """.stripMargin()
             break
