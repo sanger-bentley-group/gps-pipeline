@@ -20,7 +20,7 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   - [Resume](#resume)
   - [Clean Up](#clean-up)
 - [Pipeline Options](#pipeline-options)
-  - [Workflow](#workflow-1)
+  - [Alternative Workflows](#alternative-workflows)
   - [Input and Ouput](#input-and-ouput)
   - [QC Parameters](#qc-parameters)
   - [Assembly](#assembly)
@@ -119,13 +119,14 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   ```
   ./run_pipeline [option] [value]
   ```
+- To permanently change the value of an option, edit the `nextflow.config` file inside the `gps-unified-pipeline` local repository.
 > ℹ️ `$projectDir` is the directory where the `gps-unified-pipeline` local repository is stored, it is a [Nextflow built-in implicit variables](https://www.nextflow.io/docs/latest/script.html?highlight=projectdir#implicit-variables).
 
-## Workflow
+## Alternative Workflows
   | Option | Values | Description |
   | --- | ---| --- |
   | `--init` | `true` or `false`<br />(Default: `false`) | Use alternative workflow for initialisation.<br />Can be enabled by including `--init` without value. |
-  | `--version` | `true` or `false`<br />(Default: `false`)| Use alternative workflow for getting versions of pipeline and tools.<br />Can be enabled by including `--version` without value. |
+  | `--version` | `true` or `false`<br />(Default: `false`)| Use alternative workflow for getting versions of pipeline, tools and databases.<br />Can be enabled by including `--version` without value. |
   | `--help` | `true` or `false`<br />(Default: `false`)| Show help message.<br />Can be enabled by including `--help` without value. |
 
 ## Input and Ouput
