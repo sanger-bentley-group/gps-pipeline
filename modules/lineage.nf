@@ -16,8 +16,8 @@ process GET_POPPUNK_DB {
     DB_NAME=$(basename !{db_remote} .tar.gz)
     DB_PATH=!{local}/${DB_NAME}
 
-    if  [ ! -f ${DB_PATH}/done_poppunk.json ] || \
-        [ ! "!{db_remote}" == "$(jq -r .url ${DB_PATH}/done_poppunk.json)"  ] || \
+    if  [ ! -f !{local}/done_poppunk.json ] || \
+        [ ! "!{db_remote}" == "$(jq -r .url !{local}/done_poppunk.json)"  ] || \
         [ ! -f ${DB_PATH}/${DB_NAME}.h5 ] || \
         [ ! -f ${DB_PATH}/${DB_NAME}.dists.npy ] || \
         [ ! -f ${DB_PATH}/${DB_NAME}.dists.pkl ] || \
@@ -27,7 +27,8 @@ process GET_POPPUNK_DB {
         [ ! -f ${DB_PATH}/${DB_NAME}_clusters.csv ] || \
         [ ! -f ${DB_PATH}/${DB_NAME}.refs ]; then
         
-        rm -rf ${DB_PATH}
+        rm -rf !{local}/done_poppunk.json
+        rm -rf !{local}/*/
 
         wget !{db_remote} -O poppunk_db.tar.gz
         tar -xzf poppunk_db.tar.gz -C !{local}
@@ -36,7 +37,7 @@ process GET_POPPUNK_DB {
         jq -n \
             --arg url "!{db_remote}" \
             --arg save_time "$(date +"%Y-%m-%d %H:%M:%S")" \
-            '{"url" : $url, "save_time": $save_time}' > ${DB_PATH}/done_poppunk.json
+            '{"url" : $url, "save_time": $save_time}' > !{local}/done_poppunk.json
 
     fi
     '''
