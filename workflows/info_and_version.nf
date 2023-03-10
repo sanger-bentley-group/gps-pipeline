@@ -1,4 +1,4 @@
-include { IMAGES; DATABASES; COMBINE_INFO; PARSE; PRINT; SAVE; GIT_VERSION; PYTHON_VERSION; FASTP_VERSION; UNICYCLER_VERSION; SHOVILL_VERSION; QUAST_VERSION; BWA_VERSION; SAMTOOLS_VERSION; BCFTOOLS_VERSION; POPPUNK_VERSION; MLST_VERSION; KRAKEN2_VERSION; SEROBA_VERSION } from "$projectDir/modules/info"
+include { IMAGES; DATABASES; TOOLS; COMBINE_INFO; PARSE; PRINT; SAVE; GIT_VERSION; PYTHON_VERSION; FASTP_VERSION; UNICYCLER_VERSION; SHOVILL_VERSION; QUAST_VERSION; BWA_VERSION; SAMTOOLS_VERSION; BCFTOOLS_VERSION; POPPUNK_VERSION; MLST_VERSION; KRAKEN2_VERSION; SEROBA_VERSION } from "$projectDir/modules/info"
 
 // Alternative workflow that prints versions of pipeline and tools
 workflow PRINT_VERSION {
@@ -69,11 +69,7 @@ workflow GET_VERSION {
         KRAKEN2_VERSION()
         SEROBA_VERSION()
 
-        COMBINE_INFO(
-            pipeline_version,
-            nextflow_version,
-            DATABASES.out.json,
-            IMAGES.out.json,
+        TOOLS(
             GIT_VERSION.out,
             PYTHON_VERSION.out,
             FASTP_VERSION.out,
@@ -87,6 +83,14 @@ workflow GET_VERSION {
             MLST_VERSION.out,
             KRAKEN2_VERSION.out,
             SEROBA_VERSION.out
+        )
+
+        COMBINE_INFO(
+            pipeline_version,
+            nextflow_version,
+            DATABASES.out.json,
+            IMAGES.out.json,
+            TOOLS.out.json
         )
     
     emit:
