@@ -6,32 +6,51 @@ workflow PRINT_VERSION {
         pipeline_version
 
     main:
-       GET_VERSION(pipeline_version) | PARSE | PRINT
+        GET_VERSION(
+            params.ref_genome_bwa_db_local,
+            params.kraken2_db_local,params.seroba_local,
+            params.poppunk_local,
+            pipeline_version
+        ) \
+        | PARSE \
+        | PRINT
 }
 
 // Sub-workflow of PIPELINE workflow the save versions of pipeline and tools, and QC parameters to info.txt at output dir
 workflow SAVE_INFO {
-    take: 
-        pipeline_completed
+    take:
+        databases_info
         pipeline_version
 
     main:
-       GET_VERSION(pipeline_version) | PARSE | SAVE
+       GET_VERSION(
+            databases_info.map{it -> it[0]},
+            databases_info.map{it -> it[1]},
+            databases_info.map{it -> it[2]},
+            databases_info.map{it -> it[3]},
+            pipeline_version
+        ) \
+       | PARSE \
+       | SAVE
 }
 
 // Sub-workflow for generating a json that contains versions of pipeline and tools
 workflow GET_VERSION {
-    take: 
+    take:
+        bwa_db_path
+        kraken2_db_path
+        seroba_db_path
+        poppunk_db_path
         pipeline_version
 
     main:
         IMAGES(Channel.fromPath( "${workflow.configFiles[0]}" ))
 
         DATABASES(
-            params.ref_genome_bwa_db_local,
-            params.kraken2_db_local,
-            params.seroba_local,
-            params.poppunk_local
+            bwa_db_path,
+            kraken2_db_path,
+            seroba_db_path,
+            poppunk_db_path
         )
 
         nextflow_version = "$nextflow.version"
