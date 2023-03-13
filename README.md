@@ -155,20 +155,20 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | Option | Values | Description |
   | --- | ---| --- |
   | `--ref_genome` | Any valid path to a `.fa` or `.fasta` file<br />(Default: `"$projectDir/data/ATCC_700669_v1.fa"`) | Path to the reference genome for mapping. |
-  | `--ref_genome_bwa_db_local` | Any valid path<br />(Default: `"$projectDir/bin/bwa_ref_db"`) | Path to the directory where the reference genome FM-index database for BWA should be saved to. |
+  | `--ref_genome_bwa_db_local` | Any valid path<br />(Default: `"$projectDir/databases/bwa_ref_db"`) | Path to the directory where the reference genome FM-index database for BWA should be saved to. |
 
 ## Taxonomy 
   | Option | Values | Description |
   | --- | ---| --- |
   | `--kraken2_db_remote` | Any valid URL to a Kraken2 database in `.tar.gz` format<br />(Default: [Kraken 2 RefSeq Index Standard-8 (2022-09-12)](https://genome-idx.s3.amazonaws.com/kraken/k2_standard_08gb_20220926.tar.gz)) | URL to a Kraken2 database. |
-  | `--kraken2_db_local` | Any valid path<br />(Default: `"$projectDir/bin/kraken"`) | Path to the directory where the remote Kraken2 database should be saved to. |
+  | `--kraken2_db_local` | Any valid path<br />(Default: `"$projectDir/databases/kraken"`) | Path to the directory where the remote Kraken2 database should be saved to. |
   | `--kraken2_memory_mapping` | `true` or `false`<br />(Default: `true`) | Using the memory mapping option of Kraken2 or not.<br />`true` means not loading the database into RAM, suitable for memory-limited or fast storage environments. |
 
 ## Serotype
   | Option | Values | Description |
   | --- | ---| --- |
   | `--seroba_remote` | Any valid URL to a Git remote repository<br />(Default: [SeroBA GitHub Repo](https://github.com/sanger-pathogens/seroba.git))| URL to a SeroBA Git remote repository. |
-  | `--seroba_local` | Any valid path<br />(Default: `"$projectDir/bin/seroba"`) | Path to the directory where SeroBA local repository should be saved to. |
+  | `--seroba_local` | Any valid path<br />(Default: `"$projectDir/databases/seroba"`) | Path to the directory where SeroBA local repository should be saved to. |
   | `--seroba_kmer` | Any integer value<br />(Default: `71`) | Kmer size for creating the KMC database of SeroBA. |
 
 ## Lineage
@@ -176,7 +176,7 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | --- | ---| --- |
   | `--poppunk_db_remote` | Any valid URL to a PopPUNK database in `.tar.gz` format<br />(Default: [GPS v6](https://gps-project.cog.sanger.ac.uk/GPS_v6.tar.gz)) | URL to a PopPUNK database. |
   | `--poppunk_ext_remote` | Any valid URL to a PopPUNK external clusters file in `.csv` format<br />(Default: [GPS v6 GPSC Designation](https://www.pneumogen.net/gps/GPS_v6_external_clusters.csv)) | URL to a PopPUNK external clusters file. |
-  | `--poppunk_local` | Any valid path<br />(Default: `"$projectDir/bin/poppunk"`) | Path to the directory where the remote PopPUNK database and external clusters file should be saved to. |
+  | `--poppunk_local` | Any valid path<br />(Default: `"$projectDir/databases/poppunk"`) | Path to the directory where the remote PopPUNK database and external clusters file should be saved to. |
 
 
 &nbsp;
