@@ -243,23 +243,25 @@ process PARSE {
         |- Created: ${json.seroba_db.create_time}
         """.stripMargin()
 
+    def get_version = { json[it]['version'] ?: 'no version information available' }
+
     toolText = """\
         |=== Tool Verions ===
-        |Git: ${json.git.version}
-        |Python: ${json.python.version}
-        |fastp: ${json.fastp.version}
-        |Unicycler: ${json.unicycler.version}
-        |Shovill: ${json.shovill.version}
-        |QUAST: ${json.quast.version}
-        |BWA: ${json.bwa.version}
-        |SAMtools: ${json.samtools.version}
-        |BCFtools: ${json.bcftools.version}
-        |PopPUNK: ${json.poppunk.version}
-        |SPN_PBP_AMR: no version information available
-        |AMRSEARCH: no version information available
-        |mlst: ${json.mlst.version}
-        |Kraken 2: ${json.kraken2.version}
-        |SeroBA: ${json.seroba.version}
+        |Git: ${get_version('git')}
+        |Python: ${get_version('python')}
+        |fastp: ${get_version('fastp')}
+        |Unicycler: ${get_version('unicycler')}
+        |Shovill: ${get_version('shovill')}
+        |QUAST: ${get_version('quast')}
+        |BWA: ${get_version('bwa')}
+        |SAMtools: ${get_version('samtools')}
+        |BCFtools: ${get_version('bcftools')}
+        |PopPUNK: ${get_version('poppunk')}
+        |SPN_PBP_AMR:${get_version('spn_pbp_amr')}
+        |AMRSEARCH: ${get_version('amrsearch')}
+        |mlst: ${get_version('mlst')}
+        |Kraken 2: ${get_version('kraken2')}
+        |SeroBA: ${get_version('seroba')}
         """.stripMargin()
     
     imageText = """\
