@@ -316,8 +316,15 @@ process SAVE {
     val imageText
 
     exec:
-    File output_dir = new File("${params.output}")
+    File reads_dir = new File(params.reads)
+    File output_dir = new File(params.output)
     output_dir.mkdirs()
+
+    ioText = """\
+    |=== Input and Output ===
+    |Input Directory: ${reads_dir.getAbsolutePath()}
+    |Output Directory: ${output_dir.getAbsolutePath()}
+    """.stripMargin()
 
     assemblerText = """\
     |=== Selected assembler ===
@@ -342,6 +349,7 @@ process SAVE {
     output.write(
         """\
         |${titleText}
+        |${ioText}
         |${assemblerText}
         |${qcText}
         |${dbText}
