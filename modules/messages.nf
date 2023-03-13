@@ -33,16 +33,27 @@ def helpMessage() {
 // Workflow selection message
 def workflowSelectMessage(selectedWorkflow) {
     String message
+    File reads_dir = new File(params.reads)
+    File output_dir = new File(params.output)
 
     switch(selectedWorkflow){
         case 'pipeline':
-            message = "The main pipeline workflow was selected."
+            message = """
+            |The main pipeline workflow was selected.
+            |
+            |Input Directory: ${reads_dir.getAbsolutePath()}
+            |Output Directory: ${output_dir.getAbsolutePath()}
+            """.stripMargin()
             break
         case 'init':
-            message = "The alternative workflow for initialisation was selected."
+            message = """
+            |The alternative workflow for initialisation was selected.
+            """.stripMargin()
             break
         case 'version':
-            message = "The alternative workflow for getting versions of pipeline, tools and databases was selected."
+            message = """
+            |The alternative workflow for getting versions of pipeline, tools and databases was selected.
+            """.stripMargin()
             break
     }
 
@@ -64,12 +75,13 @@ def workflowSelectMessage(selectedWorkflow) {
 def endMessage(selectedWorkflow) {
     String successMessage
     String failMessage
+    File output_dir = new File(params.output)
 
     switch(selectedWorkflow){
         case 'pipeline':
             successMessage = """
                 |The pipeline has been completed successfully.
-                |Check the outputs at ${params.output}.
+                |Check the outputs at ${output_dir.getAbsolutePath()}.
                 """.stripMargin()
             failMessage = """
                 |The pipeline has failed.
