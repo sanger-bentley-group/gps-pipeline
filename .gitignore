@@ -6,8 +6,8 @@ work
 .nextflow
 .nextflow.log*
 
-# Binaries, data, output
-bin
+# Databases, data, output
+databases
 input
 output
 *.html
