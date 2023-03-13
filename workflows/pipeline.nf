@@ -136,7 +136,7 @@ workflow PIPELINE {
     GET_OTHER_RESISTANCE(OTHER_RESISTANCE.out.json)
     
 
-    // Generate summary.csv by sorted sample_id based on merged Channels 
+    // Generate results.csv by sorted sample_id based on merged Channels 
     // ASSEMBLY_QC.out.detailed_result,
     // MAPPING_QC.out.detailed_result,
     // TAXONOMY_QC.out.detailed_result,
@@ -164,7 +164,7 @@ workflow PIPELINE {
         .map { it -> (it[-1] == null) ? it[0..-2] + ["_"] * 20: it}
     .map { it.join',' }
     .collectFile(
-        name: "summary.csv",
+        name: "results.csv",
         storeDir: "$params.output",
         seed: [
                 "Sample_ID",
