@@ -2,6 +2,8 @@
 process MLST {
     label 'mlst_container'
 
+    tag "$sample_id"
+
     input:
     tuple val(sample_id), path(assembly)
 

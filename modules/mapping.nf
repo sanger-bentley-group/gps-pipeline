@@ -40,6 +40,8 @@ process GET_REF_GENOME_BWA_DB_PREFIX {
 process MAPPING {
     label 'bwa_container'
 
+    tag "$sample_id"
+
     input:
     tuple path(bwa_ref_db_dir), val(prefix)
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
@@ -57,6 +59,8 @@ process MAPPING {
 // Return sorted BAM
 process SAM_TO_SORTED_BAM {
     label 'samtools_container'
+
+    tag "$sample_id"
     
     input:
     tuple val(sample_id), path(sam)
@@ -77,6 +81,8 @@ process SAM_TO_SORTED_BAM {
 // Return reference coverage percentage by the reads
 process REF_COVERAGE {
     label 'samtools_container'
+
+    tag "$sample_id"
     
     input:
     tuple val(sample_id), path(bam)
@@ -94,6 +100,8 @@ process REF_COVERAGE {
 // Return .vcf by calling the SNPs
 process SNP_CALL {
     label 'bcftools_container'
+
+    tag "$sample_id"
     
     input:
     path reference
@@ -112,6 +120,8 @@ process SNP_CALL {
 process HET_SNP_COUNT {
     label 'python_container'
 
+    tag "$sample_id"
+
     input:
     tuple val(sample_id), path(vcf)
 
@@ -127,6 +137,8 @@ process HET_SNP_COUNT {
 // Return overall mapping QC result based on reference coverage and count of Het-SNP sites
 process MAPPING_QC {
     label 'bash_container'
+
+    tag "$sample_id"
 
     input:
     tuple val(sample_id), val(ref_coverage), val(het_snp_count)

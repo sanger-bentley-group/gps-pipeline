@@ -2,6 +2,8 @@
 process PREPROCESS {
     label 'fastp_container'
 
+    tag "$sample_id"
+
     input:
     tuple val(sample_id), path(reads)
 
@@ -18,6 +20,8 @@ process PREPROCESS {
 // Get total base count from fastp.json
 process GET_BASES {
     label 'bash_container'
+
+    tag "$sample_id"
 
     input:
     tuple val(sample_id), path(json)

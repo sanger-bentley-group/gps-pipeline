@@ -65,6 +65,8 @@ process CREATE_SEROBA_DB {
 process SEROTYPE {
     label 'seroba_container'
 
+    tag "$sample_id"
+
     input:
     tuple path(seroba_dir), val(database)
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
