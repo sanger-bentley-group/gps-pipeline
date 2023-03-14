@@ -84,6 +84,8 @@ process GET_POPPUNK_EXT_CLUSTERS {
 process LINEAGE {
     label 'poppunk_container'
 
+    tag "All samples"
+
     input:
     tuple path(poppunk_dir), val(db_name)
     val ext_clusters_file

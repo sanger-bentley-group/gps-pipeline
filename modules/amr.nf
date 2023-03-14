@@ -2,6 +2,8 @@
 process PBP_RESISTANCE {
     label 'spn_pbp_amr_container'
 
+    tag "$sample_id"
+
     input:
     tuple val(sample_id), path(assembly)
 
@@ -20,6 +22,8 @@ process PBP_RESISTANCE {
 // Reported to Nextflow team via issue nextflow-io/nextflow#3553, and a fix will be released with version 23.04.0 in 2023 April (ETA) 
 process GET_PBP_RESISTANCE {
     label 'bash_container'
+
+    tag "$sample_id"
 
     input:
     tuple val(sample_id), path(json)
@@ -64,6 +68,8 @@ process GET_PBP_RESISTANCE {
 process OTHER_RESISTANCE {
     label 'amrsearch_container'
 
+    tag "$sample_id"
+
     input:
     tuple val(sample_id), path(assembly)
 
@@ -79,6 +85,8 @@ process OTHER_RESISTANCE {
 // Extract the results from the result.json file of the AMRsearch
 process GET_OTHER_RESISTANCE {
     label 'bash_container'
+
+    tag "$sample_id"
 
     input:
     tuple val(sample_id), path(json)

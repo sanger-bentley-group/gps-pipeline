@@ -40,6 +40,8 @@ process GET_KRAKEN_DB {
 process TAXONOMY {
     label 'kraken2_container'
 
+    tag "$sample_id"
+
     input:
     path kraken_db
     val kraken2_memory_mapping
@@ -62,6 +64,8 @@ process TAXONOMY {
 // Return Taxonomy QC result based on kraken_report.txt
 process TAXONOMY_QC {
     label 'bash_container'
+
+    tag "$sample_id"
 
     input:
     tuple val(sample_id), path(kraken_report)
