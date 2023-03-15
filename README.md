@@ -137,7 +137,7 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | Option | Values | Description |
   | --- | ---| --- |
   | `--init` | `true` or `false`<br />(Default: `false`) | Use alternative workflow for initialisation, which means downloading all required additional files and Docker images.<br />Can be enabled by including `--init` without value. |
-  | `--version` | `true` or `false`<br />(Default: `false`)| Use alternative workflow for getting versions of pipeline, tools and databases.<br />Can be enabled by including `--version` without value.<br /> (This workflow pulls all required Docker images if they are not yet available locally) |
+  | `--version` | `true` or `false`<br />(Default: `false`)| Use alternative workflow for getting versions of pipeline, tools and databases.<br />Can be enabled by including `--version` without value.<br /> (This workflow pulls some of the required Docker images if they are not yet available locally) |
   | `--help` | `true` or `false`<br />(Default: `false`)| Show help message.<br />Can be enabled by including `--help` without value. |
 
 ## Input and Ouput
