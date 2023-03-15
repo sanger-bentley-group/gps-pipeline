@@ -28,6 +28,15 @@ validParams = [
 
 // Validate whether all provided parameters are valid
 def validate(params) {
+    // Ensure only one or none of the alternative workflows is selected
+    if ([params.help, params.init, params.version].count{ it } > 1) {
+        log.error("""
+            |More than one alternative workflow is selected, please only select one of them
+            |(Only one of --init, --version, --help should be used at one time)
+            """.stripMargin())
+        System.exit(1)
+    }
+
     // Skip validation when help option is used
     if (params.help) {
         return
