@@ -1,0 +1,8 @@
+#! /bin/sh
+
+# Basic wrapper script, clean-up tasks temporary files and log files
+
+pipelineDir=$(dirname -- "$(readlink -f -- "$0")")
+
+rm -rf $pipelineDir/work
+rm -rf $pipelineDir/.nextflow.log*

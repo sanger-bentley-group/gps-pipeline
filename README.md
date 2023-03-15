@@ -101,16 +101,27 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 
 ## Clean Up
 - During the run of the pipeline, Nextflow generates a considerable amount of intermediate files
-- If the run has been completed and you do not intend to use the `-resume` option, you can remove the intermediate files by one of following two ways:
-  - Manual removal - remove the `work` directory within the `gps-unified-pipeline` local repository
+- If the run has been completed and you do not intend to use the `-resume` option, you can remove the intermediate files by one of following three ways:
+  - Run `clean_pipeline` script
+    - It runs the commands in manual removal for you
+    - It removes the `work` directory and log files within the `gps-unified-pipeline` local repository
+    ```
+    ./clean_pipeline
+    ```
+  - Manual removal 
+    - Remove the `work` directory and log files within the `gps-unified-pipeline` local repository
     ```
     rm -rf work
+    rm -rf .nextflow.log*
     ```
-  - `nextflow clean` command - use this built-in command to clean up cache and work directories  (default: the latest run only)
+  - Run `nextflow clean` command
+    - This built-in command clean up cache and work directories
+    - By default, it only clean up the latest run
+    - For details and available options of `nextflow clean`, refer to the [Nextflow documentation](https://www.nextflow.io/docs/latest/cli.html#clean)
     ```
     ./nextflow clean
     ```
-    For options of `nextflow clean`, refer to the [Nextflow documentation](https://www.nextflow.io/docs/latest/cli.html#clean)
+    
     
 &nbsp;
 # Pipeline Options
