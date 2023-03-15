@@ -243,7 +243,13 @@ process PARSE {
         |- Created: ${json.seroba_db.create_time}
         """.stripMargin()
 
-    def get_version = { json[it]['version'] ?: 'no version information available' }
+    def get_version = { 
+        if (json[it] && json[it]['version']) {
+            return json[it]['version']
+        } else {
+            return 'no version information available'
+        }
+    }
 
     toolText = """\
         |=== Tool Verions ===
@@ -256,9 +262,10 @@ process PARSE {
         |BWA: ${get_version('bwa')}
         |SAMtools: ${get_version('samtools')}
         |BCFtools: ${get_version('bcftools')}
+        |Het-SNP Counter: ${get_version('het_snp_count')}
         |PopPUNK: ${get_version('poppunk')}
-        |SPN_PBP_AMR:${get_version('spn_pbp_amr')}
-        |AMRSEARCH: ${get_version('amrsearch')}
+        |CDC PBP AMR Predictor: ${get_version('spn_pbp_amr')}
+        |AMRsearch: ${get_version('amrsearch')}
         |mlst: ${get_version('mlst')}
         |Kraken 2: ${get_version('kraken2')}
         |SeroBA: ${get_version('seroba')}
@@ -277,8 +284,8 @@ process PARSE {
         |SAMtools: ${json.samtools.container}
         |BCFtools: ${json.bcftools.container}
         |PopPUNK: ${json.poppunk.container}
-        |SPN_PBP_AMR: ${json.spn_pbp_amr.container}
-        |AMRSEARCH: ${json.amrsearch.container}
+        |CDC PBP AMR Predictor: ${json.spn_pbp_amr.container}
+        |AMRsearch: ${json.amrsearch.container}
         |mlst: ${json.mlst.container}
         |Kraken 2: ${json.kraken2.container}
         |SeroBA: ${json.seroba.container}
