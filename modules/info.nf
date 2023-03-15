@@ -243,32 +243,41 @@ process PARSE {
         |- Created: ${json.seroba_db.create_time}
         """.stripMargin()
 
-    def get_version = { 
-        if (json[it] && json[it]['version']) {
-            return json[it]['version']
+    def getVersion = { tool ->
+        if (json[tool] && json[tool]['version']) {
+            return json[tool]['version']
         } else {
-            return 'no version information available'
+            return 'no version information'
         }
     }
 
+    // To-do
+    // def tooltextRow = { leftCol, rightCol ->
+    //     ${String.format("║%-25s │ %-25s ║", leftCol, getVersion(rightCol))}
+    // }
+
     toolText = """\
-        |=== Tool Verions ===
-        |Git: ${get_version('git')}
-        |Python: ${get_version('python')}
-        |fastp: ${get_version('fastp')}
-        |Unicycler: ${get_version('unicycler')}
-        |Shovill: ${get_version('shovill')}
-        |QUAST: ${get_version('quast')}
-        |BWA: ${get_version('bwa')}
-        |SAMtools: ${get_version('samtools')}
-        |BCFtools: ${get_version('bcftools')}
-        |Het-SNP Counter: ${get_version('het_snp_count')}
-        |PopPUNK: ${get_version('poppunk')}
-        |CDC PBP AMR Predictor: ${get_version('spn_pbp_amr')}
-        |AMRsearch: ${get_version('amrsearch')}
-        |mlst: ${get_version('mlst')}
-        |Kraken 2: ${get_version('kraken2')}
-        |SeroBA: ${get_version('seroba')}
+        |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Tool Versions ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+        |╔══════════════════════════╤═══════════════════════════╗
+        |${String.format("║%-25s │ %-25s ║", "Tool", "Version")}
+        |╠══════════════════════════╪═══════════════════════════╣
+        |${String.format("║%-25s │ %-25s ║", "Git", getVersion('git'))}
+        |${String.format("║%-25s │ %-25s ║", "Python", getVersion('python'))}
+        |${String.format("║%-25s │ %-25s ║", "fastp", getVersion('fastp'))}
+        |${String.format("║%-25s │ %-25s ║", "Unicycler", getVersion('unicycler'))}
+        |${String.format("║%-25s │ %-25s ║", "Shovill", getVersion('shovill'))}
+        |${String.format("║%-25s │ %-25s ║", "QUAST", getVersion('quast'))}
+        |${String.format("║%-25s │ %-25s ║", "BWA", getVersion('bwa'))}
+        |${String.format("║%-25s │ %-25s ║", "SAMtools", getVersion('samtools'))}
+        |${String.format("║%-25s │ %-25s ║", "BCFtools", getVersion('bcftools'))}
+        |${String.format("║%-25s │ %-25s ║", "Het-SNP Counter", getVersion('het_snp_count'))}
+        |${String.format("║%-25s │ %-25s ║", "PopPUNK", getVersion('poppunk'))}
+        |${String.format("║%-25s │ %-25s ║", "CDC PBP AMR Predictor", getVersion('spn_pbp_amr'))}
+        |${String.format("║%-25s │ %-25s ║", "AMRsearch", getVersion('amrsearch'))}
+        |${String.format("║%-25s │ %-25s ║", "mlst", getVersion('mlst'))}
+        |${String.format("║%-25s │ %-25s ║", "Kraken 2", getVersion('kraken2'))}
+        |${String.format("║%-25s │ %-25s ║", "SeroBA", getVersion('seroba'))}
+        |╚══════════════════════════╧═══════════════════════════╝
         """.stripMargin()
     
     imageText = """\
