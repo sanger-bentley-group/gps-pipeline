@@ -243,6 +243,10 @@ process PARSE {
         |- Created: ${json.seroba_db.create_time}
         """.stripMargin()
 
+    def textRow = { leftSpace, rightSpace, leftContent, rightContent ->
+        String.format("║%-${leftSpace}s │ %-${rightSpace}s ║", leftContent, rightContent)
+    }
+    
     def getVersion = { tool ->
         if (json[tool] && json[tool]['version']) {
             return json[tool]['version']
@@ -251,53 +255,68 @@ process PARSE {
         }
     }
 
-    // To-do
-    // def tooltextRow = { leftCol, rightCol ->
-    //     ${String.format("║%-25s │ %-25s ║", leftCol, getVersion(rightCol))}
-    // }
+    def toolTextRow = { leftContent, rightContent ->
+        textRow(25, 25, leftContent, getVersion(rightContent))
+    }
+
+    def getImage = { tool ->
+        if (json[tool] && json[tool]['container']) {
+            return json[tool]['container']
+        } else {
+            return 'no image information'
+        }
+    }
+
+    def imageTextRow = { leftContent, rightContent ->
+        textRow(25, 40, leftContent, getImage(rightContent))
+    }
 
     toolText = """\
         |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Tool Versions ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
         |╔══════════════════════════╤═══════════════════════════╗
-        |${String.format("║%-25s │ %-25s ║", "Tool", "Version")}
+        |${textRow(25, 25, "Tool", "Version")}
         |╠══════════════════════════╪═══════════════════════════╣
-        |${String.format("║%-25s │ %-25s ║", "Git", getVersion('git'))}
-        |${String.format("║%-25s │ %-25s ║", "Python", getVersion('python'))}
-        |${String.format("║%-25s │ %-25s ║", "fastp", getVersion('fastp'))}
-        |${String.format("║%-25s │ %-25s ║", "Unicycler", getVersion('unicycler'))}
-        |${String.format("║%-25s │ %-25s ║", "Shovill", getVersion('shovill'))}
-        |${String.format("║%-25s │ %-25s ║", "QUAST", getVersion('quast'))}
-        |${String.format("║%-25s │ %-25s ║", "BWA", getVersion('bwa'))}
-        |${String.format("║%-25s │ %-25s ║", "SAMtools", getVersion('samtools'))}
-        |${String.format("║%-25s │ %-25s ║", "BCFtools", getVersion('bcftools'))}
-        |${String.format("║%-25s │ %-25s ║", "Het-SNP Counter", getVersion('het_snp_count'))}
-        |${String.format("║%-25s │ %-25s ║", "PopPUNK", getVersion('poppunk'))}
-        |${String.format("║%-25s │ %-25s ║", "CDC PBP AMR Predictor", getVersion('spn_pbp_amr'))}
-        |${String.format("║%-25s │ %-25s ║", "AMRsearch", getVersion('amrsearch'))}
-        |${String.format("║%-25s │ %-25s ║", "mlst", getVersion('mlst'))}
-        |${String.format("║%-25s │ %-25s ║", "Kraken 2", getVersion('kraken2'))}
-        |${String.format("║%-25s │ %-25s ║", "SeroBA", getVersion('seroba'))}
+        |${toolTextRow("Git", 'git')}
+        |${toolTextRow("Python", 'python')}
+        |${toolTextRow("fastp", 'fastp')}
+        |${toolTextRow("Unicycler", 'unicycler')}
+        |${toolTextRow("Shovill", 'shovill')}
+        |${toolTextRow("QUAST", 'quast')}
+        |${toolTextRow("BWA", 'bwa')}
+        |${toolTextRow("SAMtools", 'samtools')}
+        |${toolTextRow("BCFtools", 'bcftools')}
+        |${toolTextRow("Het-SNP Counter", 'het_snp_count')}
+        |${toolTextRow("PopPUNK", 'poppunk')}
+        |${toolTextRow("CDC PBP AMR Predictor", 'spn_pbp_amr')}
+        |${toolTextRow("AMRsearch", 'amrsearch')}
+        |${toolTextRow("mlst", 'mlst')}
+        |${toolTextRow("Kraken 2", 'kraken2')}
+        |${toolTextRow("SeroBA", 'seroba')}
         |╚══════════════════════════╧═══════════════════════════╝
         """.stripMargin()
     
     imageText = """\
-        |=== Docker Images ===
-        |Bash: ${json.bash.container}
-        |Git: ${json.git.container}
-        |Python: ${json.python.container}
-        |fastp: ${json.fastp.container}
-        |Unicycler: ${json.unicycler.container}
-        |Shovill: ${json.shovill.container}
-        |QUAST: ${json.quast.container}
-        |BWA: ${json.bwa.container}
-        |SAMtools: ${json.samtools.container}
-        |BCFtools: ${json.bcftools.container}
-        |PopPUNK: ${json.poppunk.container}
-        |CDC PBP AMR Predictor: ${json.spn_pbp_amr.container}
-        |AMRsearch: ${json.amrsearch.container}
-        |mlst: ${json.mlst.container}
-        |Kraken 2: ${json.kraken2.container}
-        |SeroBA: ${json.seroba.container}
+        |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Docker Images ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+        |╔══════════════════════════╤══════════════════════════════════════════╗
+        |${textRow(25, 40, "Providing Environment For", "Image")}
+        |╠══════════════════════════╪══════════════════════════════════════════╣
+        |${imageTextRow("Bash", 'bash')}
+        |${imageTextRow("Git", 'git')}
+        |${imageTextRow("Python", 'python')}
+        |${imageTextRow("fastp", 'fastp')}
+        |${imageTextRow("Unicycler", 'unicycler')}
+        |${imageTextRow("Shovill", 'shovill')}
+        |${imageTextRow("QUAST", 'quast')}
+        |${imageTextRow("BWA", 'bwa')}
+        |${imageTextRow("SAMtools", 'samtools')}
+        |${imageTextRow("BCFtools", 'bcftools')}
+        |${imageTextRow("PopPUNK", 'poppunk')}
+        |${imageTextRow("CDC PBP AMR Predictor", 'spn_pbp_amr')}
+        |${imageTextRow("AMRsearch", 'amrsearch')}
+        |${imageTextRow("mlst", 'mlst')}
+        |${imageTextRow("Kraken 2", 'kraken2')}
+        |${imageTextRow("SeroBA", 'seroba')}
+        |╚══════════════════════════╧══════════════════════════════════════════╝
         """.stripMargin()
 }
 
