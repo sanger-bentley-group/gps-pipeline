@@ -26,7 +26,7 @@ process GET_POPPUNK_DB {
         [ ! -f ${DB_PATH}/${DB_NAME}_graph.gt ] || \
         [ ! -f ${DB_PATH}/${DB_NAME}_clusters.csv ] || \
         [ ! -f ${DB_PATH}/${DB_NAME}.refs ]; then
-        
+
         rm -rf !{local}/done_poppunk.json
         rm -rf !{local}/*/
 
@@ -73,7 +73,7 @@ process GET_POPPUNK_EXT_CLUSTERS {
             --arg url "!{ext_clusters_remote}" \
             --arg save_time "$(date +"%Y-%m-%d %H:%M:%S")" \
             '{"url" : $url, "save_time": $save_time}' > !{local}/done_poppunk_ext.json
-            
+
     fi
     '''
 }
@@ -84,7 +84,7 @@ process GET_POPPUNK_EXT_CLUSTERS {
 process LINEAGE {
     label 'poppunk_container'
 
-    tag "All samples"
+    tag 'All samples'
 
     input:
     tuple path(poppunk_dir), val(db_name)
@@ -92,7 +92,7 @@ process LINEAGE {
     path poppunk_qfile
 
     output:
-    path "result.csv", emit: csv
+    path 'result.csv', emit: csv
 
     shell:
     '''

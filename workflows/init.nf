@@ -5,7 +5,6 @@ include { GET_POPPUNK_DB; GET_POPPUNK_EXT_CLUSTERS } from "$projectDir/modules/l
 include { GET_SEROBA_DB; CREATE_SEROBA_DB } from "$projectDir/modules/serotype"
 include { GET_DOCKER_COMPOSE; PULL_IMAGES } from "$projectDir/modules/docker"
 
-
 // Alternative workflow for initialisation only
 workflow INIT {
     // Check Reference Genome BWA Database, generate from assembly if necessary
@@ -23,6 +22,6 @@ workflow INIT {
     GET_POPPUNK_EXT_CLUSTERS(params.poppunk_ext_remote, params.poppunk_local)
 
     // Pull all Docker images mentioned in nextflow.config
-    GET_DOCKER_COMPOSE(Channel.fromPath( "${workflow.configFiles[0]}" ))
+    GET_DOCKER_COMPOSE(Channel.fromPath("${workflow.configFiles[0]}"))
     PULL_IMAGES(GET_DOCKER_COMPOSE.out.compose)
 }

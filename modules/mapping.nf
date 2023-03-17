@@ -3,7 +3,7 @@
 // If not: construct the FM-index database of the reference genome for BWA
 process GET_REF_GENOME_BWA_DB_PREFIX {
     label 'bwa_container'
-    
+
     input:
     path reference
     path local
@@ -14,7 +14,7 @@ process GET_REF_GENOME_BWA_DB_PREFIX {
     shell:
     '''
     PREFIX=ref
-    
+
     if  [ ! -f !{local}/done_bwa_db.json ] || \
         [ ! "$(grep 'reference' !{local}/done_bwa_db.json | sed -r 's/.+: "(.*)",/\\1/')" == "!{reference}" ] || \
         [ ! -f !{local}/${PREFIX}.amb ] || \
@@ -26,12 +26,12 @@ process GET_REF_GENOME_BWA_DB_PREFIX {
         rm -rf !{local}/{,.[!.],..?}*
 
         bwa index -p ${PREFIX} !{reference}
-        
+
         mv ${PREFIX}.amb ${PREFIX}.ann ${PREFIX}.bwt ${PREFIX}.pac ${PREFIX}.sa -t !{local}
 
         echo -e '{\n  "reference": "!{reference}",\n  "create_time": "'"$(date +"%Y-%m-%d %H:%M:%S")"'"\n}' > !{local}/done_bwa_db.json
 
-    fi 
+    fi
     '''
 }
 
@@ -61,7 +61,7 @@ process SAM_TO_SORTED_BAM {
     label 'samtools_container'
 
     tag "$sample_id"
-    
+
     input:
     tuple val(sample_id), path(sam)
 
@@ -83,7 +83,7 @@ process REF_COVERAGE {
     label 'samtools_container'
 
     tag "$sample_id"
-    
+
     input:
     tuple val(sample_id), path(bam)
 
@@ -102,7 +102,7 @@ process SNP_CALL {
     label 'bcftools_container'
 
     tag "$sample_id"
-    
+
     input:
     path reference
     tuple val(sample_id), path(bam)
@@ -153,7 +153,7 @@ process MAPPING_QC {
     '''
     COVERAGE=$(printf %.2f !{ref_coverage})
     HET_SNP=!{het_snp_count}
-    
+
     if (( $(echo "$COVERAGE > !{qc_ref_coverage}" | bc -l) )) && (( $HET_SNP < !{qc_het_snp_site} )); then
         MAPPING_QC="PASS"
     else

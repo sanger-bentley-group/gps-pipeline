@@ -9,7 +9,6 @@ include { GET_SEROBA_DB; CREATE_SEROBA_DB; SEROTYPE } from "$projectDir/modules/
 include { MLST } from "$projectDir/modules/mlst"
 include { PBP_RESISTANCE; GET_PBP_RESISTANCE; OTHER_RESISTANCE; GET_OTHER_RESISTANCE } from "$projectDir/modules/amr"
 
-
 // Main pipeline workflow
 workflow PIPELINE {
     main:
@@ -28,7 +27,7 @@ workflow PIPELINE {
     poppunk_ext_clusters = GET_POPPUNK_EXT_CLUSTERS(params.poppunk_ext_remote, params.poppunk_local)
 
     // Get read pairs into Channel raw_read_pairs_ch
-    raw_read_pairs_ch = Channel.fromFilePairs( "$params.reads/*_{,R}{1,2}{,_001}.{fq,fastq}{,.gz}", checkIfExists: true )
+    raw_read_pairs_ch = Channel.fromFilePairs("$params.reads/*_{,R}{1,2}{,_001}.{fq,fastq}{,.gz}", checkIfExists: true)
 
     // Preprocess read pairs
     // Output into Channels PREPROCESS.out.processed_reads & PREPROCESS.out.json
@@ -36,16 +35,16 @@ workflow PIPELINE {
 
     // From Channel PREPROCESS.out.processed_reads, assemble the preprocess read pairs
     // Output into Channel ASSEMBLY_ch, and hardlink the assemblies to $params.output directory
-    switch(params.assembler){
+    switch (params.assembler) {
         case 'shovill':
             ASSEMBLY_ch = ASSEMBLY_SHOVILL(PREPROCESS.out.processed_reads)
             break
 
-        case "unicycler":
+        case 'unicycler':
             ASSEMBLY_ch = ASSEMBLY_UNICYCLER(PREPROCESS.out.processed_reads)
             break
     }
-    
+
     // From Channel ASSEMBLY_ch, assess assembly quality
     ASSEMBLY_ASSESS(ASSEMBLY_ch)
 
@@ -59,7 +58,7 @@ workflow PIPELINE {
         params.length_high,
         params.depth
     )
-    
+
     // From Channel PREPROCESS.out.processed_reads map reads to reference
     // Output into Channel MAPPING.out.sam
     MAPPING(ref_genome_bwa_db_prefix, PREPROCESS.out.processed_reads)
@@ -100,19 +99,19 @@ workflow PIPELINE {
 
     // From Channel PREPROCESS.out.processed_reads, only output reads of samples passed overall QC based on Channel OVERALL_QC.out.result
     QC_PASSED_READS_ch = OVERALL_QC.out.result.join(PREPROCESS.out.processed_reads, failOnDuplicate: true, failOnMismatch: true)
-                        .filter { it[1] == "PASS" }
-                        .map { it -> it[0, 2..-1] }
+                        .filter { it[1] == 'PASS' }
+                        .map { it[0, 2..-1] }
 
     // From Channel ASSEMBLY_ch, only output assemblies of samples passed overall QC based on Channel OVERALL_QC.out.result
     QC_PASSED_ASSEMBLIES_ch = OVERALL_QC.out.result.join(ASSEMBLY_ch, failOnDuplicate: true, failOnMismatch: true)
-                            .filter { it[1] == "PASS" }
-                            .map { it -> it[0, 2..-1] }
+                            .filter { it[1] == 'PASS' }
+                            .map { it[0, 2..-1] }
 
-    // From Channel QC_PASSED_ASSEMBLIES_ch, generate PopPUNK query file containing assemblies of samples passed overall QC 
+    // From Channel QC_PASSED_ASSEMBLIES_ch, generate PopPUNK query file containing assemblies of samples passed overall QC
     // Output into POPPUNK_QFILE
     POPPUNK_QFILE = QC_PASSED_ASSEMBLIES_ch
-                    .map{ it.join'\t'}
-                    .collectFile(name: "qfile.txt", newLine: true)
+                    .map { it.join'\t' }
+                    .collectFile(name: 'qfile.txt', newLine: true)
 
     // From generated POPPUNK_QFILE, assign GPSC to samples passed overall QC
     LINEAGE(poppunk_db, poppunk_ext_clusters, POPPUNK_QFILE)
@@ -134,9 +133,8 @@ workflow PIPELINE {
     // Output into Channel GET_OTHER_RESISTANCE.out.result
     OTHER_RESISTANCE(QC_PASSED_ASSEMBLIES_ch)
     GET_OTHER_RESISTANCE(OTHER_RESISTANCE.out.json)
-    
 
-    // Generate results.csv by sorted sample_id based on merged Channels 
+    // Generate results.csv by sorted sample_id based on merged Channels
     // ASSEMBLY_QC.out.detailed_result,
     // MAPPING_QC.out.detailed_result,
     // TAXONOMY_QC.out.detailed_result,
@@ -146,58 +144,57 @@ workflow PIPELINE {
     // MLST.out.result
     // GET_PBP_RESISTANCE.out.result
     // GET_OTHER_RESISTANCE.out.result
-    // 
+    //
     // Replace null with approiate amount of "_" items when sample_id does not exist in that output (i.e. QC rejected)
     ASSEMBLY_QC.out.detailed_result
     .join(MAPPING_QC.out.detailed_result, failOnDuplicate: true, failOnMismatch: true)
     .join(TAXONOMY_QC.out.detailed_result, failOnDuplicate: true, failOnMismatch: true)
     .join(OVERALL_QC.out.result, failOnDuplicate: true, failOnMismatch: true)
     .join(LINEAGE.out.csv.splitCsv(skip: 1), failOnDuplicate: true, remainder: true)
-        .map { it -> (it[-1] == null) ? it[0..-2] + ["_"]: it}
+        .map { (it[-1] == null) ? it[0..-2] + ['_'] : it }
     .join(SEROTYPE.out.result, failOnDuplicate: true, remainder: true)
-        .map { it -> (it[-1] == null) ? it[0..-2] + ["_"] * 2 : it}
+        .map { (it[-1] == null) ? it[0..-2] + ['_'] * 2 : it }
     .join(MLST.out.result, failOnDuplicate: true, remainder: true)
-        .map { it -> (it[-1] == null) ? it[0..-2] + ["_"] * 8: it}
-    .join(GET_PBP_RESISTANCE.out.result.map { it -> it*.replaceAll("eq_sign", "=") }, failOnDuplicate: true, remainder: true) // Revert the equal sign workaround, refer to amr.nf for details
-        .map { it -> (it[-1] == null) ? it[0..-2] + ["_"] * 18: it}
+        .map { (it[-1] == null) ? it[0..-2] + ['_'] * 8 : it }
+    .join(GET_PBP_RESISTANCE.out.result.map { it*.replaceAll('eq_sign', '=') }, failOnDuplicate: true, remainder: true) // Revert the equal sign workaround, refer to amr.nf for details
+        .map { (it[-1] == null) ? it[0..-2] + ['_'] * 18 : it }
     .join(GET_OTHER_RESISTANCE.out, failOnDuplicate: true, remainder: true)
-        .map { it -> (it[-1] == null) ? it[0..-2] + ["_"] * 20: it}
+        .map { (it[-1] == null) ? it[0..-2] + ['_'] * 20 : it }
     .map { it.join',' }
     .collectFile(
-        name: "results.csv",
+        name: 'results.csv',
         storeDir: "$params.output",
         seed: [
-                "Sample_ID",
-                "Contigs#" , "Assembly_Length", "Seq_Depth", "Assembly_QC", 
-                "Ref_Cov_%", "Het-SNP#" , "Mapping_QC",
-                "S.Pneumo_%", "Taxonomy_QC",
-                "Overall_QC",
-                "GPSC",
-                "Serotype", "SeroBA_Comment", 
-                "ST", "aroE", "gdh", "gki", "recP", "spi", "xpt", "ddl",
-                "pbp1a", "pbp2b", "pbp2x", "AMX_MIC", "AMX_Res", "CRO_MIC", "CRO_Res(Non-meningital)", "CRO_Res(Meningital)", "CTX_MIC", "CTX_Res(Non-meningital)", "CTX_Res(Meningital)", "CXM_MIC", "CXM_Res", "MEM_MIC", "MEM_Res", "PEN_MIC", "PEN_Res(Non-meningital)", "PEN_Res(Meningital)",
-                "CHL_Res", "CHL_Determinant", "CLI_Res", "CLI_Determinant", "ERY_Res", "ERY_Determinant", "FLQ_Res", "FLQ_Determinant", "KAN_Res", "KAN_Determinant", "LNZ_Res", "LNZ_Determinant", "TCY_Res", "TCY_Determinant", "TMP_Res", "TMP_Determinant", "SSS_Res", "SSS_Determinant", "SXT_Res", "SXT_Determinant"
-            ].join(","),
-        sort: { it -> it.split(",")[0] },
+                'Sample_ID',
+                'Contigs#' , 'Assembly_Length', 'Seq_Depth', 'Assembly_QC',
+                'Ref_Cov_%', 'Het-SNP#' , 'Mapping_QC',
+                'S.Pneumo_%', 'Taxonomy_QC',
+                'Overall_QC',
+                'GPSC',
+                'Serotype', 'SeroBA_Comment',
+                'ST', 'aroE', 'gdh', 'gki', 'recP', 'spi', 'xpt', 'ddl',
+                'pbp1a', 'pbp2b', 'pbp2x', 'AMX_MIC', 'AMX_Res', 'CRO_MIC', 'CRO_Res(Non-meningital)', 'CRO_Res(Meningital)', 'CTX_MIC', 'CTX_Res(Non-meningital)', 'CTX_Res(Meningital)', 'CXM_MIC', 'CXM_Res', 'MEM_MIC', 'MEM_Res', 'PEN_MIC', 'PEN_Res(Non-meningital)', 'PEN_Res(Meningital)',
+                'CHL_Res', 'CHL_Determinant', 'CLI_Res', 'CLI_Determinant', 'ERY_Res', 'ERY_Determinant', 'FLQ_Res', 'FLQ_Determinant', 'KAN_Res', 'KAN_Determinant', 'LNZ_Res', 'LNZ_Determinant', 'TCY_Res', 'TCY_Determinant', 'TMP_Res', 'TMP_Determinant', 'SSS_Res', 'SSS_Determinant', 'SXT_Res', 'SXT_Determinant'
+            ].join(','),
+        sort: { it.split(',')[0] },
         newLine: true
     )
 
     // Pass to SAVE_INFO sub-workflow
-    DATABASES_INFO = ref_genome_bwa_db_prefix.map { it -> it[0]}
-                .merge(kraken2_db)
-                .merge(seroba_db.map {it -> it[0]})
-                .merge(poppunk_db.map {it -> it[0]})
-                .merge(poppunk_ext_clusters)
-                .map { it -> 
-                    [
-                        bwa_db_path: it[0],
-                        kraken2_db_path: it[1],
-                        seroba_db_path: it[2],
-                        poppunk_db_path: it[3]
-                    ]
-                }
+    DATABASES_INFO = ref_genome_bwa_db_prefix.map { it[0] }
+                    .merge(kraken2_db)
+                    .merge(seroba_db.map { it[0] })
+                    .merge(poppunk_db.map { it[0] })
+                    .merge(poppunk_ext_clusters)
+                    .map {
+                        [
+                            bwa_db_path: it[0],
+                            kraken2_db_path: it[1],
+                            seroba_db_path: it[2],
+                            poppunk_db_path: it[3]
+                        ]
+                    }
 
-    emit: 
+    emit:
     databases_info = DATABASES_INFO
-    
 }
