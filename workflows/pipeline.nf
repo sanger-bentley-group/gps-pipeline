@@ -188,6 +188,14 @@ workflow PIPELINE {
                 .merge(seroba_db.map {it -> it[0]})
                 .merge(poppunk_db.map {it -> it[0]})
                 .merge(poppunk_ext_clusters)
+                .map { it -> 
+                    [
+                        bwa_db_path: it[0],
+                        kraken2_db_path: it[1],
+                        seroba_db_path: it[2],
+                        poppunk_db_path: it[3]
+                    ]
+                }
 
     emit: 
     databases_info = DATABASES_INFO

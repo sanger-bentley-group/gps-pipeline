@@ -24,10 +24,10 @@ workflow SAVE_INFO {
 
     main:
        GET_VERSION(
-            databases_info.map{it -> it[0]},
-            databases_info.map{it -> it[1]},
-            databases_info.map{it -> it[2]},
-            databases_info.map{it -> it[3]},
+            databases_info.bwa_db_path,
+            databases_info.kraken2_db_path,
+            databases_info.seroba_db_path,
+            databases_info.poppunk_db_path,
             pipeline_version
         ) \
        | PARSE \
