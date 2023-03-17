@@ -1,0 +1,7 @@
+#! /bin/sh
+
+# Basic wrapper script, simplify "./nextflow run main.nf" to "./run_pipeline"
+
+pipelineDir=$(dirname -- "$(readlink -f -- "$0")")
+
+$pipelineDir/nextflow -C $pipelineDir/nextflow.config run -w $pipelineDir/work $pipelineDir/main.nf "$@"

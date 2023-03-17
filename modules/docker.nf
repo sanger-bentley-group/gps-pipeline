@@ -1,10 +1,12 @@
 // Return a docker compose file that includes all images used in nextflow.config
 process GET_DOCKER_COMPOSE {
+    label 'bash_container'
+
     input:
     path nextflowConfig
-    
+
     output:
-    path "docker-compose.yml", emit: compose
+    path 'docker-compose.yml', emit: compose
 
     shell:
     '''
@@ -13,17 +15,16 @@ process GET_DOCKER_COMPOSE {
 
     echo "services:" >> $COMPOSE
 
-    grep "container = " !{nextflowConfig} \
+    grep -E "container\s?=" !{nextflowConfig} \
         | sort -u \
-        | sed -r "s/ +container ?= ?'(.+)'/\\1/" \
+        | sed -r "s/\s+container\s?=\s?'(.+)'/\\1/" \
         |   while read -r IMAGE ; do
                 COUNT=$((COUNT+1))
-                echo "  SERVICE$COUNT:" >> $COMPOSE
+                echo "  SERVICE${COUNT}:" >> $COMPOSE
                 echo "      image: $IMAGE" >> $COMPOSE
             done
     '''
 }
-
 
 // Pull all images in the genetared docker compose file
 process PULL_IMAGES {

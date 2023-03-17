@@ -1,11 +1,15 @@
-// Run fastp to preprocess the FASTQs 
+// Run fastp to preprocess the FASTQs
 process PREPROCESS {
+    label 'fastp_container'
+
+    tag "$sample_id"
+
     input:
     tuple val(sample_id), path(reads)
 
     output:
     tuple val(sample_id), path("processed-${sample_id}_1.fastq.gz"), path("processed-${sample_id}_2.fastq.gz"), path("processed-${sample_id}_unpaired.fastq.gz"), emit: processed_reads
-    tuple val(sample_id), path("fastp.json"), emit: json
+    tuple val(sample_id), path('fastp.json'), emit: json
 
     shell:
     '''
@@ -15,6 +19,10 @@ process PREPROCESS {
 
 // Get total base count from fastp.json
 process GET_BASES {
+    label 'bash_container'
+
+    tag "$sample_id"
+
     input:
     tuple val(sample_id), path(json)
 
