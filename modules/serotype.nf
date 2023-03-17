@@ -1,9 +1,9 @@
 // Return boolean of CREATE_DB
-// Check if GET_SEROBA_DB and CREATE_SEROBA_DB has run successfully and pull to check if SeroBA database is up-to-date. 
+// Check if GET_SEROBA_DB and CREATE_SEROBA_DB has run successfully and pull to check if SeroBA database is up-to-date.
 // If outdated or does not exist: clean and clone, set CREATE_DB to true
 process GET_SEROBA_DB {
     label 'git_container'
-    
+
     input:
     val remote
     path local
@@ -28,7 +28,7 @@ process GET_SEROBA_DB {
     else
 
         CREATE_DB=false
-    
+
     fi
     '''
 }

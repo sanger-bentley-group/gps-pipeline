@@ -52,7 +52,7 @@ process ASSEMBLY_ASSESS {
     input:
     tuple val(sample_id), path(assembly)
     output:
-    tuple val(sample_id), path("results/report.tsv"), emit: report
+    tuple val(sample_id), path('results/report.tsv'), emit: report
 
     shell:
     '''
@@ -60,7 +60,7 @@ process ASSEMBLY_ASSESS {
     '''
 }
 
-// Return Assembly QC result based on report.tsv from Quast and total base count 
+// Return Assembly QC result based on report.tsv from Quast and total base count
 process ASSEMBLY_QC {
     label 'bash_container'
 
@@ -82,7 +82,7 @@ process ASSEMBLY_QC {
     CONTIGS=$(awk -F'\t' '$1 == "# contigs" { print $2 }' !{report})
     LENGTH=$(awk -F'\t' '$1 == "Total length" { print $2 }' !{report})
     DEPTH=$(printf %.2f $(echo "!{bases} / $LENGTH" | bc -l) )
-    
+
     if (( $CONTIGS < !{qc_contigs} )) && (( $LENGTH >= !{qc_length_low} )) && (( $LENGTH <= !{qc_length_high} )) && (( $(echo "$DEPTH >= !{qc_depth}" | bc -l) )); then
         ASSEMBLY_QC="PASS"
     else

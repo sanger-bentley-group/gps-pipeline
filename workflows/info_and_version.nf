@@ -2,13 +2,14 @@ include { IMAGES; DATABASES; TOOLS; COMBINE_INFO; PARSE; PRINT; SAVE; GIT_VERSIO
 
 // Alternative workflow that prints versions of pipeline and tools
 workflow PRINT_VERSION {
-    take: 
+    take:
         pipeline_version
 
     main:
         GET_VERSION(
             params.ref_genome_bwa_db_local,
-            params.kraken2_db_local,params.seroba_local,
+            params.kraken2_db_local,
+            params.seroba_local,
             params.poppunk_local,
             pipeline_version
         ) \
@@ -23,7 +24,7 @@ workflow SAVE_INFO {
         pipeline_version
 
     main:
-       GET_VERSION(
+        GET_VERSION(
             databases_info.bwa_db_path,
             databases_info.kraken2_db_path,
             databases_info.seroba_db_path,
@@ -44,7 +45,7 @@ workflow GET_VERSION {
         pipeline_version
 
     main:
-        IMAGES(Channel.fromPath( "${workflow.configFiles[0]}" ))
+        IMAGES(Channel.fromPath("${workflow.configFiles[0]}"))
 
         DATABASES(
             bwa_db_path,
@@ -92,7 +93,7 @@ workflow GET_VERSION {
             IMAGES.out.json,
             TOOLS.out.json
         )
-    
+
     emit:
         COMBINE_INFO.out.json
 }

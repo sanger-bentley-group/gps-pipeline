@@ -1,5 +1,5 @@
 // Return Kraken 2 database path
-// Check if GET_KRAKEN_DB has run successfully on the specific database. 
+// Check if GET_KRAKEN_DB has run successfully on the specific database.
 // If not: clean, download, and unzip to params.kraken2_db_local
 process GET_KRAKEN_DB {
     label 'bash_container'
@@ -32,7 +32,7 @@ process GET_KRAKEN_DB {
             --arg save_time "$(date +"%Y-%m-%d %H:%M:%S")" \
             '{"url" : $url, "save_time": $save_time}' > !{local}/done_kraken.json
 
-    fi 
+    fi
     '''
 }
 
@@ -48,7 +48,7 @@ process TAXONOMY {
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
 
     output:
-    tuple val(sample_id), path("kraken_report.txt"), emit: report
+    tuple val(sample_id), path('kraken_report.txt'), emit: report
 
     shell:
     '''
@@ -59,7 +59,6 @@ process TAXONOMY {
     fi
     '''
 }
-
 
 // Return Taxonomy QC result based on kraken_report.txt
 process TAXONOMY_QC {

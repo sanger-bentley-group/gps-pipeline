@@ -1,5 +1,5 @@
 // Start message
-def startMessage(pipeline_version) {
+void startMessage(String pipelineVersion) {
     log.info """
         |
         |╔══════════════════════════════════════════════════════════════════════════════════════════╗
@@ -9,20 +9,19 @@ def startMessage(pipeline_version) {
         |║ | |  _| |_) \\___ \\  | | | | '_ \\| | |_| |/ _ \\/ _` | | |_) | | '_ \\ / _ | | | '_ \\ / _ \\ ║░
         |║ | |_| |  __/ ___) | | |_| | | | | |  _| |  __| (_| | |  __/| | |_) |  __| | | | | |  __/ ║░
         |║  \\____|_|   |____/   \\___/|_| |_|_|_| |_|\\___|\\__,_| |_|   |_| .__/ \\___|_|_|_| |_|\\___| ║░
-        |${String.format("║  v %-57s |_|                         ║░", pipeline_version)}
+        |${String.format('║  v %-57s |_|                         ║░', pipelineVersion)}
         |╚══════════════════════════════════════════════════════════════════════════════════════════╝░
         |  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
        """.stripMargin()
-} 
-
+}
 
 // Help message
-def helpMessage() {
-    log.info (
-        """
-        |This is a Nextflow Pipeline for processing Streptococcus pneumoniae sequencing raw reads (FASTQ files) 
+void helpMessage() {
+    log.info(
+        '''
+        |This is a Nextflow Pipeline for processing Streptococcus pneumoniae sequencing raw reads (FASTQ files)
         |
-        |Usage: 
+        |Usage:
         |./run_pipeline [option] [value]
         |
         |All options are optional, some common options:
@@ -32,41 +31,40 @@ def helpMessage() {
         |--version       Alternative workflow for getting versions of pipeline, tools and databases
         |
         |For all available options, please refer to README.md
-        """.stripMargin()
+        '''.stripMargin()
     )
 }
 
-
 // Workflow selection message
-def workflowSelectMessage(selectedWorkflow) {
+void workflowSelectMessage(String selectedWorkflow) {
     String message
-    File reads_dir = new File(params.reads)
-    File output_dir = new File(params.output)
+    File readsDir = new File(params.reads)
+    File outputDir = new File(params.output)
 
-    switch(selectedWorkflow){
+    switch (selectedWorkflow) {
         case 'pipeline':
             message = """
             |The main pipeline workflow was selected.
             |
-            |Input Directory: ${reads_dir.getAbsolutePath()}
-            |Output Directory: ${output_dir.getAbsolutePath()}
+            |Input Directory: ${readsDir.absolutePath}
+            |Output Directory: ${outputDir.absolutePath}
             """.stripMargin()
             break
         case 'init':
-            message = """
+            message = '''
             |The alternative workflow for initialisation was selected.
-            """.stripMargin()
+            '''.stripMargin()
             break
         case 'version':
-            message = """
+            message = '''
             |The alternative workflow for getting versions of pipeline, tools and databases was selected.
-            """.stripMargin()
+            '''.stripMargin()
             break
     }
 
     Date date = new Date()
-    String dateStr = date.format("yyyy-MM-dd")
-    String timeStr = date.format("HH:mm:ss")
+    String dateStr = date.format('yyyy-MM-dd')
+    String timeStr = date.format('HH:mm:ss')
 
     log.info(
         """
@@ -79,46 +77,46 @@ def workflowSelectMessage(selectedWorkflow) {
 }
 
 // End message
-def endMessage(selectedWorkflow) {
+void endMessage(String selectedWorkflow) {
     String successMessage
     String failMessage
-    File output_dir = new File(params.output)
+    File outputDir = new File(params.output)
 
-    switch(selectedWorkflow){
+    switch (selectedWorkflow) {
         case 'pipeline':
             successMessage = """
                 |The pipeline has been completed successfully.
-                |Check the outputs at ${output_dir.getAbsolutePath()}.
+                |Check the outputs at ${outputDir.absolutePath}.
                 """.stripMargin()
-            failMessage = """
+            failMessage = '''
                 |The pipeline has failed.
                 |If you think it is caused by a bug, submit an issue at \"https://github.com/HarryHung/gps-unified-pipeline/issues\".
-                """.stripMargin()
+                '''.stripMargin()
             break
         case 'init':
-            successMessage = """
+            successMessage = '''
                 |Initialisation has been completed successfully.
-                |The pipeline can now be used offline (unless any pipeline option is changed).
-                """.stripMargin()
-            failMessage = """
+                |The pipeline can now be used offline (unless you have changed the selection of any database or Docker image).
+                '''.stripMargin()
+            failMessage = '''
                 |Initialisation has failed.
                 |Please ensure Docker is running and your machine is conneted to the Internet.
-                """.stripMargin()
+                '''.stripMargin()
             break
         case 'version':
-            successMessage = """
+            successMessage = '''
                 |All the version information is printed above.
-                """.stripMargin()
-            failMessage = """
+                '''.stripMargin()
+            failMessage = '''
                 |Failed to get version information on pipeline, tools or databases.
                 |If you think it is caused by a bug, submit an issue at \"https://github.com/HarryHung/gps-unified-pipeline/issues\"
-                """.stripMargin()
+                '''.stripMargin()
             break
     }
 
     Date date = new Date()
-    String dateStr = date.format("yyyy-MM-dd")
-    String timeStr = date.format("HH:mm:ss")
+    String dateStr = date.format('yyyy-MM-dd')
+    String timeStr = date.format('HH:mm:ss')
 
     log.info(
         """

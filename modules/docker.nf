@@ -4,9 +4,9 @@ process GET_DOCKER_COMPOSE {
 
     input:
     path nextflowConfig
-    
+
     output:
-    path "docker-compose.yml", emit: compose
+    path 'docker-compose.yml', emit: compose
 
     shell:
     '''
@@ -25,7 +25,6 @@ process GET_DOCKER_COMPOSE {
             done
     '''
 }
-
 
 // Pull all images in the genetared docker compose file
 process PULL_IMAGES {

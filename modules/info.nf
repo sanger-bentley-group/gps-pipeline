@@ -1,7 +1,6 @@
 // Import for PARSE
 import groovy.json.JsonSlurper
 
-
 // Extract containers information and saved into a JSON file
 process IMAGES {
     label 'bash_container'
@@ -59,7 +58,6 @@ process IMAGES {
         '$ARGS.named' > images.json
     '''
 }
-
 
 // Get databases information and saved into a JSON file
 process DATABASES {
@@ -180,13 +178,12 @@ process COMBINE_INFO {
     path images
     path tools
 
-
     output:
     path("result.json"), emit: json
 
     shell:
     '''
-    jq -s '.[0] * .[1] * .[2]' !{database} !{images} !{tools}> working.json
+    jq -s '.[0] * .[1] * .[2]' !{database} !{images} !{tools} > working.json
 
     add_version () {
         jq --arg entry $1 --arg version "$2" '.[$entry] += {"version": $version}' working.json > tmp.json && mv tmp.json working.json
@@ -212,9 +209,8 @@ process PARSE {
 
     exec:
     def jsonSlurper = new JsonSlurper()
-    
-    def json = jsonSlurper.parse(new File("${json_file}")) 
 
+    def json = jsonSlurper.parse(new File("${json_file}"))
 
     def textRow = { leftSpace, rightSpace, leftContent, rightContent ->
         String.format("║ %-${leftSpace}s │ %-${rightSpace}s ║", leftContent, rightContent)
@@ -227,14 +223,14 @@ process PARSE {
     coreText = """\
         |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Core Software Versions ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
         |╔═══════════════════════════╤═══════════════════════════════════════════════════════════════╗
-        |${coreTextRow("Software", "Version")}
+        |${coreTextRow('Software', 'Version')}
         |╠═══════════════════════════╪═══════════════════════════════════════════════════════════════╣
-        |${coreTextRow("GPS Unified Pipeline", json.pipeline.version)}
-        |${coreTextRow("Nextflow", json.nextflow.version)}
+        |${coreTextRow('GPS Unified Pipeline', json.pipeline.version)}
+        |${coreTextRow('Nextflow', json.nextflow.version)}
         |╚═══════════════════════════╧═══════════════════════════════════════════════════════════════╝
-        """.stripMargin()
-    
-    def dbTextRow = { leftContent, rightContent -> 
+        |""".stripMargin()
+
+    def dbTextRow = { leftContent, rightContent ->
         textRow(9, 77, leftContent, rightContent)
     }
 
@@ -243,38 +239,38 @@ process PARSE {
         |╔═══════════════════════════════════════════════════════════════════════════════════════════╗
         |║ BWA reference genome FM-index database                                                    ║
         |╟───────────┬───────────────────────────────────────────────────────────────────────────────╢
-        |${dbTextRow("Reference", json.bwa_db.reference)}
-        |${dbTextRow("Created", json.bwa_db.create_time)}
+        |${dbTextRow('Reference', json.bwa_db.reference)}
+        |${dbTextRow('Created', json.bwa_db.create_time)}
         |╠═══════════╧═══════════════════════════════════════════════════════════════════════════════╣
         |║ Kraken 2 database                                                                         ║
         |╟───────────┬───────────────────────────────────────────────────────────────────────────────╢
-        |${dbTextRow("Source", json.kraken2_db.url)}
-        |${dbTextRow("Saved", json.kraken2_db.save_time)}
+        |${dbTextRow('Source', json.kraken2_db.url)}
+        |${dbTextRow('Saved', json.kraken2_db.save_time)}
         |╠═══════════╧═══════════════════════════════════════════════════════════════════════════════╣
         |║ PopPUNK database                                                                          ║
         |╟───────────┬───────────────────────────────────────────────────────────────────────────────╢
-        |${dbTextRow("Source", json.poppunnk_db.url)}
-        |${dbTextRow("Saved", json.poppunnk_db.save_time)}
+        |${dbTextRow('Source', json.poppunnk_db.url)}
+        |${dbTextRow('Saved', json.poppunnk_db.save_time)}
         |╠═══════════╧═══════════════════════════════════════════════════════════════════════════════╣
         |║ PopPUNK external clusters file                                                            ║
         |╟───────────┬───────────────────────────────────────────────────────────────────────────────╢
-        |${dbTextRow("Source", json.poppunk_ext.url)}
-        |${dbTextRow("Saved", json.poppunk_ext.save_time)}
+        |${dbTextRow('Source', json.poppunk_ext.url)}
+        |${dbTextRow('Saved', json.poppunk_ext.save_time)}
         |╠═══════════╧═══════════════════════════════════════════════════════════════════════════════╣
         |║ SeroBA database                                                                           ║
         |╟───────────┬───────────────────────────────────────────────────────────────────────────────╢
-        |${dbTextRow("Source", json.seroba_db.git)}
-        |${dbTextRow("Kmer size", json.seroba_db.kmer)}
-        |${dbTextRow("Created", json.seroba_db.create_time)}
+        |${dbTextRow('Source', json.seroba_db.git)}
+        |${dbTextRow('Kmer size', json.seroba_db.kmer)}
+        |${dbTextRow('Created', json.seroba_db.create_time)}
         |╚═══════════╧═══════════════════════════════════════════════════════════════════════════════╝
-        """.stripMargin()
+        |""".stripMargin()
 
     def getVersion = { tool ->
         if (json[tool] && json[tool]['version']) {
             return json[tool]['version']
-        } else {
-            return 'no version information'
         }
+
+        return 'no version information'
     }
 
     def toolTextRow = { leftContent, rightContent ->
@@ -284,33 +280,33 @@ process PARSE {
     toolText = """\
         |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Tool Versions ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
         |╔════════════════════════════════╤══════════════════════════════════════════════════════════╗
-        |${textRow(30, 56, "Tool", "Version")}
+        |${textRow(30, 56, 'Tool', 'Version')}
         |╠════════════════════════════════╪══════════════════════════════════════════════════════════╣
-        |${toolTextRow("Git", 'git')}
-        |${toolTextRow("Python", 'python')}
-        |${toolTextRow("fastp", 'fastp')}
-        |${toolTextRow("Unicycler", 'unicycler')}
-        |${toolTextRow("Shovill", 'shovill')}
-        |${toolTextRow("QUAST", 'quast')}
-        |${toolTextRow("BWA", 'bwa')}
-        |${toolTextRow("SAMtools", 'samtools')}
-        |${toolTextRow("BCFtools", 'bcftools')}
-        |${toolTextRow("Het-SNP Counter", 'het_snp_count')}
-        |${toolTextRow("PopPUNK", 'poppunk')}
-        |${toolTextRow("CDC PBP AMR Predictor", 'spn_pbp_amr')}
-        |${toolTextRow("AMRsearch", 'amrsearch')}
-        |${toolTextRow("mlst", 'mlst')}
-        |${toolTextRow("Kraken 2", 'kraken2')}
-        |${toolTextRow("SeroBA", 'seroba')}
+        |${toolTextRow('Git', 'git')}
+        |${toolTextRow('Python', 'python')}
+        |${toolTextRow('fastp', 'fastp')}
+        |${toolTextRow('Unicycler', 'unicycler')}
+        |${toolTextRow('Shovill', 'shovill')}
+        |${toolTextRow('QUAST', 'quast')}
+        |${toolTextRow('BWA', 'bwa')}
+        |${toolTextRow('SAMtools', 'samtools')}
+        |${toolTextRow('BCFtools', 'bcftools')}
+        |${toolTextRow('Het-SNP Counter', 'het_snp_count')}
+        |${toolTextRow('PopPUNK', 'poppunk')}
+        |${toolTextRow('CDC PBP AMR Predictor', 'spn_pbp_amr')}
+        |${toolTextRow('AMRsearch', 'amrsearch')}
+        |${toolTextRow('mlst', 'mlst')}
+        |${toolTextRow('Kraken 2', 'kraken2')}
+        |${toolTextRow('SeroBA', 'seroba')}
         |╚════════════════════════════════╧══════════════════════════════════════════════════════════╝
-        """.stripMargin()
-    
+        |""".stripMargin()
+
     def getImage = { tool ->
         if (json[tool] && json[tool]['container']) {
             return json[tool]['container']
-        } else {
-            return 'no image information'
         }
+
+        return 'no image information'
     }
 
     def imageTextRow = { leftContent, rightContent ->
@@ -320,26 +316,26 @@ process PARSE {
     imageText = """\
         |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Docker Images ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
         |╔════════════════════════════════╤══════════════════════════════════════════════════════════╗
-        |${textRow(30, 56, "Environment For", "Image")}
+        |${textRow(30, 56, 'Environment For', 'Image')}
         |╠════════════════════════════════╪══════════════════════════════════════════════════════════╣
-        |${imageTextRow("Bash", 'bash')}
-        |${imageTextRow("Git", 'git')}
-        |${imageTextRow("Python", 'python')}
-        |${imageTextRow("fastp", 'fastp')}
-        |${imageTextRow("Unicycler", 'unicycler')}
-        |${imageTextRow("Shovill", 'shovill')}
-        |${imageTextRow("QUAST", 'quast')}
-        |${imageTextRow("BWA", 'bwa')}
-        |${imageTextRow("SAMtools", 'samtools')}
-        |${imageTextRow("BCFtools", 'bcftools')}
-        |${imageTextRow("PopPUNK", 'poppunk')}
-        |${imageTextRow("CDC PBP AMR Predictor", 'spn_pbp_amr')}
-        |${imageTextRow("AMRsearch", 'amrsearch')}
-        |${imageTextRow("mlst", 'mlst')}
-        |${imageTextRow("Kraken 2", 'kraken2')}
-        |${imageTextRow("SeroBA", 'seroba')}
+        |${imageTextRow('Bash', 'bash')}
+        |${imageTextRow('Git', 'git')}
+        |${imageTextRow('Python', 'python')}
+        |${imageTextRow('fastp', 'fastp')}
+        |${imageTextRow('Unicycler', 'unicycler')}
+        |${imageTextRow('Shovill', 'shovill')}
+        |${imageTextRow('QUAST', 'quast')}
+        |${imageTextRow('BWA', 'bwa')}
+        |${imageTextRow('SAMtools', 'samtools')}
+        |${imageTextRow('BCFtools', 'bcftools')}
+        |${imageTextRow('PopPUNK', 'poppunk')}
+        |${imageTextRow('CDC PBP AMR Predictor', 'spn_pbp_amr')}
+        |${imageTextRow('AMRsearch', 'amrsearch')}
+        |${imageTextRow('mlst', 'mlst')}
+        |${imageTextRow('Kraken 2', 'kraken2')}
+        |${imageTextRow('SeroBA', 'seroba')}
         |╚════════════════════════════════╧══════════════════════════════════════════════════════════╝
-        """.stripMargin()
+        |""".stripMargin()
 }
 
 // Print version information
@@ -361,7 +357,7 @@ process PRINT {
         |${dbText}
         |${toolText}
         |${imageText}
-        """.stripMargin()
+        |""".stripMargin()
     )
 }
 
@@ -374,9 +370,9 @@ process SAVE {
     val imageText
 
     exec:
-    File reads_dir = new File(params.reads)
-    File output_dir = new File(params.output)
-    output_dir.mkdirs()
+    File readsDir = new File(params.reads)
+    File outputDir = new File(params.output)
+    outputDir.mkdirs()
 
     def textRow = { leftSpace, rightSpace, leftContent, rightContent ->
         String.format("║ %-${leftSpace}s │ %-${rightSpace}s ║", leftContent, rightContent)
@@ -386,53 +382,53 @@ process SAVE {
         textRow(8, 78, leftContent, rightContent)
     }
 
-    ioText = """\
+    String ioText = """\
     |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Input and Output ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
     |╔══════════╤════════════════════════════════════════════════════════════════════════════════╗
-    |${ioTextRow("Type", "Path")}
+    |${ioTextRow('Type', 'Path')}
     |╠══════════╪════════════════════════════════════════════════════════════════════════════════╣
-    |${ioTextRow("Input", reads_dir.getAbsolutePath())}
-    |${ioTextRow("Output", output_dir.getAbsolutePath())}
+    |${ioTextRow('Input', readsDir.absolutePath)}
+    |${ioTextRow('Output', outputDir.absolutePath)}
     |╚══════════╧════════════════════════════════════════════════════════════════════════════════╝
-    """.stripMargin()
+    |""".stripMargin()
 
     def moduleTextRow = { leftContent, rightContent ->
         textRow(15, 71, leftContent, rightContent)
     }
 
-    moduleText = """\
+    String moduleText = """\
     |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Module Selection ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
     |╔═════════════════╤═════════════════════════════════════════════════════════════════════════╗
-    |${moduleTextRow("Module", "Selection")}
+    |${moduleTextRow('Module', 'Selection')}
     |╠═════════════════╪═════════════════════════════════════════════════════════════════════════╣
-    |${moduleTextRow("Assembler", params.assembler.capitalize())}
+    |${moduleTextRow('Assembler', params.assembler.capitalize())}
     |╚═════════════════╧═════════════════════════════════════════════════════════════════════════╝
-    """.stripMargin()
+    |""".stripMargin()
 
     def qcTextRow = { leftContent, rightContent ->
         textRow(60, 26, leftContent, rightContent)
     }
 
-    qcText= """\
+    String qcText = """\
     |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ QC Parameters ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
     |╔═══════════════════════════════════════════════════════════════════════════════════════════╗
     |║ Taxonomy QC                                                                               ║
     |╟──────────────────────────────────────────────────────────────┬────────────────────────────╢
-    |${qcTextRow("Minimum S. pneumoniae percentage in reads", params.spneumo_percentage)}
+    |${qcTextRow('Minimum S. pneumoniae percentage in reads', params.spneumo_percentage)}
     |╠══════════════════════════════════════════════════════════════╧════════════════════════════╣
     |║ Mapping QC                                                                                ║
     |╟──────────────────────────────────────────────────────────────┬────────────────────────────╢
-    |${qcTextRow("Minimum reference coverage percentage by the reads", params.ref_coverage)}
-    |${qcTextRow("Maximum non-cluster heterozygous SNP (Het-SNP) site count", params.het_snp_site)}
+    |${qcTextRow('Minimum reference coverage percentage by the reads', params.ref_coverage)}
+    |${qcTextRow('Maximum non-cluster heterozygous SNP (Het-SNP) site count', params.het_snp_site)}
     |╠══════════════════════════════════════════════════════════════╧════════════════════════════╣
     |║ Assembly QC                                                                               ║
     |╟──────────────────────────────────────────────────────────────┬────────────────────────────╢
-    |${qcTextRow("Maximum contig count in assembly", params.contigs)}
-    |${qcTextRow("Minimum assembly length", params.length_low)}
-    |${qcTextRow("Maximum assembly length", params.length_high)}
-    |${qcTextRow("Minimum sequencing depth", params.depth)}
+    |${qcTextRow('Maximum contig count in assembly', params.contigs)}
+    |${qcTextRow('Minimum assembly length', params.length_low)}
+    |${qcTextRow('Maximum assembly length', params.length_high)}
+    |${qcTextRow('Minimum sequencing depth', params.depth)}
     |╚══════════════════════════════════════════════════════════════╧════════════════════════════╝
-    """.stripMargin()
+    |""".stripMargin()
 
     File output = new File("${params.output}/info.txt")
     output.write(
@@ -444,10 +440,9 @@ process SAVE {
         |${dbText}
         |${toolText}
         |${imageText}
-        """.stripMargin()
+        |""".stripMargin()
     )
 }
-
 
 // Below processes get tool versions within Docker images by running their containers
 
@@ -606,4 +601,3 @@ process SEROBA_VERSION {
     VERSION=$(seroba version)
     '''
 }
-
