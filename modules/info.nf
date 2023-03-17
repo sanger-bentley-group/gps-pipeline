@@ -89,7 +89,7 @@ process DATABASES {
 
     add_seroba_db () {
         SEROBA_DB_JSON=!{seroba_db_path}/done_seroba.json
-                if [ -f "$SEROBA_DB_JSON" ]; then
+        if [ -f "$SEROBA_DB_JSON" ]; then
             GIT=$(jq -r .git $SEROBA_DB_JSON)
             KMER=$(jq -r .kmer $SEROBA_DB_JSON)
             CREATE_TIME=$(jq -r .create_time $SEROBA_DB_JSON)
@@ -205,7 +205,7 @@ process PARSE {
     val json_file
 
     output:
-    val titleText
+    val coreText
     val dbText
     val toolText
     val imageText
@@ -215,38 +215,60 @@ process PARSE {
     
     def json = jsonSlurper.parse(new File("${json_file}")) 
 
-    titleText = """\
-        |=== GPS Unified Pipeline version ===
-        |${json.pipeline.version}
-        |
-        |=== Nextflow version ===
-        |${json.nextflow.version}
-        """.stripMargin()
-    
-    dbText = """\
-        |=== Databases Information ===
-        |BWA reference genome FM-index database:
-        |- Reference: ${json.bwa_db.reference}
-        |- Created: ${json.bwa_db.create_time}
-        |Kraken 2 database:
-        |- Source: ${json.kraken2_db.url}
-        |- Saved: ${json.kraken2_db.save_time}
-        |PopPUNK database:
-        |- Source: ${json.poppunnk_db.url}
-        |- Saved: ${json.poppunnk_db.save_time}
-        |PopPUNK external clusters file:
-        |- Source: ${json.poppunk_ext.url}
-        |- Saved: ${json.poppunk_ext.save_time}
-        |SeroBA database:
-        |- Source: ${json.seroba_db.git}
-        |- Kmer size for creating the KMC database: ${json.seroba_db.kmer} 
-        |- Created: ${json.seroba_db.create_time}
-        """.stripMargin()
 
     def textRow = { leftSpace, rightSpace, leftContent, rightContent ->
-        String.format("║%-${leftSpace}s │ %-${rightSpace}s ║", leftContent, rightContent)
+        String.format("║ %-${leftSpace}s │ %-${rightSpace}s ║", leftContent, rightContent)
+    }    
+
+    def coreTextRow = { leftContent, rightContent ->
+        textRow(25, 61, leftContent, rightContent)
     }
+
+    coreText = """\
+        |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Core Software Versions ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+        |╔═══════════════════════════╤═══════════════════════════════════════════════════════════════╗
+        |${coreTextRow("Software", "Version")}
+        |╠═══════════════════════════╪═══════════════════════════════════════════════════════════════╣
+        |${coreTextRow("GPS Unified Pipeline", json.pipeline.version)}
+        |${coreTextRow("Nextflow", json.nextflow.version)}
+        |╚═══════════════════════════╧═══════════════════════════════════════════════════════════════╝
+        """.stripMargin()
     
+    def dbTextRow = { leftContent, rightContent -> 
+        textRow(9, 77, leftContent, rightContent)
+    }
+
+    dbText = """\
+        |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Databases Information ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+        |╔═══════════════════════════════════════════════════════════════════════════════════════════╗
+        |║ BWA reference genome FM-index database                                                    ║
+        |╟───────────┬───────────────────────────────────────────────────────────────────────────────╢
+        |${dbTextRow("Reference", json.bwa_db.reference)}
+        |${dbTextRow("Created", json.bwa_db.create_time)}
+        |╠═══════════╧═══════════════════════════════════════════════════════════════════════════════╣
+        |║ Kraken 2 database                                                                         ║
+        |╟───────────┬───────────────────────────────────────────────────────────────────────────────╢
+        |${dbTextRow("Source", json.kraken2_db.url)}
+        |${dbTextRow("Saved", json.kraken2_db.save_time)}
+        |╠═══════════╧═══════════════════════════════════════════════════════════════════════════════╣
+        |║ PopPUNK database                                                                          ║
+        |╟───────────┬───────────────────────────────────────────────────────────────────────────────╢
+        |${dbTextRow("Source", json.poppunnk_db.url)}
+        |${dbTextRow("Saved", json.poppunnk_db.save_time)}
+        |╠═══════════╧═══════════════════════════════════════════════════════════════════════════════╣
+        |║ PopPUNK external clusters file                                                            ║
+        |╟───────────┬───────────────────────────────────────────────────────────────────────────────╢
+        |${dbTextRow("Source", json.poppunk_ext.url)}
+        |${dbTextRow("Saved", json.poppunk_ext.save_time)}
+        |╠═══════════╧═══════════════════════════════════════════════════════════════════════════════╣
+        |║ SeroBA database                                                                           ║
+        |╟───────────┬───────────────────────────────────────────────────────────────────────────────╢
+        |${dbTextRow("Source", json.seroba_db.git)}
+        |${dbTextRow("Kmer size", json.seroba_db.kmer)}
+        |${dbTextRow("Created", json.seroba_db.create_time)}
+        |╚═══════════╧═══════════════════════════════════════════════════════════════════════════════╝
+        """.stripMargin()
+
     def getVersion = { tool ->
         if (json[tool] && json[tool]['version']) {
             return json[tool]['version']
@@ -256,26 +278,14 @@ process PARSE {
     }
 
     def toolTextRow = { leftContent, rightContent ->
-        textRow(25, 25, leftContent, getVersion(rightContent))
-    }
-
-    def getImage = { tool ->
-        if (json[tool] && json[tool]['container']) {
-            return json[tool]['container']
-        } else {
-            return 'no image information'
-        }
-    }
-
-    def imageTextRow = { leftContent, rightContent ->
-        textRow(25, 40, leftContent, getImage(rightContent))
+        textRow(30, 56, leftContent, getVersion(rightContent))
     }
 
     toolText = """\
-        |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Tool Versions ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-        |╔══════════════════════════╤═══════════════════════════╗
-        |${textRow(25, 25, "Tool", "Version")}
-        |╠══════════════════════════╪═══════════════════════════╣
+        |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Tool Versions ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+        |╔════════════════════════════════╤══════════════════════════════════════════════════════════╗
+        |${textRow(30, 56, "Tool", "Version")}
+        |╠════════════════════════════════╪══════════════════════════════════════════════════════════╣
         |${toolTextRow("Git", 'git')}
         |${toolTextRow("Python", 'python')}
         |${toolTextRow("fastp", 'fastp')}
@@ -292,14 +302,26 @@ process PARSE {
         |${toolTextRow("mlst", 'mlst')}
         |${toolTextRow("Kraken 2", 'kraken2')}
         |${toolTextRow("SeroBA", 'seroba')}
-        |╚══════════════════════════╧═══════════════════════════╝
+        |╚════════════════════════════════╧══════════════════════════════════════════════════════════╝
         """.stripMargin()
     
+    def getImage = { tool ->
+        if (json[tool] && json[tool]['container']) {
+            return json[tool]['container']
+        } else {
+            return 'no image information'
+        }
+    }
+
+    def imageTextRow = { leftContent, rightContent ->
+        textRow(30, 56, leftContent, getImage(rightContent))
+    }
+
     imageText = """\
-        |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Docker Images ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-        |╔══════════════════════════╤══════════════════════════════════════════╗
-        |${textRow(25, 40, "Providing Environment For", "Image")}
-        |╠══════════════════════════╪══════════════════════════════════════════╣
+        |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Docker Images ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+        |╔════════════════════════════════╤══════════════════════════════════════════════════════════╗
+        |${textRow(30, 56, "Environment For", "Image")}
+        |╠════════════════════════════════╪══════════════════════════════════════════════════════════╣
         |${imageTextRow("Bash", 'bash')}
         |${imageTextRow("Git", 'git')}
         |${imageTextRow("Python", 'python')}
@@ -316,14 +338,14 @@ process PARSE {
         |${imageTextRow("mlst", 'mlst')}
         |${imageTextRow("Kraken 2", 'kraken2')}
         |${imageTextRow("SeroBA", 'seroba')}
-        |╚══════════════════════════╧══════════════════════════════════════════╝
+        |╚════════════════════════════════╧══════════════════════════════════════════════════════════╝
         """.stripMargin()
 }
 
 // Print version information
 process PRINT {
     input:
-    val titleText
+    val coreText
     val dbText
     val toolText
     val imageText
@@ -331,10 +353,11 @@ process PRINT {
     exec:
     log.info(
         """
+        |╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+        |╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍ Version Information ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+        |╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
         |
-        |========== Version Information ==========
-        |
-        |${titleText}
+        |${coreText}
         |${dbText}
         |${toolText}
         |${imageText}
@@ -345,7 +368,7 @@ process PRINT {
 // Save version and QC parameters information to info.txt at output dir
 process SAVE {
     input:
-    val titleText
+    val coreText
     val dbText
     val toolText
     val imageText
@@ -383,7 +406,7 @@ process SAVE {
     File output = new File("${params.output}/info.txt")
     output.write(
         """\
-        |${titleText}
+        |${coreText}
         |${ioText}
         |${assemblerText}
         |${qcText}
