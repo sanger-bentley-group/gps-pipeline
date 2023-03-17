@@ -218,7 +218,7 @@ process PARSE {
 
     def textRow = { leftSpace, rightSpace, leftContent, rightContent ->
         String.format("║ %-${leftSpace}s │ %-${rightSpace}s ║", leftContent, rightContent)
-    }    
+    }
 
     def coreTextRow = { leftContent, rightContent ->
         textRow(25, 61, leftContent, rightContent)
@@ -378,29 +378,60 @@ process SAVE {
     File output_dir = new File(params.output)
     output_dir.mkdirs()
 
+    def textRow = { leftSpace, rightSpace, leftContent, rightContent ->
+        String.format("║ %-${leftSpace}s │ %-${rightSpace}s ║", leftContent, rightContent)
+    }
+
+    def ioTextRow = { leftContent, rightContent ->
+        textRow(8, 78, leftContent, rightContent)
+    }
+
     ioText = """\
-    |=== Input and Output ===
-    |Input Directory: ${reads_dir.getAbsolutePath()}
-    |Output Directory: ${output_dir.getAbsolutePath()}
+    |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Input and Output ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+    |╔══════════╤════════════════════════════════════════════════════════════════════════════════╗
+    |${ioTextRow("Type", "Path")}
+    |╠══════════╪════════════════════════════════════════════════════════════════════════════════╣
+    |${ioTextRow("Input", reads_dir.getAbsolutePath())}
+    |${ioTextRow("Output", output_dir.getAbsolutePath())}
+    |╚══════════╧════════════════════════════════════════════════════════════════════════════════╝
     """.stripMargin()
 
-    assemblerText = """\
-    |=== Selected assembler ===
-    |${params.assembler.capitalize()}
+    def moduleTextRow = { leftContent, rightContent ->
+        textRow(15, 71, leftContent, rightContent)
+    }
+
+    moduleText = """\
+    |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Module Selection ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+    |╔═════════════════╤═════════════════════════════════════════════════════════════════════════╗
+    |${moduleTextRow("Module", "Selection")}
+    |╠═════════════════╪═════════════════════════════════════════════════════════════════════════╣
+    |${moduleTextRow("Assembler", params.assembler.capitalize())}
+    |╚═════════════════╧═════════════════════════════════════════════════════════════════════════╝
     """.stripMargin()
+
+    def qcTextRow = { leftContent, rightContent ->
+        textRow(60, 26, leftContent, rightContent)
+    }
 
     qcText= """\
-    |=== QC Parameters ===
-    |= Taxonomy QC =
-    |Minimum S. pneumoniae percentage in reads: ${params.spneumo_percentage}
-    |= Mapping QC =
-    |Minimum reference coverage percentage by the reads: ${params.ref_coverage}
-    |Maximum non-cluster heterozygous SNP (Het-SNP) site count: ${params.het_snp_site}
-    |= Assembly QC =
-    |Maximum contig count in assembly: ${params.contigs}
-    |Minimum assembly length: ${params.length_low}
-    |Maximum assembly length: ${params.length_high}
-    |Minimum sequencing depth: ${params.depth}
+    |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ QC Parameters ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+    |╔═══════════════════════════════════════════════════════════════════════════════════════════╗
+    |║ Taxonomy QC                                                                               ║
+    |╟──────────────────────────────────────────────────────────────┬────────────────────────────╢
+    |${qcTextRow("Minimum S. pneumoniae percentage in reads", params.spneumo_percentage)}
+    |╠══════════════════════════════════════════════════════════════╧════════════════════════════╣
+    |║ Mapping QC                                                                                ║
+    |╟──────────────────────────────────────────────────────────────┬────────────────────────────╢
+    |${qcTextRow("Minimum reference coverage percentage by the reads", params.ref_coverage)}
+    |${qcTextRow("Maximum non-cluster heterozygous SNP (Het-SNP) site count", params.het_snp_site)}
+    |╠══════════════════════════════════════════════════════════════╧════════════════════════════╣
+    |║ Assembly QC                                                                               ║
+    |╟──────────────────────────────────────────────────────────────┬────────────────────────────╢
+    |${qcTextRow("Maximum contig count in assembly", params.contigs)}
+    |${qcTextRow("Minimum assembly length", params.length_low)}
+    |${qcTextRow("Maximum assembly length", params.length_high)}
+    |${qcTextRow("Minimum sequencing depth", params.depth)}
+    |╚══════════════════════════════════════════════════════════════╧════════════════════════════╝
     """.stripMargin()
 
     File output = new File("${params.output}/info.txt")
@@ -408,7 +439,7 @@ process SAVE {
         """\
         |${coreText}
         |${ioText}
-        |${assemblerText}
+        |${moduleText}
         |${qcText}
         |${dbText}
         |${toolText}
