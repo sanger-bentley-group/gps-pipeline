@@ -4,6 +4,7 @@ import groovy.json.JsonSlurper
 // Extract containers information and saved into a JSON file
 process IMAGES {
     label 'bash_container'
+    label 'farm_low'
 
     input:
     path nextflowConfig
@@ -62,6 +63,8 @@ process IMAGES {
 // Get databases information and saved into a JSON file
 process DATABASES {
     label 'bash_container'
+    label 'farm_low'
+
     input:
     val bwa_db_path
     val kraken2_db_path
@@ -124,6 +127,7 @@ process DATABASES {
 // Get tools versions and saved into a JSON file
 process TOOLS {
     label 'bash_container'
+    label 'farm_low'
 
     input:
     val git_version
@@ -170,6 +174,7 @@ process TOOLS {
 // Combine pipeline, Nextflow, databases, Docker images, tools version information into the a single JSON file
 process COMBINE_INFO {
     label 'bash_container'
+    label 'farm_low'
 
     input:
     val pipeline_version
@@ -448,7 +453,7 @@ process SAVE {
 
 process GIT_VERSION {
     label 'git_container'
-    label 'get_version'
+    label 'farm_low'
 
     output:
     env VERSION
@@ -461,7 +466,7 @@ process GIT_VERSION {
 
 process PYTHON_VERSION {
     label 'python_container'
-    label 'get_version'
+    label 'farm_low'
 
     output:
     env VERSION
@@ -474,7 +479,7 @@ process PYTHON_VERSION {
 
 process FASTP_VERSION {
     label 'fastp_container'
-    label 'get_version'
+    label 'farm_low'
 
     output:
     env VERSION
@@ -487,7 +492,7 @@ process FASTP_VERSION {
 
 process UNICYCLER_VERSION {
     label 'unicycler_container'
-    label 'get_version'
+    label 'farm_low'
 
     output:
     env VERSION
@@ -500,7 +505,7 @@ process UNICYCLER_VERSION {
 
 process SHOVILL_VERSION {
     label 'shovill_container'
-    label 'get_version'
+    label 'farm_low'
 
     output:
     env VERSION
@@ -513,7 +518,7 @@ process SHOVILL_VERSION {
 
 process QUAST_VERSION {
     label 'quast_container'
-    label 'get_version'
+    label 'farm_low'
 
     output:
     env VERSION
@@ -526,7 +531,7 @@ process QUAST_VERSION {
 
 process BWA_VERSION {
     label 'bwa_container'
-    label 'get_version'
+    label 'farm_low'
 
     output:
     env VERSION
@@ -539,7 +544,7 @@ process BWA_VERSION {
 
 process SAMTOOLS_VERSION {
     label 'samtools_container'
-    label 'get_version'
+    label 'farm_low'
 
     output:
     env VERSION
@@ -552,7 +557,7 @@ process SAMTOOLS_VERSION {
 
 process BCFTOOLS_VERSION {
     label 'bcftools_container'
-    label 'get_version'
+    label 'farm_low'
 
     output:
     env VERSION
@@ -565,7 +570,7 @@ process BCFTOOLS_VERSION {
 
 process POPPUNK_VERSION {
     label 'poppunk_container'
-    label 'get_version'
+    label 'farm_low'
 
     output:
     env VERSION
@@ -578,7 +583,7 @@ process POPPUNK_VERSION {
 
 process MLST_VERSION {
     label 'mlst_container'
-    label 'get_version'
+    label 'farm_low'
 
     output:
     env VERSION
@@ -591,7 +596,7 @@ process MLST_VERSION {
 
 process KRAKEN2_VERSION {
     label 'kraken2_container'
-    label 'get_version'
+    label 'farm_low'
 
     output:
     env VERSION
@@ -604,7 +609,7 @@ process KRAKEN2_VERSION {
 
 process SEROBA_VERSION {
     label 'seroba_container'
-    label 'get_version'
+    label 'farm_low'
 
     output:
     env VERSION

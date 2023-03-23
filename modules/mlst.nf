@@ -1,6 +1,7 @@
 // Run mlst to perform PubMLST typing on samples
 process MLST {
     label 'mlst_container'
+    label 'farm_low'
 
     tag "$sample_id"
 

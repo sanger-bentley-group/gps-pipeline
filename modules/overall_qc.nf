@@ -1,6 +1,7 @@
 // Return overall QC result based on Assembly QC, Mapping QC and Taxonomy QC
 process OVERALL_QC {
     label 'bash_container'
+    label 'farm_low'
 
     tag "$sample_id"
 

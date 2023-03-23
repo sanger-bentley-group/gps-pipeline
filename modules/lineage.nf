@@ -3,6 +3,7 @@
 // If not: clean, download, and unzip to params.poppunk_local
 process GET_POPPUNK_DB {
     label 'bash_container'
+    label 'farm_low'
 
     input:
     val db_remote
@@ -48,6 +49,7 @@ process GET_POPPUNK_DB {
 // If not: clean and download to params.poppunk_local
 process GET_POPPUNK_EXT_CLUSTERS {
     label 'bash_container'
+    label 'farm_low'
 
     input:
     val ext_clusters_remote
@@ -83,6 +85,7 @@ process GET_POPPUNK_EXT_CLUSTERS {
 // Remove "prefix_" from all sample names in the output
 process LINEAGE {
     label 'poppunk_container'
+    label 'farm_high'
 
     tag 'All samples'
 

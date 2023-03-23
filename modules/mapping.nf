@@ -3,6 +3,7 @@
 // If not: construct the FM-index database of the reference genome for BWA
 process GET_REF_GENOME_BWA_DB_PREFIX {
     label 'bwa_container'
+    label 'farm_mid'
 
     input:
     path reference
@@ -39,6 +40,7 @@ process GET_REF_GENOME_BWA_DB_PREFIX {
 // Return SAM
 process MAPPING {
     label 'bwa_container'
+    label 'farm_mid'
 
     tag "$sample_id"
 
@@ -59,6 +61,7 @@ process MAPPING {
 // Return sorted BAM
 process SAM_TO_SORTED_BAM {
     label 'samtools_container'
+    label 'farm_mid'
 
     tag "$sample_id"
 
@@ -81,6 +84,7 @@ process SAM_TO_SORTED_BAM {
 // Return reference coverage percentage by the reads
 process REF_COVERAGE {
     label 'samtools_container'
+    label 'farm_mid'
 
     tag "$sample_id"
 
@@ -100,6 +104,7 @@ process REF_COVERAGE {
 // Return .vcf by calling the SNPs
 process SNP_CALL {
     label 'bcftools_container'
+    label 'farm_mid'
 
     tag "$sample_id"
 
@@ -119,6 +124,7 @@ process SNP_CALL {
 // Return non-cluster heterozygous SNP (Het-SNP) site count
 process HET_SNP_COUNT {
     label 'python_container'
+    label 'farm_low'
 
     tag "$sample_id"
 
@@ -137,6 +143,7 @@ process HET_SNP_COUNT {
 // Return overall mapping QC result based on reference coverage and count of Het-SNP sites
 process MAPPING_QC {
     label 'bash_container'
+    label 'farm_low'
 
     tag "$sample_id"
 

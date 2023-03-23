@@ -3,6 +3,7 @@
 // If not: clean, download, and unzip to params.kraken2_db_local
 process GET_KRAKEN_DB {
     label 'bash_container'
+    label 'farm_low'
 
     input:
     val remote
@@ -39,6 +40,7 @@ process GET_KRAKEN_DB {
 // Run Kraken 2 to assess Streptococcus pneumoniae percentage in reads
 process TAXONOMY {
     label 'kraken2_container'
+    label 'farm_high'
 
     tag "$sample_id"
 
@@ -63,6 +65,7 @@ process TAXONOMY {
 // Return Taxonomy QC result based on kraken_report.txt
 process TAXONOMY_QC {
     label 'bash_container'
+    label 'farm_low'
 
     tag "$sample_id"
 

@@ -3,6 +3,7 @@
 // If outdated or does not exist: clean and clone, set CREATE_DB to true
 process GET_SEROBA_DB {
     label 'git_container'
+    label 'farm_low'
 
     input:
     val remote
@@ -37,6 +38,7 @@ process GET_SEROBA_DB {
 // If create_db == true: re-create KMC and ARIBA databases
 process CREATE_SEROBA_DB {
     label 'seroba_container'
+    label 'farm_low'
 
     input:
     val remote
@@ -64,6 +66,7 @@ process CREATE_SEROBA_DB {
 // Run SeroBA to serotype samples
 process SEROTYPE {
     label 'seroba_container'
+    label 'farm_low'
 
     tag "$sample_id"
 
