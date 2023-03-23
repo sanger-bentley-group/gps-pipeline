@@ -3,6 +3,7 @@
 // Return sample_id and assembly, and hardlink the assembly to $params.output directory
 process ASSEMBLY_UNICYCLER {
     label 'unicycler_container'
+    label 'farm_high'
 
     tag "$sample_id"
 
@@ -25,6 +26,7 @@ process ASSEMBLY_UNICYCLER {
 // Return sample_id and assembly, and hardlink the assembly to $params.output directory
 process ASSEMBLY_SHOVILL {
     label 'shovill_container'
+    label 'farm_high'
 
     tag "$sample_id"
 
@@ -46,6 +48,7 @@ process ASSEMBLY_SHOVILL {
 // Run quast to assess assembly quality
 process ASSEMBLY_ASSESS {
     label 'quast_container'
+    label 'farm_low'
 
     tag "$sample_id"
 
@@ -63,6 +66,7 @@ process ASSEMBLY_ASSESS {
 // Return Assembly QC result based on report.tsv from Quast and total base count
 process ASSEMBLY_QC {
     label 'bash_container'
+    label 'farm_low'
 
     tag "$sample_id"
 

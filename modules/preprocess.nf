@@ -1,6 +1,7 @@
 // Run fastp to preprocess the FASTQs
 process PREPROCESS {
     label 'fastp_container'
+    label 'farm_mid'
 
     tag "$sample_id"
 
@@ -20,6 +21,7 @@ process PREPROCESS {
 // Get total base count from fastp.json
 process GET_BASES {
     label 'bash_container'
+    label 'farm_low'
 
     tag "$sample_id"
 
