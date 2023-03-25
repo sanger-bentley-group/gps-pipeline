@@ -11,12 +11,21 @@ include { PRINT_VERSION; SAVE_INFO } from "$projectDir/workflows/info_and_versio
 // Import supporting modules
 include { startMessage; helpMessage; workflowSelectMessage; endMessage } from "$projectDir/modules/messages"
 include { validate } from "$projectDir/modules/validate"
+include { singularityPreflight } from "$projectDir/modules/singularity"
 
 // Start message
 startMessage(pipelineVersion)
 
 // Validate parameters
 validate(params)
+
+// If Singularity is used as the container engine and not showing help message, do preflight check to prevent parallel pull issues
+// Related issue: https://github.com/nextflow-io/nextflow/issues/1210
+if (workflow.containerEngine === 'singularity' & !params.help) {
+    // TODO
+    // Add preflight message
+    singularityPreflight(workflow.configFiles[0], params.singularity_cachedir)
+}
 
 // Select workflow with PIPELINE as default
 workflow {
