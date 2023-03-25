@@ -42,6 +42,11 @@ void validate(Map params) {
         return
     }
 
+    // Add params.singularity_cachedir when workflow.containerEngine === 'singularity'
+    if (workflow.containerEngine === 'singularity') {
+        validParams.put("singularity_cachedir", "path")
+    }
+
     // For initalisation, skip input and output directories checks
     // For version, skip all file paths related checks
     skippedParams = []

@@ -21,16 +21,9 @@ workflow INIT {
     GET_POPPUNK_DB(params.poppunk_db_remote, params.poppunk_local)
     GET_POPPUNK_EXT_CLUSTERS(params.poppunk_ext_remote, params.poppunk_local)
 
-    switch (workflow.containerEngine) {
-        case 'docker':
-            // Pull all Docker images mentioned in nextflow.config
-            GET_DOCKER_COMPOSE(Channel.fromPath("${workflow.configFiles[0]}"))
-            PULL_IMAGES(GET_DOCKER_COMPOSE.out.compose)
-            break
-
-        case 'singularity':
-            // TODO
-            // pull all singularity images
-            break
+    // Pull all Docker images mentioned in nextflow.config if using Docker
+    if (workflow.containerEngine === 'docker') {
+        GET_DOCKER_COMPOSE(Channel.fromPath("${workflow.configFiles[0]}"))
+        PULL_IMAGES(GET_DOCKER_COMPOSE.out.compose)
     }
 }
