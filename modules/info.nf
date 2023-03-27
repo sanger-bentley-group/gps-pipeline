@@ -203,6 +203,8 @@ process COMBINE_INFO {
 
 // Parse information from JSON into human-readable format
 process PARSE {
+    label 'farm_local'
+
     input:
     val json_file
 
@@ -345,6 +347,8 @@ process PARSE {
 
 // Print version information
 process PRINT {
+    label 'farm_local'
+
     input:
     val coreText
     val dbText
@@ -368,6 +372,8 @@ process PRINT {
 
 // Save version and QC parameters information to info.txt at output dir
 process SAVE {
+    label 'farm_local'
+    
     input:
     val coreText
     val dbText
