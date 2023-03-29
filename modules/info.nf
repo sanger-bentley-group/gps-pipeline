@@ -171,7 +171,7 @@ process TOOLS {
     '''
 }
 
-// Combine pipeline, Nextflow, databases, Docker images, tools version information into the a single JSON file
+// Combine pipeline, Nextflow, databases, container images, tools version information into the a single JSON file
 process COMBINE_INFO {
     label 'bash_container'
     label 'farm_low'
@@ -455,7 +455,7 @@ process SAVE {
     )
 }
 
-// Below processes get tool versions within Docker images by running their containers
+// Below processes get tool versions within container images by running their containers
 
 process GIT_VERSION {
     label 'git_container'

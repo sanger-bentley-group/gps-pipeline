@@ -96,11 +96,11 @@ void endMessage(String selectedWorkflow) {
         case 'init':
             successMessage = '''
                 |Initialisation has been completed successfully.
-                |The pipeline can now be used offline (unless you have changed the selection of any database or Docker image).
+                |The pipeline can now be used offline (unless you have changed the selection of any database or container image).
                 '''.stripMargin()
             failMessage = '''
                 |Initialisation has failed.
-                |Please ensure Docker is running and your machine is conneted to the Internet.
+                |Please ensure Container Engine (i.e. Docker or Singularity) is running and your machine is conneted to the Internet.
                 '''.stripMargin()
             break
         case 'version':
