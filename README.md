@@ -30,6 +30,7 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   - [Taxonomy](#taxonomy)
   - [Serotype](#serotype)
   - [Lineage](#lineage)
+  - [Singularity](#singularity)
 - [Output](#output)
   - [Output Content](#output-content)
   - [Details of `results.csv`](#details-of-resultscsv)
@@ -216,6 +217,12 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | `--poppunk_ext_remote` | Any valid URL to a PopPUNK external clusters file in `.csv` format<br />(Default: [GPS v6 GPSC Designation](https://www.pneumogen.net/gps/GPS_v6_external_clusters.csv)) | URL to a PopPUNK external clusters file. |
   | `--poppunk_local` | Any valid path<br />(Default: `"$projectDir/databases/poppunk"`) | Path to the directory where the remote PopPUNK database and external clusters file should be saved to. |
 
+## Singularity
+  > ℹ️ This section is only valid when Singularity is used as the container engine
+
+  | Option | Values | Description |
+  | --- | ---| --- |
+  | `--singularity_cachedir` | Any valid path<br />(Default: `"$projectDir/singularity_cache"`) | Path to the directory where Singularity images should be saved to. |
 
 &nbsp;
 # Output
