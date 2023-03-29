@@ -13,6 +13,13 @@ include { startMessage; helpMessage; workflowSelectMessage; endMessage } from "$
 include { validate } from "$projectDir/modules/validate"
 include { singularityPreflight } from "$projectDir/modules/singularity"
 
+// Safeguard Nextflow minimum version, in case user is not using the included executable
+nextflowMinVersion = '22.10' 
+if( !nextflow.version.matches("${nextflowMinVersion}+") ) {
+    log.error("The pipeline requires Nextflow version ${nextflowMinVersion} or greater -- You are running version $nextflow.version") 
+    System.exit(1)
+}
+
 // Start message
 startMessage(pipelineVersion)
 
