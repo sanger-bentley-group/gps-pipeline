@@ -10,53 +10,12 @@ process IMAGES {
     path nextflowConfig
 
     output:
-    path("images.json"), emit: json
+    path(json), emit: json
 
     shell:
+    json='images.json'
     '''
-    IMAGES=$(grep -E "container\s?=" !{nextflowConfig} \
-                | sort -u \
-                | sed -r "s/\s+container\s?=\s?'(.+)'/\\1/")
-
-    BASH=$(grep network-multitool <<< $IMAGES)
-    GIT=$(grep git <<< $IMAGES)
-    PYTHON=$(grep python <<< $IMAGES)
-    FASTP=$(grep fastp <<< $IMAGES)
-    UNICYCLER=$(grep unicycler <<< $IMAGES)
-    SHOVILL=$(grep shovill <<< $IMAGES)
-    QUAST=$(grep quast <<< $IMAGES)
-    BWA=$(grep bwa <<< $IMAGES)
-    SAMTOOLS=$(grep samtools <<< $IMAGES)
-    BCFTOOLS=$(grep bcftools <<< $IMAGES)
-    POPPUNK=$(grep poppunk <<< $IMAGES)
-    SPN_PBP_AMR=$(grep spn-pbp-amr <<< $IMAGES)
-    AMRSEARCH=$(grep amrsearch <<< $IMAGES)
-    MLST=$(grep mlst <<< $IMAGES)
-    KRAKEN2=$(grep kraken2 <<< $IMAGES)
-    SEROBA=$(grep seroba <<< $IMAGES)
-
-    add_container () {
-        jq -n --arg container $1 '.container = $container'
-    }
-
-    jq -n \
-        --argjson bash "$(add_container $BASH)" \
-        --argjson git "$(add_container $GIT)" \
-        --argjson python "$(add_container $PYTHON)" \
-        --argjson fastp "$(add_container $FASTP)" \
-        --argjson unicycler "$(add_container $UNICYCLER)" \
-        --argjson shovill "$(add_container $SHOVILL)" \
-        --argjson quast "$(add_container $QUAST)" \
-        --argjson bwa "$(add_container $BWA)" \
-        --argjson samtools "$(add_container $SAMTOOLS)" \
-        --argjson bcftools "$(add_container $BCFTOOLS)" \
-        --argjson poppunk "$(add_container $POPPUNK)" \
-        --argjson spn_pbp_amr "$(add_container $SPN_PBP_AMR)" \
-        --argjson amrsearch "$(add_container $AMRSEARCH)" \
-        --argjson mlst "$(add_container $MLST)" \
-        --argjson kraken2 "$(add_container $KRAKEN2)" \
-        --argjson seroba "$(add_container $SEROBA)" \
-        '$ARGS.named' > images.json
+    get_images_info.sh !{nextflowConfig} !{json}
     '''
 }
 
@@ -72,55 +31,12 @@ process DATABASES {
     val poppunk_db_path
 
     output:
-    path("databases.json"), emit: json
+    path(json), emit: json
 
     shell:
+    json='databases.json'
     '''
-    add_bwa_db () {
-        BWA_DB_JSON=!{bwa_db_path}/done_bwa_db.json
-        if [ -f "$BWA_DB_JSON" ]; then
-            REFERENCE=$(jq -r .reference $BWA_DB_JSON)
-            CREATE_TIME=$(jq -r .create_time $BWA_DB_JSON)
-        else
-            REFERENCE="Not yet created"
-            CREATE_TIME="Not yet created"
-        fi
-        jq -n --arg ref "$REFERENCE" --arg create_time "$CREATE_TIME" '. = {"reference": $ref, "create_time": $create_time}'
-    }
-
-    add_seroba_db () {
-        SEROBA_DB_JSON=!{seroba_db_path}/done_seroba.json
-        if [ -f "$SEROBA_DB_JSON" ]; then
-            GIT=$(jq -r .git $SEROBA_DB_JSON)
-            KMER=$(jq -r .kmer $SEROBA_DB_JSON)
-            CREATE_TIME=$(jq -r .create_time $SEROBA_DB_JSON)
-        else
-            GIT="Not yet created"
-            KMER="Not yet created"
-            CREATE_TIME="Not yet created"
-        fi
-        jq -n --arg git "$GIT" --arg kmer "$KMER" --arg create_time "$CREATE_TIME" '. = {"git": $git, "kmer": $kmer, "create_time": $create_time}'
-    }
-
-    add_url_db () {
-        DB_JSON=$1
-        if [ -f "$DB_JSON" ]; then
-            URL=$(jq -r .url $DB_JSON)
-            SAVE_TIME=$(jq -r .save_time $DB_JSON)
-        else
-            URL="Not yet downloaded"
-            SAVE_TIME="Not yet downloaded"
-        fi
-        jq -n --arg url "$URL" --arg save_time "$SAVE_TIME" '. = {"url": $url, "save_time": $save_time}'
-    }
-
-    jq -n \
-        --argjson bwa_db "$(add_bwa_db)" \
-        --argjson seroba_db "$(add_seroba_db)" \
-        --argjson kraken2_db "$(add_url_db "!{kraken2_db_path}/done_kraken.json")" \
-        --argjson poppunnk_db "$(add_url_db "!{poppunk_db_path}/done_poppunk.json")" \
-        --argjson poppunk_ext "$(add_url_db "!{poppunk_db_path}/done_poppunk_ext.json")" \
-        '$ARGS.named' > databases.json
+    get_databases_info.sh !{bwa_db_path} !{kraken2_db_path} !{seroba_db_path} !{poppunk_db_path} !{json}
     '''
 }
 
@@ -145,29 +61,12 @@ process TOOLS {
     val seroba_version
 
     output:
-    path("tools.json"), emit: json
+    path(json), emit: json
 
     shell:
+    json='tools.json'
     '''
-    add_version () {
-        jq -n --arg version $1 '.version = $version'
-    }
-
-    jq -n \
-        --argjson git "$(add_version '!{git_version}')" \
-        --argjson python "$(add_version '!{python_version}')" \
-        --argjson fastp "$(add_version '!{fastp_version}')" \
-        --argjson unicycler "$(add_version '!{unicycler_version}')" \
-        --argjson shovill "$(add_version '!{shovill_version}')" \
-        --argjson quast "$(add_version '!{quast_version}')" \
-        --argjson bwa "$(add_version '!{bwa_version}')" \
-        --argjson samtools "$(add_version '!{samtools_version}')" \
-        --argjson bcftools "$(add_version '!{bcftools_version}')" \
-        --argjson poppunk "$(add_version '!{poppunk_version}')" \
-        --argjson mlst "$(add_version '!{mlst_version}')" \
-        --argjson kraken2 "$(add_version '!{kraken2_version}')" \
-        --argjson seroba "$(add_version '!{seroba_version}')" \
-        '$ARGS.named' > tools.json
+    get_tools_info.sh !{git_version} !{python_version} !{fastp_version} !{unicycler_version} !{shovill_version} !{quast_version} !{bwa_version} !{samtools_version} !{bcftools_version} !{poppunk_version} !{mlst_version} !{kraken2_version} !{seroba_version} !{json}
     '''
 }
 
@@ -184,20 +83,12 @@ process COMBINE_INFO {
     path tools
 
     output:
-    path("result.json"), emit: json
+    path(json), emit: json
 
     shell:
+    json='result.json'
     '''
-    jq -s '.[0] * .[1] * .[2]' !{database} !{images} !{tools} > working.json
-
-    add_version () {
-        jq --arg entry $1 --arg version "$2" '.[$entry] += {"version": $version}' working.json > tmp.json && mv tmp.json working.json
-    }
-
-    add_version pipeline "!{pipeline_version}"
-    add_version nextflow "!{nextflow_version}"
-
-    mv working.json result.json
+    combine_info.sh !{pipeline_version} !{nextflow_version} !{database} !{images} !{tools} !{json}
     '''
 }
 
@@ -465,9 +356,9 @@ process GIT_VERSION {
     env VERSION
 
     shell:
-    '''
-    VERSION=$(git -v | sed -r "s/.*\s(.+)/\\1/")
-    '''
+    $/
+    VERSION=$(git -v | sed -r "s/.*\s(.+)/\1/")
+    /$
 }
 
 process PYTHON_VERSION {
@@ -478,9 +369,9 @@ process PYTHON_VERSION {
     env VERSION
 
     shell:
-    '''
-    VERSION=$(python --version | sed -r "s/.*\s(.+)/\\1/")
-    '''
+    $/
+    VERSION=$(python --version | sed -r "s/.*\s(.+)/\1/")
+    /$
 }
 
 process FASTP_VERSION {
@@ -491,9 +382,9 @@ process FASTP_VERSION {
     env VERSION
 
     shell:
-    '''
-    VERSION=$(fastp -v 2>&1 | sed -r "s/.*\s(.+)/\\1/")
-    '''
+    $/
+    VERSION=$(fastp -v 2>&1 | sed -r "s/.*\s(.+)/\1/")
+    /$
 }
 
 process UNICYCLER_VERSION {
@@ -504,9 +395,9 @@ process UNICYCLER_VERSION {
     env VERSION
 
     shell:
-    '''
-    VERSION=$(unicycler --version | sed -r "s/.*\sv(.+)/\\1/")
-    '''
+    $/
+    VERSION=$(unicycler --version | sed -r "s/.*\sv(.+)/\1/")
+    /$
 }
 
 process SHOVILL_VERSION {
@@ -517,9 +408,9 @@ process SHOVILL_VERSION {
     env VERSION
 
     shell:
-    '''
-    VERSION=$(shovill -v | sed -r "s/.*\s(.+)/\\1/")
-    '''
+    $/
+    VERSION=$(shovill -v | sed -r "s/.*\s(.+)/\1/")
+    /$
 }
 
 process QUAST_VERSION {
@@ -530,9 +421,9 @@ process QUAST_VERSION {
     env VERSION
 
     shell:
-    '''
-    VERSION=$(quast.py -v | sed -r "s/.*\sv(.+)/\\1/")
-    '''
+    $/
+    VERSION=$(quast.py -v | sed -r "s/.*\sv(.+)/\1/")
+    /$
 }
 
 process BWA_VERSION {
@@ -543,9 +434,9 @@ process BWA_VERSION {
     env VERSION
 
     shell:
-    '''
-    VERSION=$(bwa 2>&1 | grep Version | sed -r "s/.*:\s(.+)/\\1/")
-    '''
+    $/
+    VERSION=$(bwa 2>&1 | grep Version | sed -r "s/.*:\s(.+)/\1/")
+    /$
 }
 
 process SAMTOOLS_VERSION {
@@ -556,9 +447,9 @@ process SAMTOOLS_VERSION {
     env VERSION
 
     shell:
-    '''
-    VERSION=$(samtools 2>&1 | grep Version | sed -r "s/.*:\s(.+)\s\\(.+/\\1/")
-    '''
+    $/
+    VERSION=$(samtools 2>&1 | grep Version | sed -r "s/.*:\s(.+)\s\(.+/\1/")
+    /$
 }
 
 process BCFTOOLS_VERSION {
@@ -569,9 +460,9 @@ process BCFTOOLS_VERSION {
     env VERSION
 
     shell:
-    '''
-    VERSION=$(bcftools 2>&1 | grep Version | sed -r "s/.*:\s(.+)\s\\(.+/\\1/")
-    '''
+    $/
+    VERSION=$(bcftools 2>&1 | grep Version | sed -r "s/.*:\s(.+)\s\(.+/\1/")
+    /$
 }
 
 process POPPUNK_VERSION {
@@ -582,9 +473,9 @@ process POPPUNK_VERSION {
     env VERSION
 
     shell:
-    '''
-    VERSION=$(poppunk --version | sed -r "s/.*\s(.+)/\\1/")
-    '''
+    $/
+    VERSION=$(poppunk --version | sed -r "s/.*\s(.+)/\1/")
+    /$
 }
 
 process MLST_VERSION {
@@ -595,9 +486,9 @@ process MLST_VERSION {
     env VERSION
 
     shell:
-    '''
-    VERSION=$(mlst -v | sed -r "s/.*\s(.+)/\\1/")
-    '''
+    $/
+    VERSION=$(mlst -v | sed -r "s/.*\s(.+)/\1/")
+    /$
 }
 
 process KRAKEN2_VERSION {
@@ -608,9 +499,9 @@ process KRAKEN2_VERSION {
     env VERSION
 
     shell:
-    '''
-    VERSION=$(kraken2 -v | grep version | sed -r "s/.*\s(.+)/\\1/")
-    '''
+    $/
+    VERSION=$(kraken2 -v | grep version | sed -r "s/.*\s(.+)/\1/")
+    /$
 }
 
 process SEROBA_VERSION {
@@ -621,7 +512,7 @@ process SEROBA_VERSION {
     env VERSION
 
     shell:
-    '''
+    $/
     VERSION=$(seroba version)
-    '''
+    /$
 }

@@ -7,23 +7,12 @@ process GET_DOCKER_COMPOSE {
     path nextflowConfig
 
     output:
-    path 'docker-compose.yml', emit: compose
+    path compose, emit: compose
 
     shell:
+    compose='docker-compose.yml'
     '''
-    COMPOSE="docker-compose.yml"
-    COUNT=0
-
-    echo "services:" >> $COMPOSE
-
-    grep -E "container\s?=" !{nextflowConfig} \
-        | sort -u \
-        | sed -r "s/\s+container\s?=\s?'(.+)'/\\1/" \
-        |   while read -r IMAGE ; do
-                COUNT=$((COUNT+1))
-                echo "  SERVICE${COUNT}:" >> $COMPOSE
-                echo "      image: $IMAGE" >> $COMPOSE
-            done
+    get_docker_compose.sh !{nextflowConfig} !{compose}
     '''
 }
 

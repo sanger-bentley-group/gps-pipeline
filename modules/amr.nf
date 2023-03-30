@@ -35,34 +35,7 @@ process GET_PBP_RESISTANCE {
 
     shell:
     '''
-    function GET_VALUE {
-        echo $( < !{json} jq -r --arg target "$1" '.[$target]' \
-            | sed 's/=/eq_sign/g' )
-    }
-
-    function GET_RES {
-        echo $( < !{json} jq -r --arg target "$1" '.[$target]' \
-            | sed 's/^S$/SENSITIVE/g;s/^I$/INTERMEDIATE/g;s/^R$/RESISTANT/g' )
-    }
-
-    pbp1a=$(GET_VALUE "pbp1a")
-    pbp2b=$(GET_VALUE "pbp2b")
-    pbp2x=$(GET_VALUE "pbp2x")
-    AMX_MIC=$(GET_VALUE "amxMic")
-    AMX=$(GET_RES "amx")
-    CRO_MIC=$(GET_VALUE "croMic")
-    CRO_NONMENINGITIS=$(GET_RES "croNonMeningitis")
-    CRO_MENINGITIS=$(GET_RES "croMeningitis")
-    CTX_MIC=$(GET_VALUE "ctxMic")
-    CTX_NONMENINGITIS=$(GET_RES "ctxNonMeningitis")
-    CTX_MENINGITIS=$(GET_RES "ctxMeningitis")
-    CXM_MIC=$(GET_VALUE "cxmMic")
-    CXM=$(GET_RES "cxm")
-    MEM_MIC=$(GET_VALUE "memMic")
-    MEM=$(GET_RES "mem")
-    PEN_MIC=$(GET_VALUE "penMic")
-    PEN_NONMENINGITIS=$(GET_RES "penNonMeningitis")
-    PEN_MENINGITIS=$(GET_RES "penMeningitis")
+    source get_pbp_resistance.sh !{json}
     '''
 }
 
@@ -100,45 +73,6 @@ process GET_OTHER_RESISTANCE {
 
     shell:
     '''
-    function GET_RES {
-        echo $( < !{json} jq -r --arg target "$1" '.resistanceProfile[] | select( .agent.key == $target ) | .state' \
-            | sed 's/NOT_FOUND/NONE/g' \
-            | tr '[:lower:]' '[:upper:]' )
-    }
-
-    function GET_DETERMINANTS {
-        echo $( < !{json} jq -r --arg target "$1" '.resistanceProfile[] | select( .agent.key == $target ) | .determinantRules | keys[] // "_"' \
-        | sed 's/__/; /g' )
-    }
-
-    CHL_RES=$(GET_RES "CHL")
-    CHL_DETERMINANTS=$(GET_DETERMINANTS "CHL")
-
-    CLI_RES=$(GET_RES "CLI")
-    CLI_DETERMINANTS=$(GET_DETERMINANTS "CLI")
-
-    ERY_RES=$(GET_RES "ERY")
-    ERY_DETERMINANTS=$(GET_DETERMINANTS "ERY")
-
-    FLQ_RES=$(GET_RES "FLQ")
-    FLQ_DETERMINANTS=$(GET_DETERMINANTS "FLQ")
-
-    KAN_RES=$(GET_RES "KAN")
-    KAN_DETERMINANTS=$(GET_DETERMINANTS "KAN")
-
-    LNZ_RES=$(GET_RES "LNZ")
-    LNZ_DETERMINANTS=$(GET_DETERMINANTS "LNZ")
-
-    TCY_RES=$(GET_RES "TCY")
-    TCY_DETERMINANTS=$(GET_DETERMINANTS "TCY")
-
-    TMP_RES=$(GET_RES "TMP")
-    TMP_DETERMINANTS=$(GET_DETERMINANTS "TMP")
-
-    SSS_RES=$(GET_RES "SSS")
-    SSS_DETERMINANTS=$(GET_DETERMINANTS "SSS")
-
-    SXT_RES=$(GET_RES "SXT")
-    SXT_DETERMINANTS=$(GET_DETERMINANTS "SXT")
+    source get_other_resistance.sh !{json}
     '''
 }
