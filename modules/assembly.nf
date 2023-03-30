@@ -83,14 +83,6 @@ process ASSEMBLY_QC {
 
     shell:
     '''
-    CONTIGS=$(awk -F'\t' '$1 == "# contigs" { print $2 }' !{report})
-    LENGTH=$(awk -F'\t' '$1 == "Total length" { print $2 }' !{report})
-    DEPTH=$(printf %.2f $(echo "!{bases} / $LENGTH" | bc -l) )
-
-    if (( $CONTIGS < !{qc_contigs} )) && (( $LENGTH >= !{qc_length_low} )) && (( $LENGTH <= !{qc_length_high} )) && (( $(echo "$DEPTH >= !{qc_depth}" | bc -l) )); then
-        ASSEMBLY_QC="PASS"
-    else
-        ASSEMBLY_QC="FAIL"
-    fi
+    source assembly_qc.sh !{report} !{bases} !{qc_contigs} !{qc_length_low} !{qc_length_high} !{qc_depth}
     '''
 }
