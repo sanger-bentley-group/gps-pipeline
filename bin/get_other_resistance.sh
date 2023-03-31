@@ -9,8 +9,6 @@ function GET_DETERMINANTS {
     | sed 's/__/; /g' )
 }
 
-JSON_FILE=$1
-
 CHL_RES=$(GET_RES "CHL")
 CHL_DETERMINANTS=$(GET_DETERMINANTS "CHL")
 

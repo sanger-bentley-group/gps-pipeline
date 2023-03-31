@@ -83,6 +83,13 @@ process ASSEMBLY_QC {
 
     shell:
     '''
-    source assembly_qc.sh !{report} !{bases} !{qc_contigs} !{qc_length_low} !{qc_length_high} !{qc_depth}
+    REPORT="!{report}"
+    BASES="!{bases}"
+    QC_CONTIGS="!{qc_contigs}"
+    QC_LENGTH_LOW="!{qc_length_low}"
+    QC_LENGTH_HIGH="!{qc_length_high}"
+    QC_DEPTH="!{qc_depth}"
+    
+    source assembly_qc.sh      
     '''
 }

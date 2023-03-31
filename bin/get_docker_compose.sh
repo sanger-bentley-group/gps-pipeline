@@ -1,6 +1,3 @@
-NEXTFLOW_CONFIG=$1
-COMPOSE=$2
-
 COUNT=0
 
 echo "services:" >> $COMPOSE

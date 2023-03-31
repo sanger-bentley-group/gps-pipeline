@@ -12,7 +12,10 @@ process GET_DOCKER_COMPOSE {
     shell:
     compose='docker-compose.yml'
     '''
-    get_docker_compose.sh !{nextflowConfig} !{compose}
+    NEXTFLOW_CONFIG="!{nextflowConfig}"
+    COMPOSE="!{compose}"
+    
+    source get_docker_compose.sh
     '''
 }
 

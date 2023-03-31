@@ -1,6 +1,3 @@
-NEXTFLOW_CONFIG=$1
-JSON=$2
-
 IMAGES=$(grep -E "container\s?=" $NEXTFLOW_CONFIG \
                 | sort -u \
                 | sed -r "s/\s+container\s?=\s?'(.+)'/\1/")
@@ -43,4 +40,4 @@ jq -n \
     --argjson mlst "$(add_container $MLST)" \
     --argjson kraken2 "$(add_container $KRAKEN2)" \
     --argjson seroba "$(add_container $SEROBA)" \
-    '$ARGS.named' > $JSON
+    '$ARGS.named' > $JSON_FILE
