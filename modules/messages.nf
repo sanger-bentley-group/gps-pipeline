@@ -66,7 +66,7 @@ void workflowSelectMessage(String selectedWorkflow) {
 
     Date date = new Date()
     String dateStr = date.format('yyyy-MM-dd')
-    String timeStr = date.format('HH:mm:ss')
+    String timeStr = date.format('HH:mm:ss z')
 
     log.info(
         """
@@ -118,7 +118,7 @@ void endMessage(String selectedWorkflow) {
 
     Date date = new Date()
     String dateStr = date.format('yyyy-MM-dd')
-    String timeStr = date.format('HH:mm:ss')
+    String timeStr = date.format('HH:mm:ss z')
 
     log.info(
         """
