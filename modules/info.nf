@@ -15,7 +15,10 @@ process IMAGES {
     shell:
     json='images.json'
     '''
-    get_images_info.sh !{nextflowConfig} !{json}
+    NEXTFLOW_CONFIG="!{nextflowConfig}"
+    JSON_FILE="!{json}"
+
+    source get_images_info.sh
     '''
 }
 
@@ -36,7 +39,13 @@ process DATABASES {
     shell:
     json='databases.json'
     '''
-    get_databases_info.sh !{bwa_db_path} !{kraken2_db_path} !{seroba_db_path} !{poppunk_db_path} !{json}
+    BWA_DB_PATH="!{bwa_db_path}"
+    KRAKEN2_DB_PATH="!{kraken2_db_path}"
+    SEROBA_DB_PATH="!{seroba_db_path}"
+    POPPUNK_DB_PATH="!{poppunk_db_path}"
+    JSON_FILE="!{json}"
+
+    source get_databases_info.sh
     '''
 }
 
@@ -66,7 +75,22 @@ process TOOLS {
     shell:
     json='tools.json'
     '''
-    get_tools_info.sh !{git_version} !{python_version} !{fastp_version} !{unicycler_version} !{shovill_version} !{quast_version} !{bwa_version} !{samtools_version} !{bcftools_version} !{poppunk_version} !{mlst_version} !{kraken2_version} !{seroba_version} !{json}
+    GIT_VERSION="!{git_version}"
+    PYTHON_VERSION="!{python_version}"
+    FASTP_VERSION="!{fastp_version}"
+    UNICYCLER_VERSION="!{unicycler_version}"
+    SHOVILL_VERSION="!{shovill_version}"
+    QUAST_VERSION="!{quast_version}"
+    BWA_VERSION="!{bwa_version}"
+    SAMTOOLS_VERSION="!{samtools_version}"
+    BCFTOOLS_VERSION="!{bcftools_version}"
+    POPPUNK_VERSION="!{poppunk_version}"
+    MLST_VERSION="!{mlst_version}"
+    KRAKEN2_VERSION="!{kraken2_version}"
+    SEROBA_VERSION="!{seroba_version}"
+    JSON_FILE="!{json}"
+                
+    source get_tools_info.sh
     '''
 }
 
@@ -88,7 +112,14 @@ process COMBINE_INFO {
     shell:
     json='result.json'
     '''
-    combine_info.sh !{pipeline_version} !{nextflow_version} !{database} !{images} !{tools} !{json}
+    PIPELINE_VERSION="!{pipeline_version}"
+    NEXTFLOW_VERSION="!{nextflow_version}"
+    DATABASE="!{database}"
+    IMAGES="!{images}"
+    TOOLS="!{tools}"
+    JSON_FILE="!{json}"
+
+    source combine_info.sh
     '''
 }
 

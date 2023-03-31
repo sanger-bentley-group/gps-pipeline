@@ -1,9 +1,3 @@
-BWA_DB_PATH=$1
-KRAKEN2_DB_PATH=$2
-SEROBA_DB_PATH=$3
-POPPUNK_DB_PATH=$4
-JSON=$5
-
 add_bwa_db () {
     BWA_DB_JSON=${BWA_DB_PATH}/done_bwa_db.json
     if [ -f "$BWA_DB_JSON" ]; then
@@ -48,4 +42,4 @@ jq -n \
     --argjson kraken2_db "$(add_url_db "${KRAKEN2_DB_PATH}/done_kraken.json")" \
     --argjson poppunnk_db "$(add_url_db "${POPPUNK_DB_PATH}/done_poppunk.json")" \
     --argjson poppunk_ext "$(add_url_db "${POPPUNK_DB_PATH}/done_poppunk_ext.json")" \
-    '$ARGS.named' > $JSON
+    '$ARGS.named' > $JSON_FILE

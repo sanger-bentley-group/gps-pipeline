@@ -35,7 +35,9 @@ process GET_PBP_RESISTANCE {
 
     shell:
     '''
-    source get_pbp_resistance.sh !{json}
+    JSON_FILE="!{json}"
+
+    source get_pbp_resistance.sh
     '''
 }
 
@@ -73,6 +75,8 @@ process GET_OTHER_RESISTANCE {
 
     shell:
     '''
-    source get_other_resistance.sh !{json}
+    JSON_FILE="!{json}"
+    
+    source get_other_resistance.sh
     '''
 }

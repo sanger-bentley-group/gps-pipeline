@@ -8,8 +8,6 @@ function GET_RES {
         | sed 's/^S$/SENSITIVE/g;s/^I$/INTERMEDIATE/g;s/^R$/RESISTANT/g' )
 }
 
-JSON_FILE=$1
-
 pbp1a=$(GET_VALUE "pbp1a")
 pbp2b=$(GET_VALUE "pbp2b")
 pbp2x=$(GET_VALUE "pbp2x")
