@@ -10,29 +10,16 @@ process GET_REF_GENOME_BWA_DB_PREFIX {
     path local
 
     output:
-    tuple path(local), env(PREFIX)
+    tuple path(local), val(prefix)
 
     shell:
+    prefix='reference'
     '''
-    PREFIX=ref
+    REFERENCE="!{reference}"
+    DB_LOCAL="!{local}"
+    PREFIX="!{prefix}"
 
-    if  [ ! -f !{local}/done_bwa_db.json ] || \
-        [ ! "$(grep 'reference' !{local}/done_bwa_db.json | sed -r 's/.+: "(.*)",/\\1/')" == "!{reference}" ] || \
-        [ ! -f !{local}/${PREFIX}.amb ] || \
-        [ ! -f !{local}/${PREFIX}.ann ] || \
-        [ ! -f !{local}/${PREFIX}.bwt ] || \
-        [ ! -f !{local}/${PREFIX}.pac ] || \
-        [ ! -f !{local}/${PREFIX}.sa ] ; then
-
-        rm -rf !{local}/{,.[!.],..?}*
-
-        bwa index -p ${PREFIX} !{reference}
-
-        mv ${PREFIX}.amb ${PREFIX}.ann ${PREFIX}.bwt ${PREFIX}.pac ${PREFIX}.sa -t !{local}
-
-        echo -e '{\n  "reference": "!{reference}",\n  "create_time": "'"$(date +"%Y-%m-%d %H:%M:%S")"'"\n}' > !{local}/done_bwa_db.json
-
-    fi
+    source get_ref_genome_bwa_db_prefix.sh
     '''
 }
 
@@ -158,13 +145,11 @@ process MAPPING_QC {
 
     shell:
     '''
-    COVERAGE=$(printf %.2f !{ref_coverage})
+    COVERAGE=!{ref_coverage}
     HET_SNP=!{het_snp_count}
+    QC_REF_COVERAGE=!{qc_ref_coverage}
+    QC_HET_SNP_SITE=!{qc_het_snp_site}
 
-    if (( $(echo "$COVERAGE > !{qc_ref_coverage}" | bc -l) )) && (( $HET_SNP < !{qc_het_snp_site} )); then
-        MAPPING_QC="PASS"
-    else
-        MAPPING_QC="FAIL"
-    fi
+    source mapping_qc.sh
     '''
 }
