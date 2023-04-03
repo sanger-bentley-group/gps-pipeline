@@ -13,13 +13,14 @@ process ASSEMBLY_UNICYCLER {
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
 
     output:
-    tuple val(sample_id), path("${sample_id}.contigs.fasta")
+    tuple val(sample_id), path(fasta)
 
-    shell:
-    '''
-    unicycler -1 !{read1} -2 !{read2} -s !{unpaired} -o results -t $(nproc)
-    mv results/assembly.fasta !{sample_id}.contigs.fasta
-    '''
+    script:
+    fasta="${sample_id}.contigs.fasta"
+    """
+    unicycler -1 "$read1" -2 "$read2" -s "$unpaired" -o results -t `nproc`
+    mv results/assembly.fasta "${fasta}"
+    """
 }
 
 // Run Shovill to get assembly
@@ -36,13 +37,14 @@ process ASSEMBLY_SHOVILL {
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
 
     output:
-    tuple val(sample_id), path("${sample_id}.contigs.fasta")
+    tuple val(sample_id), path(fasta)
 
-    shell:
-    '''
-    shovill --R1 !{read1} --R2 !{read2} --outdir results --cpus $(nproc)
-    mv results/contigs.fa !{sample_id}.contigs.fasta
-    '''
+    script:
+    fasta="${sample_id}.contigs.fasta"
+    """
+    shovill --R1 "$read1" --R2 "$read2" --outdir results --cpus `nproc`
+    mv results/contigs.fa "${fasta}"
+    """
 }
 
 // Run quast to assess assembly quality
@@ -57,10 +59,10 @@ process ASSEMBLY_ASSESS {
     output:
     tuple val(sample_id), path('results/report.tsv'), emit: report
 
-    shell:
-    '''
-    quast.py -o results !{assembly}
-    '''
+    script:
+    """
+    quast.py -o results "$assembly"
+    """
 }
 
 // Return Assembly QC result based on report.tsv from Quast and total base count
@@ -81,15 +83,15 @@ process ASSEMBLY_QC {
     tuple val(sample_id), env(CONTIGS), env(LENGTH), env(DEPTH), env(ASSEMBLY_QC), emit: detailed_result
     tuple val(sample_id), env(ASSEMBLY_QC), emit: result
 
-    shell:
-    '''
-    REPORT="!{report}"
-    BASES="!{bases}"
-    QC_CONTIGS="!{qc_contigs}"
-    QC_LENGTH_LOW="!{qc_length_low}"
-    QC_LENGTH_HIGH="!{qc_length_high}"
-    QC_DEPTH="!{qc_depth}"
+    script:
+    """
+    REPORT="$report"
+    BASES="$bases"
+    QC_CONTIGS="$qc_contigs"
+    QC_LENGTH_LOW="$qc_length_low"
+    QC_LENGTH_HIGH="$qc_length_high"
+    QC_DEPTH="$qc_depth"
     
     source assembly_qc.sh      
-    '''
+    """
 }

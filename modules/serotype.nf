@@ -13,14 +13,14 @@ process GET_SEROBA_DB {
     output:
     env CREATE_DB, emit: create_db
 
-    shell:
-    '''
-    DB_REMOTE=!{remote}
-    DB_LOCAL=!{local}
-    KMER=!{kmer}
+    script:
+    """
+    DB_REMOTE="$remote"
+    DB_LOCAL="$local"
+    KMER="$kmer"
 
     source get_seroba_db.sh
-    '''
+    """
 }
 
 // Return SeroBA databases path
@@ -38,17 +38,17 @@ process CREATE_SEROBA_DB {
     output:
     tuple path(local), val(database)
 
-    shell:
+    script:
     database='database'
-    '''
-    DATABASE=!{database}
-    DB_REMOTE=!{remote}
-    DB_LOCAL=!{local}
-    KMER=!{kmer}
-    CREATE_DB=!{create_db}
+    """
+    DATABASE="$database"
+    DB_REMOTE="$remote"
+    DB_LOCAL="$local"
+    KMER="$kmer"
+    CREATE_DB="$create_db"
 
     source create_seroba_db.sh
-    '''
+    """
 }
 
 // Run SeroBA to serotype samples
@@ -65,11 +65,14 @@ process SEROTYPE {
     output:
     tuple val(sample_id), env(SEROTYPE), env(SEROBA_COMMENT), emit: result
 
-    shell:
-    '''
-    seroba runSerotyping !{seroba_dir}/!{database} !{read1} !{read2} !{sample_id}
+    script:
+    """
+    SEROBA_DIR="$seroba_dir"
+    DATABASE="$database"
+    READ1="$read1"
+    READ2="$read2"
+    SAMPLE_ID="$sample_id"
 
-    SEROTYPE=$(awk -F'\t' '{ print $2 }' !{sample_id}/pred.tsv)
-    SEROBA_COMMENT=$(awk -F'\t' '$3!=""{ print $3 } $3==""{ print "_" }' !{sample_id}/pred.tsv)
-    '''
+    source get_serotype.sh
+    """
 }

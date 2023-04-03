@@ -12,13 +12,13 @@ process GET_POPPUNK_DB {
     output:
     tuple path(local), env(DB_NAME)
 
-    shell:
-    '''
-    DB_REMOTE="!{db_remote}"
-    DB_LOCAL="!{local}"
+    script:
+    """
+    DB_REMOTE="$db_remote"
+    DB_LOCAL="$local"
 
     source get_poppunk_db.sh
-    '''
+    """
 }
 
 // Return PopPUNK External Clusters file name
@@ -35,13 +35,13 @@ process GET_POPPUNK_EXT_CLUSTERS {
     output:
     env EXT_CLUSTERS_CSV
 
-    shell:
-    '''
-    EXT_CLUSTERS_REMOTE="!{ext_clusters_remote}"
-    EXT_CLUSTERS_LOCAL="!{local}"
+    script:
+    """
+    EXT_CLUSTERS_REMOTE="$ext_clusters_remote"
+    EXT_CLUSTERS_LOCAL="$local"
 
     source get_poppunk_ext_clusters.sh    
-    '''
+    """
 }
 
 // Run PopPUNK to assign GPSCs to samples
@@ -61,11 +61,11 @@ process LINEAGE {
     output:
     path(result), emit: csv
 
-    shell:
+    script:
     result='result.csv'
-    '''
-    sed 's/^/prefix_/' !{qfile} > safe_qfile.txt
-    poppunk_assign --db !{poppunk_dir}/!{db_name} --external-clustering !{poppunk_dir}/!{ext_clusters_file} --query safe_qfile.txt --output output --threads $(nproc)
-    sed 's/^prefix_//' output/output_external_clusters.csv > !{result}
-    '''
+    """
+    sed 's/^/prefix_/' "$qfile" > safe_qfile.txt
+    poppunk_assign --db "${poppunk_dir}/${db_name}" --external-clustering "${poppunk_dir}/${ext_clusters_file}" --query safe_qfile.txt --output output --threads `nproc`
+    sed 's/^prefix_//' output/output_external_clusters.csv > "$result"
+    """
 }

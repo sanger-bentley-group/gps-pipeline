@@ -1,0 +1,1 @@
+BASES=$(< $JSON jq -r .summary.after_filtering.total_bases)

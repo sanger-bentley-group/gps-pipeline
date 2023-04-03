@@ -9,13 +9,18 @@ process PREPROCESS {
     tuple val(sample_id), path(reads)
 
     output:
-    tuple val(sample_id), path("processed-${sample_id}_1.fastq.gz"), path("processed-${sample_id}_2.fastq.gz"), path("processed-${sample_id}_unpaired.fastq.gz"), emit: processed_reads
+    tuple val(sample_id), path(processed_one), path(processed_two), path(processed_unpaired), emit: processed_reads
     tuple val(sample_id), path('fastp.json'), emit: json
 
-    shell:
-    '''
-    fastp --thread $(nproc) --in1 !{reads[0]} --in2 !{reads[1]} --out1 processed-!{sample_id}_1.fastq.gz --out2 processed-!{sample_id}_2.fastq.gz --unpaired1 processed-!{sample_id}_unpaired.fastq.gz --unpaired2 processed-!{sample_id}_unpaired.fastq.gz
-    '''
+    script:
+    read_one="${reads[0]}"
+    read_two="${reads[1]}"
+    processed_one="processed-${sample_id}_1.fastq.gz"
+    processed_two="processed-${sample_id}_2.fastq.gz"
+    processed_unpaired="processed-${sample_id}_unpaired.fastq.gz"
+    """
+    fastp --thread `nproc` --in1 "$read_one" --in2 "$read_two" --out1 "$processed_one" --out2 "$processed_two" --unpaired1 "$processed_unpaired" --unpaired2 "$processed_unpaired"
+    """
 }
 
 // Get total base count from fastp.json
@@ -31,8 +36,10 @@ process GET_BASES {
     output:
     tuple val(sample_id), env(BASES)
 
-    shell:
-    '''
-    BASES=$(< !{json} jq -r .summary.after_filtering.total_bases)
-    '''
+    script:
+    """
+    JSON="$json"
+    
+    source get_bases.sh
+    """
 }
