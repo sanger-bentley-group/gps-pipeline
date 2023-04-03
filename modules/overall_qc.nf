@@ -11,12 +11,12 @@ process OVERALL_QC {
     output:
     tuple val(sample_id), env(OVERALL_QC), emit: result
 
-    shell:
-    '''
-    ASSEMBLY_QC="!{assembly_qc}"
-    MAPPING_QC="!{mapping_qc}"
-    TAXONOMY_QC="!{taxonomy_qc}"
+    script:
+    """
+    ASSEMBLY_QC="$assembly_qc"
+    MAPPING_QC="$mapping_qc"
+    TAXONOMY_QC="$taxonomy_qc"
 
     source overall_qc.sh
-    '''
+    """
 }

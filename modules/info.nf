@@ -12,14 +12,14 @@ process IMAGES {
     output:
     path(json), emit: json
 
-    shell:
+    script:
     json='images.json'
-    '''
-    NEXTFLOW_CONFIG="!{nextflowConfig}"
-    JSON_FILE="!{json}"
+    """
+    NEXTFLOW_CONFIG="$nextflowConfig"
+    JSON_FILE="$json"
 
     source get_images_info.sh
-    '''
+    """
 }
 
 // Get databases information and saved into a JSON file
@@ -36,17 +36,17 @@ process DATABASES {
     output:
     path(json), emit: json
 
-    shell:
+    script:
     json='databases.json'
-    '''
-    BWA_DB_PATH="!{bwa_db_path}"
-    KRAKEN2_DB_PATH="!{kraken2_db_path}"
-    SEROBA_DB_PATH="!{seroba_db_path}"
-    POPPUNK_DB_PATH="!{poppunk_db_path}"
-    JSON_FILE="!{json}"
+    """
+    BWA_DB_PATH="$bwa_db_path"
+    KRAKEN2_DB_PATH="$kraken2_db_path"
+    SEROBA_DB_PATH="$seroba_db_path"
+    POPPUNK_DB_PATH="$poppunk_db_path"
+    JSON_FILE="$json"
 
     source get_databases_info.sh
-    '''
+    """
 }
 
 // Get tools versions and saved into a JSON file
@@ -72,26 +72,26 @@ process TOOLS {
     output:
     path(json), emit: json
 
-    shell:
+    script:
     json='tools.json'
-    '''
-    GIT_VERSION="!{git_version}"
-    PYTHON_VERSION="!{python_version}"
-    FASTP_VERSION="!{fastp_version}"
-    UNICYCLER_VERSION="!{unicycler_version}"
-    SHOVILL_VERSION="!{shovill_version}"
-    QUAST_VERSION="!{quast_version}"
-    BWA_VERSION="!{bwa_version}"
-    SAMTOOLS_VERSION="!{samtools_version}"
-    BCFTOOLS_VERSION="!{bcftools_version}"
-    POPPUNK_VERSION="!{poppunk_version}"
-    MLST_VERSION="!{mlst_version}"
-    KRAKEN2_VERSION="!{kraken2_version}"
-    SEROBA_VERSION="!{seroba_version}"
-    JSON_FILE="!{json}"
+    """
+    GIT_VERSION="$git_version"
+    PYTHON_VERSION="$python_version"
+    FASTP_VERSION="$fastp_version"
+    UNICYCLER_VERSION="$unicycler_version"
+    SHOVILL_VERSION="$shovill_version"
+    QUAST_VERSION="$quast_version"
+    BWA_VERSION="$bwa_version"
+    SAMTOOLS_VERSION="$samtools_version"
+    BCFTOOLS_VERSION="$bcftools_version"
+    POPPUNK_VERSION="$poppunk_version"
+    MLST_VERSION="$mlst_version"
+    KRAKEN2_VERSION="$kraken2_version"
+    SEROBA_VERSION="$seroba_version"
+    JSON_FILE="$json"
                 
     source get_tools_info.sh
-    '''
+    """
 }
 
 // Combine pipeline, Nextflow, databases, container images, tools version information into the a single JSON file
@@ -109,18 +109,18 @@ process COMBINE_INFO {
     output:
     path(json), emit: json
 
-    shell:
+    script:
     json='result.json'
-    '''
-    PIPELINE_VERSION="!{pipeline_version}"
-    NEXTFLOW_VERSION="!{nextflow_version}"
-    DATABASE="!{database}"
-    IMAGES="!{images}"
-    TOOLS="!{tools}"
-    JSON_FILE="!{json}"
+    """
+    PIPELINE_VERSION="$pipeline_version"
+    NEXTFLOW_VERSION="$nextflow_version"
+    DATABASE="$database"
+    IMAGES="$images"
+    TOOLS="$tools"
+    JSON_FILE="$json"
 
     source combine_info.sh
-    '''
+    """
 }
 
 // Parse information from JSON into human-readable format

@@ -9,14 +9,14 @@ process GET_DOCKER_COMPOSE {
     output:
     path compose, emit: compose
 
-    shell:
+    script:
     compose='docker-compose.yml'
-    '''
-    NEXTFLOW_CONFIG="!{nextflowConfig}"
-    COMPOSE="!{compose}"
+    """
+    NEXTFLOW_CONFIG="$nextflowConfig"
+    COMPOSE="$compose"
     
     source get_docker_compose.sh
-    '''
+    """
 }
 
 // Pull all images in the genetared docker compose file
@@ -24,8 +24,8 @@ process PULL_IMAGES {
     input:
     path compose
 
-    shell:
-    '''
-    docker-compose --file !{compose} pull
-    '''
+    script:
+    """
+    docker-compose --file "$compose" pull
+    """
 }

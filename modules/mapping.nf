@@ -12,15 +12,15 @@ process GET_REF_GENOME_BWA_DB_PREFIX {
     output:
     tuple path(local), val(prefix)
 
-    shell:
+    script:
     prefix='reference'
-    '''
-    REFERENCE="!{reference}"
-    DB_LOCAL="!{local}"
-    PREFIX="!{prefix}"
+    """
+    REFERENCE="$reference"
+    DB_LOCAL="$local"
+    PREFIX="$prefix"
 
     source get_ref_genome_bwa_db_prefix.sh
-    '''
+    """
 }
 
 // Map the reads to reference using BWA-MEM algorithm
@@ -36,12 +36,13 @@ process MAPPING {
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
 
     output:
-    tuple val(sample_id), path("${sample_id}_mapped.sam"), emit: sam
+    tuple val(sample_id), path(sam), emit: sam
 
-    shell:
-    '''
-    bwa mem -t $(nproc) !{bwa_ref_db_dir}/!{prefix} <(zcat -f -- < !{read1}) <(zcat -f -- < !{read2}) > !{sample_id}_mapped.sam
-    '''
+    script:
+    sam="${sample_id}_mapped.sam"
+    """
+    bwa mem -t `nproc` "${bwa_ref_db_dir}/${prefix}" <(zcat -f -- < "$read1") <(zcat -f -- < "$read2") > "$sam"
+    """
 }
 
 // Convert SAM into BAM and sort it
@@ -56,16 +57,16 @@ process SAM_TO_SORTED_BAM {
     tuple val(sample_id), path(sam)
 
     output:
-    tuple val(sample_id), path("${sample_id}_mapped_sorted.bam"), emit: bam
+    tuple val(sample_id), path(bam), emit: bam
 
-    shell:
-    '''
-    samtools view -@ $(($(nproc) - 1)) -b !{sam} > !{sample_id}_mapped.bam
-    rm !{sam}
+    script:
+    bam="${sample_id}_mapped_sorted.bam"
+    """
+    samtools view -@ `nproc` -b "$sam" > mapped.bam
 
-    samtools sort -@ $(nproc) -o !{sample_id}_mapped_sorted.bam !{sample_id}_mapped.bam
-    rm !{sample_id}_mapped.bam
-    '''
+    samtools sort -@ `nproc` -o "$bam" mapped.bam
+    rm mapped.bam
+    """
 }
 
 // Return reference coverage percentage by the reads
@@ -81,11 +82,12 @@ process REF_COVERAGE {
     output:
     tuple val(sample_id), env(COVERAGE), emit: result
 
-    shell:
-    '''
-    samtools index -@ $(($(nproc) - 1)) !{bam}
-    COVERAGE=$(samtools coverage !{bam} | awk -F'\t' 'FNR==2 {print $6}')
-    '''
+    script:
+    """
+    BAM="$bam"
+    
+    source get_ref_coverage.sh
+    """
 }
 
 // Return .vcf by calling the SNPs
@@ -100,12 +102,13 @@ process SNP_CALL {
     tuple val(sample_id), path(bam)
 
     output:
-    tuple val(sample_id), path("${sample_id}.vcf"), emit: vcf
+    tuple val(sample_id), path(vcf), emit: vcf
 
-    shell:
-    '''
-    bcftools mpileup --threads $(nproc) -f !{reference} !{bam} | bcftools call --threads $(nproc) -mv -O v -o !{sample_id}.vcf
-    '''
+    script:
+    vcf="${sample_id}.vcf"
+    """
+    bcftools mpileup --threads `nproc` -f "$reference" "$bam" | bcftools call --threads `nproc` -mv -O v -o "$vcf"
+    """
 }
 
 // Return non-cluster heterozygous SNP (Het-SNP) site count
@@ -121,10 +124,10 @@ process HET_SNP_COUNT {
     output:
     tuple val(sample_id), env(OUTPUT), emit: result
 
-    shell:
-    '''
-    OUTPUT=$(het_snp_count.py !{vcf} 50)
-    '''
+    script:
+    """
+    OUTPUT=`het_snp_count.py "$vcf" 50`
+    """
 }
 
 // Return overall mapping QC result based on reference coverage and count of Het-SNP sites
@@ -143,13 +146,13 @@ process MAPPING_QC {
     tuple val(sample_id), env(COVERAGE), env(HET_SNP), env(MAPPING_QC), emit: detailed_result
     tuple val(sample_id), env(MAPPING_QC), emit: result
 
-    shell:
-    '''
-    COVERAGE=!{ref_coverage}
-    HET_SNP=!{het_snp_count}
-    QC_REF_COVERAGE=!{qc_ref_coverage}
-    QC_HET_SNP_SITE=!{qc_het_snp_site}
+    script:
+    """
+    COVERAGE="$ref_coverage"
+    HET_SNP="$het_snp_count"
+    QC_REF_COVERAGE="$qc_ref_coverage"
+    QC_HET_SNP_SITE="$qc_het_snp_site"
 
     source mapping_qc.sh
-    '''
+    """
 }
