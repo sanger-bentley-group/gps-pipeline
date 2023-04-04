@@ -2,13 +2,8 @@
 
 # For resistances, S, I and R in the file are output as SENSITIVE, INTERMEDIATE and RESISTANT respectively
 
-# Temporary Patch
-# For values, "=" character are replaced by "eq_sign" string to avoid issue when Nextflow attempt to capture string variables with "=" character
-# Reported to Nextflow team via issue nextflow-io/nextflow#3553, and a fix will be released with version 23.04.0 in 2023 April (ETA)
-
 function GET_VALUE {
-    echo $( < $JSON_FILE jq -r --arg target "$1" '.[$target]' \
-        | sed 's/=/eq_sign/g' ) # Temporary Patch
+    echo $( < $JSON_FILE jq -r --arg target "$1" '.[$target]' )
 }
 
 function GET_RES {
