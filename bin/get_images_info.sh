@@ -1,3 +1,5 @@
+# Extract containers information from nextflow.config and save into a JSON file
+
 IMAGES=$(grep -E "container\s?=" $NEXTFLOW_CONFIG \
                 | sort -u \
                 | sed -r "s/\s+container\s?=\s?'(.+)'/\1/")

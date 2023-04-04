@@ -1,3 +1,5 @@
+# If create_db is true: re-create KMC and ARIBA databases, also save metadata to done_seroba.json
+
 if [ $CREATE_DB = true ]; then
 
     seroba createDBs ${DB_LOCAL}/${DATABASE}/ ${KMER}

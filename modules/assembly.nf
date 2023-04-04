@@ -1,13 +1,12 @@
 // Run Unicycler to get assembly
-// Use specific SPAdes executable if provided its directory
-// Return sample_id and assembly, and hardlink the assembly to $params.output directory
+// Return sample_id and assembly, and hardlink the assembly to ${params.output}/assemblies directory
 process ASSEMBLY_UNICYCLER {
     label 'unicycler_container'
     label 'farm_high'
 
     tag "$sample_id"
 
-    publishDir "$params.output/assemblies", mode: 'link'
+    publishDir "${params.output}/assemblies", mode: 'link'
 
     input:
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
@@ -24,14 +23,14 @@ process ASSEMBLY_UNICYCLER {
 }
 
 // Run Shovill to get assembly
-// Return sample_id and assembly, and hardlink the assembly to $params.output directory
+// Return sample_id and assembly, and hardlink the assembly to ${params.output}/assemblies directory
 process ASSEMBLY_SHOVILL {
     label 'shovill_container'
     label 'farm_high'
 
     tag "$sample_id"
 
-    publishDir "$params.output/assemblies", mode: 'link'
+    publishDir "${params.output}/assemblies", mode: 'link'
 
     input:
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
@@ -65,7 +64,7 @@ process ASSEMBLY_ASSESS {
     """
 }
 
-// Return Assembly QC result based on report.tsv from Quast and total base count
+// Extract assembly QC information and determine QC result based on report.tsv from Quast, and total base count
 process ASSEMBLY_QC {
     label 'bash_container'
     label 'farm_low'

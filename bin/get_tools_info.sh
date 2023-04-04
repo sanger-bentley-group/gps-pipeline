@@ -1,3 +1,5 @@
+# Save received tools versions into a JSON file
+
 add_version () {
     jq -n --arg version $1 '.version = $version'
 }

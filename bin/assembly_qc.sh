@@ -1,3 +1,5 @@
+# Extract assembly QC information and determine QC result based on report.tsv from Quast, total base count
+
 CONTIGS=$(awk -F'\t' '$1 == "# contigs" { print $2 }' $REPORT)
 LENGTH=$(awk -F'\t' '$1 == "Total length" { print $2 }' $REPORT)
 DEPTH=$(printf %.2f $(echo "$BASES / $LENGTH" | bc -l) )

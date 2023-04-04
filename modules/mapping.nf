@@ -1,6 +1,4 @@
-// Return database prefix with path for bwa mem runs
-// Check if GET_REF_GENOME_BWA_DB_PREFIX has run successfully on the specific reference.
-// If not: construct the FM-index database of the reference genome for BWA
+// Return database prefix with path, construct if necessary
 process GET_REF_GENOME_BWA_DB_PREFIX {
     label 'bwa_container'
     label 'farm_mid'
@@ -24,7 +22,7 @@ process GET_REF_GENOME_BWA_DB_PREFIX {
 }
 
 // Map the reads to reference using BWA-MEM algorithm
-// Return SAM
+// Return mapped SAM
 process MAPPING {
     label 'bwa_container'
     label 'farm_mid'
@@ -45,8 +43,8 @@ process MAPPING {
     """
 }
 
-// Convert SAM into BAM and sort it
-// Return sorted BAM
+// Convert mapped SAM into BAM and sort it
+// Return mapped and sorted BAM
 process SAM_TO_SORTED_BAM {
     label 'samtools_container'
     label 'farm_mid'
@@ -130,7 +128,7 @@ process HET_SNP_COUNT {
     """
 }
 
-// Return overall mapping QC result based on reference coverage and count of Het-SNP sites
+// Extract mapping QC information and determine QC result based on reference coverage and count of Het-SNP sites
 process MAPPING_QC {
     label 'bash_container'
     label 'farm_low'

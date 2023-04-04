@@ -1,3 +1,6 @@
+# Check if all file exists and were obtained from the database at the specific link.
+# If not: remove files in database directory, download, and unzip to database directory, also save metadata to done_kraken.json
+
 DB_NAME=$(basename $DB_REMOTE)
 
 if  [ ! -f ${DB_LOCAL}/done_kraken.json ] || \

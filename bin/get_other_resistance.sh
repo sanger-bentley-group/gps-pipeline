@@ -1,3 +1,8 @@
+# Extract the results from the output file of the AMRsearch
+
+# For resistances, change NOT_FOUND to NONE, and lower cases to upper cases
+# For determinants, no determinant is output as "_"; determinants separator "__" is output as "; "
+
 function GET_RES {
     echo $( < $JSON_FILE jq -r --arg target "$1" '.resistanceProfile[] | select( .agent.key == $target ) | .state' \
         | sed 's/NOT_FOUND/NONE/g' \

@@ -1,6 +1,4 @@
-// Return Kraken 2 database path
-// Check if GET_KRAKEN_DB has run successfully on the specific database.
-// If not: clean, download, and unzip to params.kraken2_db_local
+// Return Kraken 2 database path, download if necessary
 process GET_KRAKEN_DB {
     label 'bash_container'
     label 'farm_low'
@@ -51,7 +49,7 @@ process TAXONOMY {
         error "The value for --kraken2_memory_mapping is not valid."
 }
 
-// Return Taxonomy QC result based on kraken_report.txt
+// Extract taxonomy QC information and determine QC result based on kraken_report.txt
 process TAXONOMY_QC {
     label 'bash_container'
     label 'farm_low'

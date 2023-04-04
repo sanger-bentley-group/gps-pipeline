@@ -1,3 +1,5 @@
+# Generate a Docker compose file that includes all images used in nextflow.config
+
 COUNT=0
 
 echo "services:" >> $COMPOSE
