@@ -1,6 +1,4 @@
-// Return boolean of CREATE_DB
-// Check if GET_SEROBA_DB and CREATE_SEROBA_DB has run successfully and pull to check if SeroBA database is up-to-date.
-// If outdated or does not exist: clean and clone, set CREATE_DB to true
+// Return boolean of CREATE_DB, download if necessary
 process GET_SEROBA_DB {
     label 'git_container'
     label 'farm_low'
@@ -23,8 +21,7 @@ process GET_SEROBA_DB {
     """
 }
 
-// Return SeroBA databases path
-// If create_db == true: re-create KMC and ARIBA databases
+// Return SeroBA databases path, create databases if necessary
 process CREATE_SEROBA_DB {
     label 'seroba_container'
     label 'farm_low'

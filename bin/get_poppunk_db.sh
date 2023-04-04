@@ -1,5 +1,10 @@
+# Return PopPUNK database name
+
+# Check if all files exist and were obtained from the database at the specific link.
+# If not: remove all sub-directories, download, and unzip to database directory, also save metadata to done_poppunk.json
+
 DB_NAME=$(basename "$DB_REMOTE" .tar.gz)
-DB_PATH="$DB_LOCAL"/${DB_NAME}
+DB_PATH=${DB_LOCAL}/${DB_NAME}
 
 if  [ ! -f ${DB_LOCAL}/done_poppunk.json ] || \
     [ ! "$DB_REMOTE" == "$(jq -r .url ${DB_LOCAL}/done_poppunk.json)"  ] || \

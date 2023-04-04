@@ -1,7 +1,7 @@
-// Import for PARSE
+// Import for PARSE process
 import groovy.json.JsonSlurper
 
-// Extract containers information and saved into a JSON file
+// Extract containers information from nextflow.config and save into a JSON file
 process IMAGES {
     label 'bash_container'
     label 'farm_low'
@@ -22,7 +22,7 @@ process IMAGES {
     """
 }
 
-// Get databases information and saved into a JSON file
+// Save received databases information into a JSON file
 process DATABASES {
     label 'bash_container'
     label 'farm_low'
@@ -49,7 +49,7 @@ process DATABASES {
     """
 }
 
-// Get tools versions and saved into a JSON file
+// Save received tools versions into a JSON file
 process TOOLS {
     label 'bash_container'
     label 'farm_low'
@@ -94,7 +94,7 @@ process TOOLS {
     """
 }
 
-// Combine pipeline, Nextflow, databases, container images, tools version information into the a single JSON file
+// Combine pipeline version, Nextflow version, databases information, container images, tools version JSON files into the a single JSON file
 process COMBINE_INFO {
     label 'bash_container'
     label 'farm_low'
@@ -123,7 +123,7 @@ process COMBINE_INFO {
     """
 }
 
-// Parse information from JSON into human-readable format
+// Parse information from JSON into human-readable tables
 process PARSE {
     label 'farm_local'
 
@@ -267,7 +267,7 @@ process PARSE {
         |""".stripMargin()
 }
 
-// Print version information
+// Print parsed version information
 process PRINT {
     label 'farm_local'
 
@@ -292,7 +292,7 @@ process PRINT {
     )
 }
 
-// Save version and QC parameters information to info.txt at output dir
+// Save I/O, module selection, QC parameters, and version information to info.txt at output dir
 process SAVE {
     label 'farm_local'
     

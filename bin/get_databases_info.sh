@@ -1,3 +1,5 @@
+# Save received databases information into a JSON file
+
 add_bwa_db () {
     BWA_DB_JSON=${BWA_DB_PATH}/done_bwa_db.json
     if [ -f "$BWA_DB_JSON" ]; then

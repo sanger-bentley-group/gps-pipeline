@@ -1,6 +1,4 @@
-// Return PopPUNK database path and database name
-// Check if GET_POPPUNK_DB has run successfully on the specific database.
-// If not: clean, download, and unzip to params.poppunk_local
+// Return PopPUNK database path and database name, download if necessary
 process GET_POPPUNK_DB {
     label 'bash_container'
     label 'farm_low'
@@ -21,9 +19,7 @@ process GET_POPPUNK_DB {
     """
 }
 
-// Return PopPUNK External Clusters file name
-// Check if GET_POPPUNK_EXT_CLUSTERS has run successfully on the specific external clusters file.
-// If not: clean and download to params.poppunk_local
+// Return PopPUNK External Clusters file name, download if necessary
 process GET_POPPUNK_EXT_CLUSTERS {
     label 'bash_container'
     label 'farm_low'

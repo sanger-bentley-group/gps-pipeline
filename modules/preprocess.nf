@@ -23,7 +23,7 @@ process PREPROCESS {
     """
 }
 
-// Get total base count from fastp.json
+// Extract total base count from output JSON file of fastp 
 process GET_BASES {
     label 'bash_container'
     label 'farm_low'

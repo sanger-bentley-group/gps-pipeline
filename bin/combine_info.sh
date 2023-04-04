@@ -1,3 +1,5 @@
+# Combine pipeline version, Nextflow version, databases information, container images, tools version JSON files into the a single JSON file
+
 jq -s '.[0] * .[1] * .[2]' $DATABASE $IMAGES $TOOLS > working.json
 
 add_version () {

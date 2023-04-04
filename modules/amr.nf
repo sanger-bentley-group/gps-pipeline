@@ -18,10 +18,7 @@ process PBP_RESISTANCE {
     """
 }
 
-// Extract the results from the result.json file of the PBP AMR predictor
-//
-// "=" character are replaced by "eq_sign" string to avoid issue when Nextflow attempt to capture string variables with "=" character
-// Reported to Nextflow team via issue nextflow-io/nextflow#3553, and a fix will be released with version 23.04.0 in 2023 April (ETA)
+// Extract the results from the output file of the PBP AMR predictor
 process GET_PBP_RESISTANCE {
     label 'bash_container'
     label 'farm_low'
@@ -62,7 +59,7 @@ process OTHER_RESISTANCE {
     """
 }
 
-// Extract the results from the result.json file of the AMRsearch
+// Extract the results from the output file of the AMRsearch
 process GET_OTHER_RESISTANCE {
     label 'bash_container'
     label 'farm_low'

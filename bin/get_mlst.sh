@@ -1,3 +1,5 @@
+# Run mlst to perform PubMLST typing on samples
+
 OUTPUT='output.tsv'
 
 mlst --legacy --scheme spneumoniae "$ASSEMBLY" > $OUTPUT
