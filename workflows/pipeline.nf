@@ -156,7 +156,7 @@ workflow PIPELINE {
         .map { (it[-1] == null) ? it[0..-2] + ['_'] * 2 : it }
     .join(MLST.out.result, failOnDuplicate: true, remainder: true)
         .map { (it[-1] == null) ? it[0..-2] + ['_'] * 8 : it }
-    .join(GET_PBP_RESISTANCE.out.result.map { it*.replaceAll('eq_sign', '=') }, failOnDuplicate: true, remainder: true) // Revert the equal sign workaround, refer to amr.nf for details
+    .join(GET_PBP_RESISTANCE.out.result, failOnDuplicate: true, remainder: true)
         .map { (it[-1] == null) ? it[0..-2] + ['_'] * 18 : it }
     .join(GET_OTHER_RESISTANCE.out, failOnDuplicate: true, remainder: true)
         .map { (it[-1] == null) ? it[0..-2] + ['_'] * 20 : it }

@@ -11,3 +11,6 @@ databases
 input
 output
 *.html
+
+# Singularity cache
+singularity_cache

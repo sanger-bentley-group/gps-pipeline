@@ -1,18 +1,20 @@
 // Start message
 void startMessage(String pipelineVersion) {
-    log.info """
+    log.info( 
+        $/
         |
         |╔══════════════════════════════════════════════════════════════════════════════════════════╗
         |║                                                                                          ║░
         |║   ____ ____  ____    _   _       _  __ _          _   ____  _            _ _             ║░
-        |║  / ___|  _ \\/ ___|  | | | |_ __ (_)/ _(_) ___  __| | |  _ \\(_)_ __   ___| (_)_ __   ___  ║░
-        |║ | |  _| |_) \\___ \\  | | | | '_ \\| | |_| |/ _ \\/ _` | | |_) | | '_ \\ / _ | | | '_ \\ / _ \\ ║░
+        |║  / ___|  _ \/ ___|  | | | |_ __ (_)/ _(_) ___  __| | |  _ \(_)_ __   ___| (_)_ __   ___  ║░
+        |║ | |  _| |_) \___ \  | | | | '_ \| | |_| |/ _ \/ _` | | |_) | | '_ \ / _ | | | '_ \ / _ \ ║░
         |║ | |_| |  __/ ___) | | |_| | | | | |  _| |  __| (_| | |  __/| | |_) |  __| | | | | |  __/ ║░
-        |║  \\____|_|   |____/   \\___/|_| |_|_|_| |_|\\___|\\__,_| |_|   |_| .__/ \\___|_|_|_| |_|\\___| ║░
+        |║  \____|_|   |____/   \___/|_| |_|_|_| |_|\___|\__,_| |_|   |_| .__/ \___|_|_|_| |_|\___| ║░
         |${String.format('║  v %-57s |_|                         ║░', pipelineVersion)}
         |╚══════════════════════════════════════════════════════════════════════════════════════════╝░
         |  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
-       """.stripMargin()
+       /$.stripMargin()
+    )
 }
 
 // Help message
@@ -64,7 +66,7 @@ void workflowSelectMessage(String selectedWorkflow) {
 
     Date date = new Date()
     String dateStr = date.format('yyyy-MM-dd')
-    String timeStr = date.format('HH:mm:ss')
+    String timeStr = date.format('HH:mm:ss z')
 
     log.info(
         """
@@ -96,11 +98,11 @@ void endMessage(String selectedWorkflow) {
         case 'init':
             successMessage = '''
                 |Initialisation has been completed successfully.
-                |The pipeline can now be used offline (unless you have changed the selection of any database or Docker image).
+                |The pipeline can now be used offline (unless you have changed the selection of any database or container image).
                 '''.stripMargin()
             failMessage = '''
                 |Initialisation has failed.
-                |Please ensure Docker is running and your machine is conneted to the Internet.
+                |Please ensure Container Engine (i.e. Docker or Singularity) is running and your machine is conneted to the Internet.
                 '''.stripMargin()
             break
         case 'version':
@@ -116,7 +118,7 @@ void endMessage(String selectedWorkflow) {
 
     Date date = new Date()
     String dateStr = date.format('yyyy-MM-dd')
-    String timeStr = date.format('HH:mm:ss')
+    String timeStr = date.format('HH:mm:ss z')
 
     log.info(
         """
