@@ -1,8 +1,7 @@
-// Return boolean of CREATE_DB
-// Check if GET_SEROBA_DB and CREATE_SEROBA_DB has run successfully and pull to check if SeroBA database is up-to-date.
-// If outdated or does not exist: clean and clone, set CREATE_DB to true
+// Return boolean of CREATE_DB, download if necessary
 process GET_SEROBA_DB {
     label 'git_container'
+    label 'farm_low'
 
     input:
     val remote
@@ -12,58 +11,47 @@ process GET_SEROBA_DB {
     output:
     env CREATE_DB, emit: create_db
 
-    shell:
-    '''
-    # Assume up-to-date if done_seroba exists and the host cannot be resolved (often means the Internet is not available)
-    if  [ ! -f !{local}/done_seroba.json ] || \
-        [ ! "$(grep 'git' !{local}/done_seroba.json | sed -r 's/.+: "(.*)",/\\1/')" == "!{remote}" ] || \
-        [ ! "$(grep 'kmer' !{local}/done_seroba.json | sed -r 's/.+: "(.*)",/\\1/')" == "!{kmer}" ] || \
-        !((git -C !{local} pull || echo 'Already up-to-date') | grep -q 'Already up[- ]to[- ]date'); then
+    script:
+    """
+    DB_REMOTE="$remote"
+    DB_LOCAL="$local"
+    KMER="$kmer"
 
-        rm -rf !{local}/{,.[!.],..?}*
-        git clone !{remote} !{local}
-
-        CREATE_DB=true
-
-    else
-
-        CREATE_DB=false
-
-    fi
-    '''
+    source get_seroba_db.sh
+    """
 }
 
-// Return SeroBA databases path
-// If create_db == true: re-create KMC and ARIBA databases
+// Return SeroBA databases path, create databases if necessary
 process CREATE_SEROBA_DB {
     label 'seroba_container'
+    label 'farm_low'
 
     input:
     val remote
-    path seroba_dir
+    path local
     val create_db
     val kmer
 
     output:
-    tuple path(seroba_dir), env(DATABASE)
+    tuple path(local), val(database)
 
-    shell:
-    '''
-    DATABASE=database
+    script:
+    database='database'
+    """
+    DATABASE="$database"
+    DB_REMOTE="$remote"
+    DB_LOCAL="$local"
+    KMER="$kmer"
+    CREATE_DB="$create_db"
 
-    if [ !{create_db} = true ]; then
-
-        seroba createDBs !{seroba_dir}/${DATABASE}/ !{kmer}
-
-        echo -e '{\n  "git": "!{remote}",\n  "kmer": "!{kmer}",\n  "create_time": "'"$(date +"%Y-%m-%d %H:%M:%S")"'"\n}' > !{seroba_dir}/done_seroba.json
-
-    fi
-    '''
+    source create_seroba_db.sh
+    """
 }
 
 // Run SeroBA to serotype samples
 process SEROTYPE {
     label 'seroba_container'
+    label 'farm_low'
 
     tag "$sample_id"
 
@@ -74,11 +62,14 @@ process SEROTYPE {
     output:
     tuple val(sample_id), env(SEROTYPE), env(SEROBA_COMMENT), emit: result
 
-    shell:
-    '''
-    seroba runSerotyping !{seroba_dir}/!{database} !{read1} !{read2} !{sample_id}
+    script:
+    """
+    SEROBA_DIR="$seroba_dir"
+    DATABASE="$database"
+    READ1="$read1"
+    READ2="$read2"
+    SAMPLE_ID="$sample_id"
 
-    SEROTYPE=$(awk -F'\t' '{ print $2 }' !{sample_id}/pred.tsv)
-    SEROBA_COMMENT=$(awk -F'\t' '$3!=""{ print $3 } $3==""{ print "_" }' !{sample_id}/pred.tsv)
-    '''
+    source get_serotype.sh
+    """
 }

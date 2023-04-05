@@ -1,67 +1,32 @@
-// Import for PARSE
+// Import for PARSE process
 import groovy.json.JsonSlurper
 
-// Extract containers information and saved into a JSON file
+// Extract containers information from nextflow.config and save into a JSON file
 process IMAGES {
     label 'bash_container'
+    label 'farm_low'
 
     input:
     path nextflowConfig
 
     output:
-    path("images.json"), emit: json
+    path(json), emit: json
 
-    shell:
-    '''
-    IMAGES=$(grep -E "container\s?=" !{nextflowConfig} \
-                | sort -u \
-                | sed -r "s/\s+container\s?=\s?'(.+)'/\\1/")
+    script:
+    json='images.json'
+    """
+    NEXTFLOW_CONFIG="$nextflowConfig"
+    JSON_FILE="$json"
 
-    BASH=$(grep network-multitool <<< $IMAGES)
-    GIT=$(grep git <<< $IMAGES)
-    PYTHON=$(grep python <<< $IMAGES)
-    FASTP=$(grep fastp <<< $IMAGES)
-    UNICYCLER=$(grep unicycler <<< $IMAGES)
-    SHOVILL=$(grep shovill <<< $IMAGES)
-    QUAST=$(grep quast <<< $IMAGES)
-    BWA=$(grep bwa <<< $IMAGES)
-    SAMTOOLS=$(grep samtools <<< $IMAGES)
-    BCFTOOLS=$(grep bcftools <<< $IMAGES)
-    POPPUNK=$(grep poppunk <<< $IMAGES)
-    SPN_PBP_AMR=$(grep spn-pbp-amr <<< $IMAGES)
-    AMRSEARCH=$(grep amrsearch <<< $IMAGES)
-    MLST=$(grep mlst <<< $IMAGES)
-    KRAKEN2=$(grep kraken2 <<< $IMAGES)
-    SEROBA=$(grep seroba <<< $IMAGES)
-
-    add_container () {
-        jq -n --arg container $1 '.container = $container'
-    }
-
-    jq -n \
-        --argjson bash "$(add_container $BASH)" \
-        --argjson git "$(add_container $GIT)" \
-        --argjson python "$(add_container $PYTHON)" \
-        --argjson fastp "$(add_container $FASTP)" \
-        --argjson unicycler "$(add_container $UNICYCLER)" \
-        --argjson shovill "$(add_container $SHOVILL)" \
-        --argjson quast "$(add_container $QUAST)" \
-        --argjson bwa "$(add_container $BWA)" \
-        --argjson samtools "$(add_container $SAMTOOLS)" \
-        --argjson bcftools "$(add_container $BCFTOOLS)" \
-        --argjson poppunk "$(add_container $POPPUNK)" \
-        --argjson spn_pbp_amr "$(add_container $SPN_PBP_AMR)" \
-        --argjson amrsearch "$(add_container $AMRSEARCH)" \
-        --argjson mlst "$(add_container $MLST)" \
-        --argjson kraken2 "$(add_container $KRAKEN2)" \
-        --argjson seroba "$(add_container $SEROBA)" \
-        '$ARGS.named' > images.json
-    '''
+    source get_images_info.sh
+    """
 }
 
-// Get databases information and saved into a JSON file
+// Save received databases information into a JSON file
 process DATABASES {
     label 'bash_container'
+    label 'farm_low'
+
     input:
     val bwa_db_path
     val kraken2_db_path
@@ -69,61 +34,25 @@ process DATABASES {
     val poppunk_db_path
 
     output:
-    path("databases.json"), emit: json
+    path(json), emit: json
 
-    shell:
-    '''
-    add_bwa_db () {
-        BWA_DB_JSON=!{bwa_db_path}/done_bwa_db.json
-        if [ -f "$BWA_DB_JSON" ]; then
-            REFERENCE=$(jq -r .reference $BWA_DB_JSON)
-            CREATE_TIME=$(jq -r .create_time $BWA_DB_JSON)
-        else
-            REFERENCE="Not yet created"
-            CREATE_TIME="Not yet created"
-        fi
-        jq -n --arg ref "$REFERENCE" --arg create_time "$CREATE_TIME" '. = {"reference": $ref, "create_time": $create_time}'
-    }
+    script:
+    json='databases.json'
+    """
+    BWA_DB_PATH="$bwa_db_path"
+    KRAKEN2_DB_PATH="$kraken2_db_path"
+    SEROBA_DB_PATH="$seroba_db_path"
+    POPPUNK_DB_PATH="$poppunk_db_path"
+    JSON_FILE="$json"
 
-    add_seroba_db () {
-        SEROBA_DB_JSON=!{seroba_db_path}/done_seroba.json
-        if [ -f "$SEROBA_DB_JSON" ]; then
-            GIT=$(jq -r .git $SEROBA_DB_JSON)
-            KMER=$(jq -r .kmer $SEROBA_DB_JSON)
-            CREATE_TIME=$(jq -r .create_time $SEROBA_DB_JSON)
-        else
-            GIT="Not yet created"
-            KMER="Not yet created"
-            CREATE_TIME="Not yet created"
-        fi
-        jq -n --arg git "$GIT" --arg kmer "$KMER" --arg create_time "$CREATE_TIME" '. = {"git": $git, "kmer": $kmer, "create_time": $create_time}'
-    }
-
-    add_url_db () {
-        DB_JSON=$1
-        if [ -f "$DB_JSON" ]; then
-            URL=$(jq -r .url $DB_JSON)
-            SAVE_TIME=$(jq -r .save_time $DB_JSON)
-        else
-            URL="Not yet downloaded"
-            SAVE_TIME="Not yet downloaded"
-        fi
-        jq -n --arg url "$URL" --arg save_time "$SAVE_TIME" '. = {"url": $url, "save_time": $save_time}'
-    }
-
-    jq -n \
-        --argjson bwa_db "$(add_bwa_db)" \
-        --argjson seroba_db "$(add_seroba_db)" \
-        --argjson kraken2_db "$(add_url_db "!{kraken2_db_path}/done_kraken.json")" \
-        --argjson poppunnk_db "$(add_url_db "!{poppunk_db_path}/done_poppunk.json")" \
-        --argjson poppunk_ext "$(add_url_db "!{poppunk_db_path}/done_poppunk_ext.json")" \
-        '$ARGS.named' > databases.json
-    '''
+    source get_databases_info.sh
+    """
 }
 
-// Get tools versions and saved into a JSON file
+// Save received tools versions into a JSON file
 process TOOLS {
     label 'bash_container'
+    label 'farm_low'
 
     input:
     val git_version
@@ -141,35 +70,34 @@ process TOOLS {
     val seroba_version
 
     output:
-    path("tools.json"), emit: json
+    path(json), emit: json
 
-    shell:
-    '''
-    add_version () {
-        jq -n --arg version $1 '.version = $version'
-    }
-
-    jq -n \
-        --argjson git "$(add_version '!{git_version}')" \
-        --argjson python "$(add_version '!{python_version}')" \
-        --argjson fastp "$(add_version '!{fastp_version}')" \
-        --argjson unicycler "$(add_version '!{unicycler_version}')" \
-        --argjson shovill "$(add_version '!{shovill_version}')" \
-        --argjson quast "$(add_version '!{quast_version}')" \
-        --argjson bwa "$(add_version '!{bwa_version}')" \
-        --argjson samtools "$(add_version '!{samtools_version}')" \
-        --argjson bcftools "$(add_version '!{bcftools_version}')" \
-        --argjson poppunk "$(add_version '!{poppunk_version}')" \
-        --argjson mlst "$(add_version '!{mlst_version}')" \
-        --argjson kraken2 "$(add_version '!{kraken2_version}')" \
-        --argjson seroba "$(add_version '!{seroba_version}')" \
-        '$ARGS.named' > tools.json
-    '''
+    script:
+    json='tools.json'
+    """
+    GIT_VERSION="$git_version"
+    PYTHON_VERSION="$python_version"
+    FASTP_VERSION="$fastp_version"
+    UNICYCLER_VERSION="$unicycler_version"
+    SHOVILL_VERSION="$shovill_version"
+    QUAST_VERSION="$quast_version"
+    BWA_VERSION="$bwa_version"
+    SAMTOOLS_VERSION="$samtools_version"
+    BCFTOOLS_VERSION="$bcftools_version"
+    POPPUNK_VERSION="$poppunk_version"
+    MLST_VERSION="$mlst_version"
+    KRAKEN2_VERSION="$kraken2_version"
+    SEROBA_VERSION="$seroba_version"
+    JSON_FILE="$json"
+                
+    source get_tools_info.sh
+    """
 }
 
-// Combine pipeline, Nextflow, databases, Docker images, tools version information into the a single JSON file
+// Combine pipeline version, Nextflow version, databases information, container images, tools version JSON files into the a single JSON file
 process COMBINE_INFO {
     label 'bash_container'
+    label 'farm_low'
 
     input:
     val pipeline_version
@@ -179,25 +107,26 @@ process COMBINE_INFO {
     path tools
 
     output:
-    path("result.json"), emit: json
+    path(json), emit: json
 
-    shell:
-    '''
-    jq -s '.[0] * .[1] * .[2]' !{database} !{images} !{tools} > working.json
+    script:
+    json='result.json'
+    """
+    PIPELINE_VERSION="$pipeline_version"
+    NEXTFLOW_VERSION="$nextflow_version"
+    DATABASE="$database"
+    IMAGES="$images"
+    TOOLS="$tools"
+    JSON_FILE="$json"
 
-    add_version () {
-        jq --arg entry $1 --arg version "$2" '.[$entry] += {"version": $version}' working.json > tmp.json && mv tmp.json working.json
-    }
-
-    add_version pipeline "!{pipeline_version}"
-    add_version nextflow "!{nextflow_version}"
-
-    mv working.json result.json
-    '''
+    source combine_info.sh
+    """
 }
 
-// Parse information from JSON into human-readable format
+// Parse information from JSON into human-readable tables
 process PARSE {
+    label 'farm_local'
+
     input:
     val json_file
 
@@ -314,7 +243,7 @@ process PARSE {
     }
 
     imageText = """\
-        |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Docker Images ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+        |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Container Images ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
         |╔════════════════════════════════╤══════════════════════════════════════════════════════════╗
         |${textRow(30, 56, 'Environment For', 'Image')}
         |╠════════════════════════════════╪══════════════════════════════════════════════════════════╣
@@ -338,8 +267,10 @@ process PARSE {
         |""".stripMargin()
 }
 
-// Print version information
+// Print parsed version information
 process PRINT {
+    label 'farm_local'
+
     input:
     val coreText
     val dbText
@@ -361,8 +292,10 @@ process PRINT {
     )
 }
 
-// Save version and QC parameters information to info.txt at output dir
+// Save I/O, module selection, QC parameters, and version information to info.txt at output dir
 process SAVE {
+    label 'farm_local'
+    
     input:
     val coreText
     val dbText
@@ -444,160 +377,173 @@ process SAVE {
     )
 }
 
-// Below processes get tool versions within Docker images by running their containers
+// Below processes get tool versions within container images by running their containers
 
 process GIT_VERSION {
     label 'git_container'
+    label 'farm_low'
 
     output:
     env VERSION
 
     shell:
-    '''
-    VERSION=$(git -v | sed -r "s/.*\s(.+)/\\1/")
-    '''
+    $/
+    VERSION=$(git -v | sed -r "s/.*\s(.+)/\1/")
+    /$
 }
 
 process PYTHON_VERSION {
     label 'python_container'
+    label 'farm_low'
 
     output:
     env VERSION
 
     shell:
-    '''
-    VERSION=$(python --version | sed -r "s/.*\s(.+)/\\1/")
-    '''
+    $/
+    VERSION=$(python --version | sed -r "s/.*\s(.+)/\1/")
+    /$
 }
 
 process FASTP_VERSION {
     label 'fastp_container'
+    label 'farm_low'
 
     output:
     env VERSION
 
     shell:
-    '''
-    VERSION=$(fastp -v 2>&1 | sed -r "s/.*\s(.+)/\\1/")
-    '''
+    $/
+    VERSION=$(fastp -v 2>&1 | sed -r "s/.*\s(.+)/\1/")
+    /$
 }
 
 process UNICYCLER_VERSION {
     label 'unicycler_container'
+    label 'farm_low'
 
     output:
     env VERSION
 
     shell:
-    '''
-    VERSION=$(unicycler --version | sed -r "s/.*\sv(.+)/\\1/")
-    '''
+    $/
+    VERSION=$(unicycler --version | sed -r "s/.*\sv(.+)/\1/")
+    /$
 }
 
 process SHOVILL_VERSION {
     label 'shovill_container'
+    label 'farm_low'
 
     output:
     env VERSION
 
     shell:
-    '''
-    VERSION=$(shovill -v | sed -r "s/.*\s(.+)/\\1/")
-    '''
+    $/
+    VERSION=$(shovill -v | sed -r "s/.*\s(.+)/\1/")
+    /$
 }
 
 process QUAST_VERSION {
     label 'quast_container'
+    label 'farm_low'
 
     output:
     env VERSION
 
     shell:
-    '''
-    VERSION=$(quast.py -v | sed -r "s/.*\sv(.+)/\\1/")
-    '''
+    $/
+    VERSION=$(quast.py -v | sed -r "s/.*\sv(.+)/\1/")
+    /$
 }
 
 process BWA_VERSION {
     label 'bwa_container'
+    label 'farm_low'
 
     output:
     env VERSION
 
     shell:
-    '''
-    VERSION=$(bwa 2>&1 | grep Version | sed -r "s/.*:\s(.+)/\\1/")
-    '''
+    $/
+    VERSION=$(bwa 2>&1 | grep Version | sed -r "s/.*:\s(.+)/\1/")
+    /$
 }
 
 process SAMTOOLS_VERSION {
     label 'samtools_container'
+    label 'farm_low'
 
     output:
     env VERSION
 
     shell:
-    '''
-    VERSION=$(samtools 2>&1 | grep Version | sed -r "s/.*:\s(.+)\s\\(.+/\\1/")
-    '''
+    $/
+    VERSION=$(samtools 2>&1 | grep Version | sed -r "s/.*:\s(.+)\s\(.+/\1/")
+    /$
 }
 
 process BCFTOOLS_VERSION {
     label 'bcftools_container'
+    label 'farm_low'
 
     output:
     env VERSION
 
     shell:
-    '''
-    VERSION=$(bcftools 2>&1 | grep Version | sed -r "s/.*:\s(.+)\s\\(.+/\\1/")
-    '''
+    $/
+    VERSION=$(bcftools 2>&1 | grep Version | sed -r "s/.*:\s(.+)\s\(.+/\1/")
+    /$
 }
 
 process POPPUNK_VERSION {
     label 'poppunk_container'
+    label 'farm_low'
 
     output:
     env VERSION
 
     shell:
-    '''
-    VERSION=$(poppunk --version | sed -r "s/.*\s(.+)/\\1/")
-    '''
+    $/
+    VERSION=$(poppunk --version | sed -r "s/.*\s(.+)/\1/")
+    /$
 }
 
 process MLST_VERSION {
     label 'mlst_container'
+    label 'farm_low'
 
     output:
     env VERSION
 
     shell:
-    '''
-    VERSION=$(mlst -v | sed -r "s/.*\s(.+)/\\1/")
-    '''
+    $/
+    VERSION=$(mlst -v | sed -r "s/.*\s(.+)/\1/")
+    /$
 }
 
 process KRAKEN2_VERSION {
     label 'kraken2_container'
+    label 'farm_low'
 
     output:
     env VERSION
 
     shell:
-    '''
-    VERSION=$(kraken2 -v | grep version | sed -r "s/.*\s(.+)/\\1/")
-    '''
+    $/
+    VERSION=$(kraken2 -v | grep version | sed -r "s/.*\s(.+)/\1/")
+    /$
 }
 
 process SEROBA_VERSION {
     label 'seroba_container'
+    label 'farm_low'
 
     output:
     env VERSION
 
     shell:
-    '''
+    $/
     VERSION=$(seroba version)
-    '''
+    /$
 }

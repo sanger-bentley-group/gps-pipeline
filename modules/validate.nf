@@ -42,6 +42,11 @@ void validate(Map params) {
         return
     }
 
+    // Add params.singularity_cachedir when workflow.containerEngine === 'singularity'
+    if (workflow.containerEngine === 'singularity') {
+        validParams.put("singularity_cachedir", "path")
+    }
+
     // For initalisation, skip input and output directories checks
     // For version, skip all file paths related checks
     skippedParams = []
@@ -126,13 +131,13 @@ void validate(Map params) {
             case 'url_git':
                 if (!(value ==~ /^(https?:\/\/)?(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)\.git$/)) {
                     invalidValues[key] = [value, 'URL that points a Git remote repository (valid URL ending with .git)']
-        }
+                }
                 break
 
             case 'url_targz':
                 if (!(value ==~ /^(https?:\/\/)?(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)\.tar\.gz$/)) {
                     invalidValues[key] = [value, 'URL that points a .tar.gz file (valid URL ending with .tar.gz)']
-    }
+                }
                 break
 
             case 'url_csv':
@@ -144,7 +149,7 @@ void validate(Map params) {
             // Should only reach this statement if a new value type is added to validParams without adding its case above
             default:
                 log.error("""
-                    |Unknown value type \"${valueType}\"
+                    |Unknown value type \"${validParams[key]}\"
                     |Please submit an issue at \"https://github.com/HarryHung/gps-unified-pipeline/issues\"}
                     """.stripMargin())
                 System.exit(1)

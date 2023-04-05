@@ -1,11 +1,12 @@
 # GPS Unified Pipeline <!-- omit in toc -->
 
-[![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-22.10.4-23aa62.svg)](https://www.nextflow.io/)
+[![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-23.04.0-23aa62.svg)](https://www.nextflow.io/)
 [![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)
+[![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/singularity/)
 
 The GPS Unified Pipeline is a Nextflow pipeline designed for processing raw reads (FASTQ files) of *Streptococcus pneumoniae* samples. The pipeline assesses the quality of the reads based on assembly, mapping, and taxonomy. If the sample passes all quality controls (QC), the pipeline also provides the sample's serotype, multi-locus sequence typing (MLST), lineage (based on the [Global Pneumococcal Sequence Cluster (GPSC)](https://www.pneumogen.net/gps/GPSC_lineages.html)), and antimicrobial resistance (AMR) against multiple antimicrobials.
 
-The pipeline is designed to be easy to set up and use, and is suitable for use on local machines. It is also offline-capable, making it an ideal option for cases where the FASTQ files being analysed should not leave the local machine. Additionally, the pipeline only downloads essential files to enable the analysis, and no data is uploaded from the local machine. After initialisation or the first successful complete run, the pipeline can be used offline unless you have changed the selection of any database or Docker image.
+The pipeline is designed to be easy to set up and use, and is suitable for use on local machines. It is also offline-capable, making it an ideal option for cases where the FASTQ files being analysed should not leave the local machine. Additionally, the pipeline only downloads essential files to enable the analysis, and no data is uploaded from the local machine. After initialisation or the first successful complete run, the pipeline can be used offline unless you have changed the selection of any database or container image.
 
 The development of this pipeline is part of the GPS Project ([Global Pneumococcal Sequencing Project](https://www.pneumogen.net/gps/)). 
 
@@ -17,17 +18,19 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   - [Accepted Inputs](#accepted-inputs)
   - [Setup](#setup)
   - [Run](#run)
+  - [Profile](#profile)
   - [Resume](#resume)
   - [Clean Up](#clean-up)
 - [Pipeline Options](#pipeline-options)
   - [Alternative Workflows](#alternative-workflows)
-  - [Input and Ouput](#input-and-ouput)
+  - [Input and Output](#input-and-output)
   - [QC Parameters](#qc-parameters)
   - [Assembly](#assembly)
   - [Mapping](#mapping)
   - [Taxonomy](#taxonomy)
   - [Serotype](#serotype)
   - [Lineage](#lineage)
+  - [Singularity](#singularity)
 - [Output](#output)
   - [Output Content](#output-content)
   - [Details of `results.csv`](#details-of-resultscsv)
@@ -42,8 +45,8 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 # Usage
 ## Requirement
 - A POSIX-compatible system (e.g. Linux, macOS, Windows with [WSL](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux))
-- Java 11 or later (up to 18) ([OpenJDK](https://openjdk.org/)/[Oracle Java](https://www.oracle.com/java/))
-- [Docker](https://www.docker.com/)
+- Java 11 or later (up to 19) ([OpenJDK](https://openjdk.org/)/[Oracle Java](https://www.oracle.com/java/))
+- [Docker](https://www.docker.com/) or [Singularity](https://sylabs.io/singularity/)
 - It is recommended to have at least 16GB of RAM and 100GB of free storage
 ## Accepted Inputs
 - Currently, only Illumina paired-end short reads are supported
@@ -64,14 +67,23 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
     ```
     cd gps-unified-pipeline
     ```
-3. (Optional) You could perform an initialisation to download all required additional files and Docker images, so the pipeline can be used at any time with or without the Internet afterward.
-   > ⚠️ Docker Desktop / Engine must be running, and an Internet connection is required.
-    ```
-    ./run_pipeline --init
-    ```
+3. (Optional) You could perform an initialisation to download all required additional files and container images, so the pipeline can be used at any time with or without the Internet afterwards.
+    > ⚠️ Docker or Singularity must be running, and an Internet connection is required.
+    - For those using Docker as the container engine
+      ```
+      ./run_pipeline --init
+      ```
+    - For those using Singularity as the container engine
+      ```
+      ./run_pipeline --init -profile singularity
+      ```
 
 ## Run
-> ⚠️ Docker Desktop / Engine must be running. An Internet connection is required for the first run (if initialisation was not performed).
+> ⚠️ Docker or Singularity must be running.
+<!-- -->
+> ⚠️ If this is the first run and initialisation was not performed, an Internet connection is required.
+<!-- -->
+> ℹ️ By default, Docker is used as the container engine and all the processes are executed by the local machine. See [Profile](#profile) for details on running the pipeline with Singularity or on a server farm.
 - You can run the pipeline without options. It will attempt to get the raw reads from the default location (`input` directory inside the `gps-unified-pipeline` local repository)
   ```
   ./run_pipeline
@@ -87,10 +99,23 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   - `9870_5#52` will fail the Taxonomy QC and hence Overall QC, therefore without analysis results
   - `17175_7#59` and `21127_1#156` should pass Overall QC, therefore with analysis results
 
+## Profile
+- By default, Docker is used as the container engine and all the processes are executed by the local machine. To change this, you could use Nextflow's built-in `-profile` option to switch to other available profiles
+  > ℹ️ `-profile` is a built-in Nextflow option, it only has one leading `-`
+  ```
+  ./run_pipeline -profile [profile name]
+  ```
+- Currently, the following profiles are available
+  | Profile Name | Details |
+  | --- | --- |
+  | `standard`<br> (Default) | Docker is used as the container engine. <br> Processes are executed locally. |
+  | `singularity` |  Singularity is used as the container engine. <br> Processes are executed locally. |
+  | `lsf` | Singularity is used as the container engine. <br> Processes are sent to your LSF cluster. <br> (Tested on Sanger farm5) |
+
 ## Resume
 - If the pipeline is interrupted mid-run, Nextflow's built-in `-resume` option can be used to resume the pipeline execution instead of starting from scratch again
 - You should use the same command of the original run, only add `-resume` at the end (i.e. all pipeline options should be identical) 
-  > ℹ️ Nextflow options only have one leading `-`, instead of `--` of pipeline options
+  > ℹ️ `-resume` is a built-in Nextflow option, it only has one leading `-`
   ```
   # original command
   ./run_pipeline --reads /path/to/raw-reads-directory
@@ -101,7 +126,7 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 
 ## Clean Up
 - During the run of the pipeline, Nextflow generates a considerable amount of intermediate files
-- If the run has been completed and you do not intend to use the `-resume` option, you can remove the intermediate files by one of following three ways:
+- If the run has been completed and you do not intend to use the `-resume` option, you can remove the intermediate files using one of the following ways:
   - Run `clean_pipeline` script
     - It runs the commands in manual removal for you
     - It removes the `work` directory and log files within the `gps-unified-pipeline` local repository
@@ -115,8 +140,8 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
     rm -rf .nextflow.log*
     ```
   - Run `nextflow clean` command
-    - This built-in command clean up cache and work directories
-    - By default, it only clean up the latest run
+    - This built-in command cleans up cache and work directories
+    - By default, it only cleans up the latest run
     - For details and available options of `nextflow clean`, refer to the [Nextflow documentation](https://www.nextflow.io/docs/latest/cli.html#clean)
     ```
     ./nextflow clean
@@ -125,22 +150,25 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
     
 &nbsp;
 # Pipeline Options
-- The tables below contains the available options that can be used when you run the pipeline
+- The tables below contain the available options that can be used when you run the pipeline
 - Usage:
   ```
   ./run_pipeline [option] [value]
   ```
-- To permanently change the value of an option, edit the `nextflow.config` file inside the `gps-unified-pipeline` local repository.
-> ℹ️ `$projectDir` is the directory where the `gps-unified-pipeline` local repository is stored, it is a [Nextflow built-in implicit variables](https://www.nextflow.io/docs/latest/script.html?highlight=projectdir#implicit-variables).
+> ℹ️ To permanently change the value of an option, edit the `nextflow.config` file inside the `gps-unified-pipeline` local repository.
+<!-- -->
+> ℹ️ `$projectDir` is a [Nextflow built-in implicit variables](https://www.nextflow.io/docs/latest/script.html?highlight=projectdir#implicit-variables), it is defined as the directory where the `gps-unified-pipeline` local repository is stored.
+<!-- -->
+> ℹ️ They are not built-in Nextflow options, hence lead with `--` instead of `-`
 
 ## Alternative Workflows
   | Option | Values | Description |
   | --- | ---| --- |
-  | `--init` | `true` or `false`<br />(Default: `false`) | Use alternative workflow for initialisation, which means downloading all required additional files and Docker images.<br />Can be enabled by including `--init` without value. |
-  | `--version` | `true` or `false`<br />(Default: `false`)| Use alternative workflow for getting versions of pipeline, tools and databases.<br />Can be enabled by including `--version` without value.<br /> (This workflow pulls some of the required Docker images if they are not yet available locally) |
+  | `--init` | `true` or `false`<br />(Default: `false`) | Use alternative workflow for initialisation, which means downloading all required additional files and container images.<br />Can be enabled by including `--init` without value. |
+  | `--version` | `true` or `false`<br />(Default: `false`)| Use alternative workflow for getting versions of pipeline, tools and databases.<br />Can be enabled by including `--version` without value.<br /> (This workflow pulls the required container images if they are not yet available locally) |
   | `--help` | `true` or `false`<br />(Default: `false`)| Show help message.<br />Can be enabled by including `--help` without value. |
 
-## Input and Ouput
+## Input and Output
   | Option | Values | Description |
   | --- | ---| --- |
   | `--reads` | Any valid path<br />(Default: `"$projectDir/input"`) | Path to the input directory that contains the reads to be processed. |
@@ -160,7 +188,7 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 ## Assembly
   | Option | Values | Description |
   | --- | ---| --- |
-  | `--assembler` | `"shovill"` or `"unicycler"`<br />(Default: `"shovill"`)| SPAdes Assembler to assembly the reads. |
+  | `--assembler` | `"shovill"` or `"unicycler"`<br />(Default: `"shovill"`)| SPAdes Assembler to assemble the reads. |
 
 ## Mapping
   | Option | Values | Description |
@@ -189,6 +217,12 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | `--poppunk_ext_remote` | Any valid URL to a PopPUNK external clusters file in `.csv` format<br />(Default: [GPS v6 GPSC Designation](https://www.pneumogen.net/gps/GPS_v6_external_clusters.csv)) | URL to a PopPUNK external clusters file. |
   | `--poppunk_local` | Any valid path<br />(Default: `"$projectDir/databases/poppunk"`) | Path to the directory where the remote PopPUNK database and external clusters file should be saved to. |
 
+## Singularity
+  > ℹ️ This section is only valid when Singularity is used as the container engine
+
+  | Option | Values | Description |
+  | --- | ---| --- |
+  | `--singularity_cachedir` | Any valid path<br />(Default: `"$projectDir/singularity_cache"`) | Path to the directory where Singularity images should be saved to. |
 
 &nbsp;
 # Output
