@@ -6,6 +6,7 @@ validParams = [
     reads: 'path_exist',
     output: 'path',
     assembler: 'assembler',
+    min_contig_length: 'int',
     seroba_remote: 'url_git',
     seroba_local: 'path',
     seroba_kmer: 'int',

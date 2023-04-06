@@ -10,6 +10,7 @@ process ASSEMBLY_UNICYCLER {
 
     input:
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
+    val min_contig_length
 
     output:
     tuple val(sample_id), path(fasta)
@@ -17,7 +18,7 @@ process ASSEMBLY_UNICYCLER {
     script:
     fasta="${sample_id}.contigs.fasta"
     """
-    unicycler -1 "$read1" -2 "$read2" -s "$unpaired" -o results -t `nproc`
+    unicycler -1 "$read1" -2 "$read2" -s "$unpaired" -o results -t `nproc` --min_fasta_length "$min_contig_length"
     mv results/assembly.fasta "${fasta}"
     """
 }
@@ -34,6 +35,7 @@ process ASSEMBLY_SHOVILL {
 
     input:
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
+    val min_contig_length
 
     output:
     tuple val(sample_id), path(fasta)
@@ -41,7 +43,7 @@ process ASSEMBLY_SHOVILL {
     script:
     fasta="${sample_id}.contigs.fasta"
     """
-    shovill --R1 "$read1" --R2 "$read2" --outdir results --cpus `nproc`
+    shovill --R1 "$read1" --R2 "$read2" --outdir results --cpus `nproc` --minlen "$min_contig_length"
     mv results/contigs.fa "${fasta}"
     """
 }
