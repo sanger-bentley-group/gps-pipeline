@@ -37,11 +37,11 @@ workflow PIPELINE {
     // Output into Channel ASSEMBLY_ch, and hardlink the assemblies to $params.output directory
     switch (params.assembler) {
         case 'shovill':
-            ASSEMBLY_ch = ASSEMBLY_SHOVILL(PREPROCESS.out.processed_reads)
+            ASSEMBLY_ch = ASSEMBLY_SHOVILL(PREPROCESS.out.processed_reads, params.min_contig_length)
             break
 
         case 'unicycler':
-            ASSEMBLY_ch = ASSEMBLY_UNICYCLER(PREPROCESS.out.processed_reads)
+            ASSEMBLY_ch = ASSEMBLY_UNICYCLER(PREPROCESS.out.processed_reads, params.min_contig_length)
             break
     }
 
