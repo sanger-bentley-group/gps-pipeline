@@ -325,17 +325,18 @@ process SAVE {
     |╚══════════╧════════════════════════════════════════════════════════════════════════════════╝
     |""".stripMargin()
 
-    def moduleTextRow = { leftContent, rightContent ->
-        textRow(15, 71, leftContent, rightContent)
+    def assemblerTextRow = { leftContent, rightContent ->
+        textRow(25, 61, leftContent, rightContent)
     }
 
-    String moduleText = """\
-    |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Module Selection ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-    |╔═════════════════╤═════════════════════════════════════════════════════════════════════════╗
-    |${moduleTextRow('Module', 'Selection')}
-    |╠═════════════════╪═════════════════════════════════════════════════════════════════════════╣
-    |${moduleTextRow('Assembler', params.assembler.capitalize())}
-    |╚═════════════════╧═════════════════════════════════════════════════════════════════════════╝
+    String assemblerText = """\
+    |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Assembler Options ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+    |╔═══════════════════════════╤═══════════════════════════════════════════════════════════════╗
+    |${assemblerTextRow('Option', 'Value')}
+    |╠═══════════════════════════╪═══════════════════════════════════════════════════════════════╣
+    |${assemblerTextRow('Selected Assembler', params.assembler.capitalize())}
+    |${assemblerTextRow('Minimum contig length', params.min_contig_length)}
+    |╚═══════════════════════════╧═══════════════════════════════════════════════════════════════╝
     |""".stripMargin()
 
     def qcTextRow = { leftContent, rightContent ->
@@ -368,7 +369,7 @@ process SAVE {
         """\
         |${coreText}
         |${ioText}
-        |${moduleText}
+        |${assemblerText}
         |${qcText}
         |${dbText}
         |${toolText}
