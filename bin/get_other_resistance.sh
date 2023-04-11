@@ -1,7 +1,7 @@
 # Extract the results from the output file of the AMRsearch
 
 # For resistances, change NOT_FOUND to NONE, and lower cases to upper cases
-# For determinants, no determinant is output as "_"; determinants separator "__" is output as "; "
+# For determinants, determinants are separated by "; ", and no determinant is output as "_". Each acquired gene is output as "*gene*", each variant is output as "*gene*_*variant*"
 
 function GET_RES {
     echo $( < $JSON_FILE jq -r --arg target "$1" '.resistanceProfile[] | select( .agent.key == $target ) | .state' \
