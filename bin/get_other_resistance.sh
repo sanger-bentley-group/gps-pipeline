@@ -10,8 +10,27 @@ function GET_RES {
 }
 
 function GET_DETERMINANTS {
-    echo $( < $JSON_FILE jq -r --arg target "$1" '.resistanceProfile[] | select( .agent.key == $target ) | .determinantRules | keys[] // "_"' \
-    | sed 's/__/; /g' )
+    DETERMINANTS=()
+
+    ACQUIRED=$(< $JSON_FILE jq -r --arg target "$1" '.resistanceProfile[] | select( .agent.key == $target ) | .determinants | .acquired | map(.gene) | join("; ")')
+    VARIANTS=$(< $JSON_FILE jq -r --arg target "$1" '.resistanceProfile[] | select( .agent.key == $target ) | .determinants | .variants | map(.gene + "_" +.variant) | join("; ")')
+
+    if [ ! -z "$ACQUIRED" ]
+    then
+        DETERMINANTS+=("$ACQUIRED")
+    fi
+
+    if [ ! -z "$VARIANTS" ]
+    then
+        DETERMINANTS+=("$VARIANTS")
+    fi
+
+    if (( ${#DETERMINANTS[@]} == 0 )); then
+        DETERMINANTS+=("_")
+    fi
+
+    printf -v DETERMINANTS_OUTPUT '; %s' "${DETERMINANTS[@]}"
+    echo ${DETERMINANTS_OUTPUT:2}
 }
 
 CHL_RES=$(GET_RES "CHL")
