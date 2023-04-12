@@ -63,13 +63,30 @@ process SEROTYPE {
     tuple val(sample_id), env(SEROTYPE), env(SEROBA_COMMENT), emit: result
 
     script:
-    """
-    SEROBA_DIR="$seroba_dir"
-    DATABASE="$database"
-    READ1="$read1"
-    READ2="$read2"
-    SAMPLE_ID="$sample_id"
+    // When using Singularity as container engine, certain range of path length results in the failure of Seroba on certain samples
+    // Therefore when using Singularity and task attempt > 1, create and use a subdirectory to increase path length as a workaround
+    if (!(workflow.containerEngine === 'singularity' && task.attempt > 1))
+        """
+        SEROBA_DIR="$seroba_dir"
+        DATABASE="$database"
+        READ1="$read1"
+        READ2="$read2"
+        SAMPLE_ID="$sample_id"
 
-    source get_serotype.sh
-    """
+        source get_serotype.sh
+        """
+    else
+        """
+        SEROBA_DIR="$seroba_dir"
+        DATABASE="$database"
+        READ1="$read1"
+        READ2="$read2"
+        SAMPLE_ID="$sample_id"
+
+        mkdir WORKAROUND && mv $seroba_dir $read1 $read2 WORKAROUND && cd WORKAROUND
+
+        source get_serotype.sh
+
+        cd ../
+        """
 }
