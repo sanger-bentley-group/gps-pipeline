@@ -1,7 +1,7 @@
 # Extract the results from the output file of the AMRsearch
 
 # For resistances, change NOT_FOUND to NONE, and lower cases to upper cases
-# For determinants, determinants are separated by "; ", and no determinant is output as "_". Each acquired gene is output as "*gene*", each variant is output as "*gene*_*variant*"
+# For determinants, determinants are sorted and separated by "; ", and no determinant is output as "_". Each acquired gene is output as "*gene*", each variant is output as "*gene*_*variant*"
 
 function GET_RES {
     echo $( < $JSON_FILE jq -r --arg target "$1" '.resistanceProfile[] | select( .agent.key == $target ) | .state' \
@@ -12,25 +12,24 @@ function GET_RES {
 function GET_DETERMINANTS {
     DETERMINANTS=()
 
-    ACQUIRED=$(< $JSON_FILE jq -r --arg target "$1" '.resistanceProfile[] | select( .agent.key == $target ) | .determinants | .acquired | map(.gene) | join("; ")')
-    VARIANTS=$(< $JSON_FILE jq -r --arg target "$1" '.resistanceProfile[] | select( .agent.key == $target ) | .determinants | .variants | map(.gene + "_" +.variant) | join("; ")')
+    ACQUIRED=( $(< $JSON_FILE jq -r --arg target "$1" '.resistanceProfile[] | select( .agent.key == $target ) | .determinants | .acquired | map(.gene)[]') )
+    VARIANTS=( $(< $JSON_FILE jq -r --arg target "$1" '.resistanceProfile[] | select( .agent.key == $target ) | .determinants | .variants | map(.gene + "_" +.variant)[]') )
 
-    if [ ! -z "$ACQUIRED" ]
-    then
-        DETERMINANTS+=("$ACQUIRED")
+    if (( ${#ACQUIRED[@]} != 0 )); then
+        DETERMINANTS+=( "${ACQUIRED[@]}" )
     fi
 
-    if [ ! -z "$VARIANTS" ]
-    then
-        DETERMINANTS+=("$VARIANTS")
+    if (( ${#VARIANTS[@]} != 0 )); then
+        DETERMINANTS+=( "${VARIANTS[@]}" )
     fi
 
     if (( ${#DETERMINANTS[@]} == 0 )); then
         DETERMINANTS+=("_")
     fi
 
-    printf -v DETERMINANTS_OUTPUT '; %s' "${DETERMINANTS[@]}"
-    echo ${DETERMINANTS_OUTPUT:2}
+    IFS=$'\n' SORTED_DETERMINANTS=($(sort -f <<<"${DETERMINANTS[*]}")); unset IFS
+    printf -v JOINED_DETERMINANTS '; %s' "${SORTED_DETERMINANTS[@]}"
+    echo ${JOINED_DETERMINANTS:2}
 }
 
 CHL_RES=$(GET_RES "CHL")
