@@ -43,7 +43,7 @@ process ASSEMBLY_SHOVILL {
     script:
     fasta="${sample_id}.contigs.fasta"
     """
-    shovill --R1 "$read1" --R2 "$read2" --outdir results --cpus `nproc` --minlen "$min_contig_length"
+    shovill --R1 "$read1" --R2 "$read2" --outdir results --cpus `nproc` --minlen "$min_contig_length" --force
     mv results/contigs.fa "${fasta}"
     """
 }
