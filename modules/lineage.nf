@@ -46,6 +46,8 @@ process GET_POPPUNK_EXT_CLUSTERS {
 process LINEAGE {
     label 'poppunk_container'
     label 'farm_high'
+    label 'farm_slow'
+    label 'farm_scratchless'
 
     tag 'All samples'
 
