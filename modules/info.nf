@@ -320,8 +320,8 @@ process SAVE {
     |╔══════════╤════════════════════════════════════════════════════════════════════════════════╗
     |${ioTextRow('Type', 'Path')}
     |╠══════════╪════════════════════════════════════════════════════════════════════════════════╣
-    |${ioTextRow('Input', readsDir.absolutePath)}
-    |${ioTextRow('Output', outputDir.absolutePath)}
+    |${ioTextRow('Input', readsDir.canonicalPath)}
+    |${ioTextRow('Output', outputDir.canonicalPath)}
     |╚══════════╧════════════════════════════════════════════════════════════════════════════════╝
     |""".stripMargin()
 
