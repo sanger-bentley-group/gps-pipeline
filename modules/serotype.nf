@@ -52,6 +52,7 @@ process CREATE_SEROBA_DB {
 process SEROTYPE {
     label 'seroba_container'
     label 'farm_low'
+    label 'farm_scratchless'
 
     tag "$sample_id"
 
@@ -63,8 +64,8 @@ process SEROTYPE {
     tuple val(sample_id), env(SEROTYPE), env(SEROBA_COMMENT), emit: result
 
     script:
-    // When using Singularity as container engine, certain range of path length results in the failure of Seroba on certain samples
-    // Therefore when using Singularity and task attempt > 1, create and use a subdirectory to increase path length as a workaround
+    // When using Singularity as container engine, certain paths result in the failure of Seroba on certain samples
+    // Therefore when using Singularity and task attempt > 1, create and use a subdirectory to alter the path as a workaround
     if (!(workflow.containerEngine === 'singularity' && task.attempt > 1))
         """
         SEROBA_DIR="$seroba_dir"
