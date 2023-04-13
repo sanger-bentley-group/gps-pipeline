@@ -91,5 +91,5 @@ process SEROTYPE {
         cd ../
         """
     else
-        error "Incorrect value for workflow.containerEngine"
+        error "The process must be run with Docker or Singularity as container engine."
 }
