@@ -52,7 +52,6 @@ process CREATE_SEROBA_DB {
 process SEROTYPE {
     label 'seroba_container'
     label 'farm_low'
-    label 'farm_scratchless'
 
     tag "$sample_id"
 
@@ -64,9 +63,10 @@ process SEROTYPE {
     tuple val(sample_id), env(SEROTYPE), env(SEROBA_COMMENT), emit: result
 
     script:
-    // When using Singularity as container engine, certain paths result in the failure of Seroba on certain samples
-    // Therefore when using Singularity and task attempt > 1, create and use a subdirectory to alter the path as a workaround
-    if (!(workflow.containerEngine === 'singularity' && task.attempt > 1))
+    // When using Singularity as container engine, SeroBA sometimes gives incorrect result or critical error
+    // Uncertain root cause, happen randomly when input are located directly in a Nextflow process work directory
+    // Workaround: create and use a subdirectory to alter the path
+    if (workflow.containerEngine === 'docker')
         """
         SEROBA_DIR="$seroba_dir"
         DATABASE="$database"
@@ -76,7 +76,7 @@ process SEROTYPE {
 
         source get_serotype.sh
         """
-    else
+    else if (workflow.containerEngine === 'singularity')
         """
         SEROBA_DIR="$seroba_dir"
         DATABASE="$database"
@@ -84,10 +84,12 @@ process SEROTYPE {
         READ2="$read2"
         SAMPLE_ID="$sample_id"
 
-        mkdir WORKAROUND && mv $seroba_dir $read1 $read2 WORKAROUND && cd WORKAROUND
+        mkdir SEROBA_WORKDIR && mv $seroba_dir $read1 $read2 SEROBA_WORKDIR && cd SEROBA_WORKDIR
 
         source get_serotype.sh
 
         cd ../
         """
+    else
+        error "The process must be run with Docker or Singularity as container engine."
 }
