@@ -37,7 +37,6 @@ process READ_QC {
 
     output:
     tuple val(sample_id), env(BASES), emit: bases
-    tuple val(sample_id), env(BASES), env(READ_QC), emit: detailed_result
     tuple val(sample_id), env(READ_QC), emit: result
 
     script:

@@ -81,7 +81,7 @@ process ASSEMBLY_QC {
     val(qc_depth)
 
     output:
-    tuple val(sample_id), env(CONTIGS), env(LENGTH), env(DEPTH), env(ASSEMBLY_QC), emit: detailed_result
+    tuple val(sample_id), env(CONTIGS), env(LENGTH), env(DEPTH), emit: info
     tuple val(sample_id), env(ASSEMBLY_QC), emit: result
 
     script:
