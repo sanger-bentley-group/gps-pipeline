@@ -1,5 +1,5 @@
 // Import process modules
-include { PREPROCESS; GET_BASES } from "$projectDir/modules/preprocess"
+include { PREPROCESS; READ_QC } from "$projectDir/modules/preprocess"
 include { ASSEMBLY_UNICYCLER; ASSEMBLY_SHOVILL; ASSEMBLY_ASSESS; ASSEMBLY_QC } from "$projectDir/modules/assembly"
 include { GET_REF_GENOME_BWA_DB_PREFIX; MAPPING; SAM_TO_SORTED_BAM; REF_COVERAGE; SNP_CALL; HET_SNP_COUNT; MAPPING_QC } from "$projectDir/modules/mapping"
 include { GET_KRAKEN_DB; TAXONOMY; TAXONOMY_QC } from "$projectDir/modules/taxonomy"
@@ -33,35 +33,44 @@ workflow PIPELINE {
     // Output into Channels PREPROCESS.out.processed_reads & PREPROCESS.out.json
     PREPROCESS(raw_read_pairs_ch)
 
-    // From Channel PREPROCESS.out.processed_reads, assemble the preprocess read pairs
+    // From Channel PREPROCESS.out.json, provide Read QC status
+    // Output into Channel READ_QC_PASSED_READS_ch
+    READ_QC(PREPROCESS.out.json, params.length_low, params.depth)
+
+    // From Channel PREPROCESS.out.processed_reads, only output reads of samples passed Read QC based on Channel READ_QC.out.result
+    READ_QC_PASSED_READS_ch = READ_QC.out.result.join(PREPROCESS.out.processed_reads, failOnDuplicate: true, failOnMismatch: true)
+                        .filter { it[1] == 'PASS' }
+                        .map { it[0, 2..-1] }
+
+    // From Channel READ_QC_PASSED_READS_ch, assemble the preprocess read pairs
     // Output into Channel ASSEMBLY_ch, and hardlink the assemblies to $params.output directory
     switch (params.assembler) {
         case 'shovill':
-            ASSEMBLY_ch = ASSEMBLY_SHOVILL(PREPROCESS.out.processed_reads, params.min_contig_length)
+            ASSEMBLY_ch = ASSEMBLY_SHOVILL(READ_QC_PASSED_READS_ch, params.min_contig_length)
             break
 
         case 'unicycler':
-            ASSEMBLY_ch = ASSEMBLY_UNICYCLER(PREPROCESS.out.processed_reads, params.min_contig_length)
+            ASSEMBLY_ch = ASSEMBLY_UNICYCLER(READ_QC_PASSED_READS_ch, params.min_contig_length)
             break
     }
 
     // From Channel ASSEMBLY_ch, assess assembly quality
     ASSEMBLY_ASSESS(ASSEMBLY_ch)
 
-    // From Channel ASSEMBLY_ASSESS.out.report and Channel GET_BASES(PREPROCESS.out.json), provide Assembly QC status
+    // From Channel ASSEMBLY_ASSESS.out.report and Channel READ_QC.out.bases, provide Assembly QC status
     // Output into Channels ASSEMBLY_QC.out.detailed_result & ASSEMBLY_QC.out.result
     ASSEMBLY_QC(
         ASSEMBLY_ASSESS.out.report
-        .join(GET_BASES(PREPROCESS.out.json), failOnDuplicate: true, failOnMismatch: true),
+        .join(READ_QC.out.bases, failOnDuplicate: true),
         params.contigs,
         params.length_low,
         params.length_high,
         params.depth
     )
 
-    // From Channel PREPROCESS.out.processed_reads map reads to reference
+    // From Channel READ_QC_PASSED_READS_ch map reads to reference
     // Output into Channel MAPPING.out.sam
-    MAPPING(ref_genome_bwa_db_prefix, PREPROCESS.out.processed_reads)
+    MAPPING(ref_genome_bwa_db_prefix, READ_QC_PASSED_READS_ch)
 
     // From Channel MAPPING.out.sam, Convert SAM into sorted BAM
     // Output into Channel SAM_TO_SORTED_BAM.out.bam
@@ -81,9 +90,9 @@ workflow PIPELINE {
         params.het_snp_site
     )
 
-    // From Channel PREPROCESS.out.processed_reads assess Streptococcus pneumoniae percentage in reads
+    // From Channel READ_QC_PASSED_READS_ch assess Streptococcus pneumoniae percentage in reads
     // Output into Channels TAXONOMY.out.detailed_result & TAXONOMY.out.result report
-    TAXONOMY(kraken2_db, params.kraken2_memory_mapping, PREPROCESS.out.processed_reads)
+    TAXONOMY(kraken2_db, params.kraken2_memory_mapping, READ_QC_PASSED_READS_ch)
 
     // From Channel TAXONOMY.out.report, provide taxonomy QC status
     // Output into Channels TAXONOMY_QC.out.detailed_result & TAXONOMY_QC.out.result report
@@ -97,59 +106,65 @@ workflow PIPELINE {
         .join(TAXONOMY_QC.out.result, failOnDuplicate: true, failOnMismatch: true)
     )
 
-    // From Channel PREPROCESS.out.processed_reads, only output reads of samples passed overall QC based on Channel OVERALL_QC.out.result
-    QC_PASSED_READS_ch = OVERALL_QC.out.result.join(PREPROCESS.out.processed_reads, failOnDuplicate: true, failOnMismatch: true)
+    // From Channel READ_QC_PASSED_READS_ch, only output reads of samples passed overall QC based on Channel OVERALL_QC.out.result
+    OVERALL_QC_PASSED_READS_ch = OVERALL_QC.out.result.join(READ_QC_PASSED_READS_ch, failOnDuplicate: true, failOnMismatch: true)
                         .filter { it[1] == 'PASS' }
                         .map { it[0, 2..-1] }
 
     // From Channel ASSEMBLY_ch, only output assemblies of samples passed overall QC based on Channel OVERALL_QC.out.result
-    QC_PASSED_ASSEMBLIES_ch = OVERALL_QC.out.result.join(ASSEMBLY_ch, failOnDuplicate: true, failOnMismatch: true)
+    OVERALL_QC_PASSED_ASSEMBLIES_ch = OVERALL_QC.out.result.join(ASSEMBLY_ch, failOnDuplicate: true, failOnMismatch: true)
                             .filter { it[1] == 'PASS' }
                             .map { it[0, 2..-1] }
 
-    // From Channel QC_PASSED_ASSEMBLIES_ch, generate PopPUNK query file containing assemblies of samples passed overall QC
+    // From Channel OVERALL_QC_PASSED_ASSEMBLIES_ch, generate PopPUNK query file containing assemblies of samples passed overall QC
     // Output into POPPUNK_QFILE
-    POPPUNK_QFILE = QC_PASSED_ASSEMBLIES_ch
+    POPPUNK_QFILE = OVERALL_QC_PASSED_ASSEMBLIES_ch
                     .map { it.join'\t' }
                     .collectFile(name: 'qfile.txt', newLine: true)
 
     // From generated POPPUNK_QFILE, assign GPSC to samples passed overall QC
     LINEAGE(poppunk_db, poppunk_ext_clusters, POPPUNK_QFILE)
 
-    // From Channel QC_PASSED_READS_ch, serotype the preprocess reads of samples passed overall QC
+    // From Channel OVERALL_QC_PASSED_READS_ch, serotype the preprocess reads of samples passed overall QC
     // Output into Channel SEROTYPE.out.result
-    SEROTYPE(seroba_db, QC_PASSED_READS_ch)
+    SEROTYPE(seroba_db, OVERALL_QC_PASSED_READS_ch)
 
-    // From Channel QC_PASSED_ASSEMBLIES_ch, PubMLST typing the assemblies of samples passed overall QC
+    // From Channel OVERALL_QC_PASSED_ASSEMBLIES_ch, PubMLST typing the assemblies of samples passed overall QC
     // Output into Channel MLST.out.result
-    MLST(QC_PASSED_ASSEMBLIES_ch)
+    MLST(OVERALL_QC_PASSED_ASSEMBLIES_ch)
 
-    // From Channel QC_PASSED_ASSEMBLIES_ch, assign PBP genes and estimate MIC (minimum inhibitory concentration) for 6 Beta-lactam antibiotics
+    // From Channel OVERALL_QC_PASSED_ASSEMBLIES_ch, assign PBP genes and estimate MIC (minimum inhibitory concentration) for 6 Beta-lactam antibiotics
     // Output into Channel GET_PBP_RESISTANCE.out.result
-    PBP_RESISTANCE(QC_PASSED_ASSEMBLIES_ch)
+    PBP_RESISTANCE(OVERALL_QC_PASSED_ASSEMBLIES_ch)
     GET_PBP_RESISTANCE(PBP_RESISTANCE.out.json)
 
-    // From Channel QC_PASSED_ASSEMBLIES_ch, infer resistance (also determinants if any) of other antimicrobials
+    // From Channel OVERALL_QC_PASSED_ASSEMBLIES_ch, infer resistance (also determinants if any) of other antimicrobials
     // Output into Channel GET_OTHER_RESISTANCE.out.result
-    OTHER_RESISTANCE(QC_PASSED_ASSEMBLIES_ch)
+    OTHER_RESISTANCE(OVERALL_QC_PASSED_ASSEMBLIES_ch)
     GET_OTHER_RESISTANCE(OTHER_RESISTANCE.out.json)
 
     // Generate results.csv by sorted sample_id based on merged Channels
+    // READ_QC.out.detailed_result,
     // ASSEMBLY_QC.out.detailed_result,
     // MAPPING_QC.out.detailed_result,
     // TAXONOMY_QC.out.detailed_result,
     // OVERALL_QC.out.result,
     // LINEAGE.out.csv,
     // SEROTYPE.out.result,
-    // MLST.out.result
-    // GET_PBP_RESISTANCE.out.result
+    // MLST.out.result,
+    // GET_PBP_RESISTANCE.out.result,
     // GET_OTHER_RESISTANCE.out.result
     //
     // Replace null with approiate amount of "_" items when sample_id does not exist in that output (i.e. QC rejected)
-    ASSEMBLY_QC.out.detailed_result
-    .join(MAPPING_QC.out.detailed_result, failOnDuplicate: true, failOnMismatch: true)
-    .join(TAXONOMY_QC.out.detailed_result, failOnDuplicate: true, failOnMismatch: true)
-    .join(OVERALL_QC.out.result, failOnDuplicate: true, failOnMismatch: true)
+    READ_QC.out.detailed_result
+    .join(ASSEMBLY_QC.out.detailed_result, failOnDuplicate: true, remainder: true)
+        .map { (it[-1] == null) ? it[0..-2] + ['_'] * 3 : it }
+    .join(MAPPING_QC.out.detailed_result, failOnDuplicate: true, remainder: true)
+        .map { (it[-1] == null) ? it[0..-2] + ['_'] * 3 : it }
+    .join(TAXONOMY_QC.out.detailed_result, failOnDuplicate: true, remainder: true)
+        .map { (it[-1] == null) ? it[0..-2] + ['_'] * 2 : it }
+    .join(OVERALL_QC.out.result, failOnDuplicate: true, remainder: true)
+        .map { (it[-1] == null) ? it[0..-2] + ['_'] : it }
     .join(LINEAGE.out.csv.splitCsv(skip: 1), failOnDuplicate: true, remainder: true)
         .map { (it[-1] == null) ? it[0..-2] + ['_'] : it }
     .join(SEROTYPE.out.result, failOnDuplicate: true, remainder: true)
@@ -166,6 +181,7 @@ workflow PIPELINE {
         storeDir: "$params.output",
         seed: [
                 'Sample_ID',
+                'Bases', 'Read_QC',
                 'Contigs#' , 'Assembly_Length', 'Seq_Depth', 'Assembly_QC',
                 'Ref_Cov_%', 'Het-SNP#' , 'Mapping_QC',
                 'S.Pneumo_%', 'Taxonomy_QC',
