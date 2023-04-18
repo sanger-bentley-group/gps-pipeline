@@ -61,7 +61,7 @@ process TAXONOMY_QC {
     val(qc_spneumo_percentage)
 
     output:
-    tuple val(sample_id), env(PERCENTAGE), env(TAXONOMY_QC), emit: detailed_result
+    tuple val(sample_id), env(PERCENTAGE), emit: percentage
     tuple val(sample_id), env(TAXONOMY_QC), emit: result
 
     script:
