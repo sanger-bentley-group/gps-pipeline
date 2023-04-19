@@ -60,7 +60,7 @@ process SEROTYPE {
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
 
     output:
-    tuple val(sample_id), env(SEROTYPE), env(SEROBA_COMMENT), emit: result
+    tuple val(sample_id), env(SEROTYPE), emit: result
 
     script:
     // When using Singularity as container engine, SeroBA sometimes gives incorrect result or critical error
