@@ -255,18 +255,18 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | Field | Type | Description |
   | --- | --- | --- |
   | `Sample_ID` | Identification | Sample ID based on the raw reads file name |
-  | `Bases` | Read | Number of bases in the reads<br>(Default: ≥ 38 Mb to pass Read QC) |
   | `Read_QC` | QC | Read quality control result |
+  | `Assembly_QC` | QC | Assembly quality control result |
+  | `Mapping_QC` | QC | Mapping quality control result |
+  | `Taxonomy_QC` | QC | Taxonomy quality control result |
+  | `Overall_QC` | QC | Overall quality control result<br>(Based on `Assembly_QC`, `Mapping_QC` and `Taxonomy_QC`) |
+  | `Bases` | Read | Number of bases in the reads<br>(Default: ≥ 38 Mb to pass Read QC) |
   | `Contigs#` | Assembly | Number of contigs in the assembly<br>(Default: < 500 to pass Assembly QC) |
   | `Assembly_Length` | Assembly | Total length of the assembly<br>(Default: 1.9 - 2.3 Mb to pass Assembly QC) |
   | `Seq_Depth` | Assembly | Sequencing depth of the assembly<br>(Default: ≥ 20x to pass Assembly QC) |
-  | `Assembly_QC` | QC | Assembly quality control result |
   | `Ref_Cov_%` | Mapping | Percentage of reference covered by reads<br>(Default: > 60% to pass Mapping QC) |
   | `Het-SNP#` | Mapping | Non-cluster heterozygous SNP (Het-SNP) site count<br>(Default: < 220 to pass Mapping QC) |
-  | `Mapping_QC` | QC | Mapping quality control result |
   | `S.Pneumo_%` | Taxonomy | Percentage of reads assigned to *Streptococcus pneumoniae*<br>(Default: > 60% to pass Taxonomy QC) |
-  | `Taxonomy_QC` | QC | Taxonomy quality control result  |
-  | `Overall_QC` | QC | Overall quality control result<br>(Based on `Assembly_QC`, `Mapping_QC` and `Taxonomy_QC`) |
   | `GPSC` | Lineage | GPSC Lineage |
   | `Serotype` | Serotype | Serotype |
   | `SeroBA_Comment` | Serotype | (if any) SeroBA comment on serotype assignment |
