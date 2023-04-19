@@ -172,7 +172,7 @@ workflow PIPELINE {
     .join(LINEAGE.out.csv.splitCsv(skip: 1), failOnDuplicate: true, remainder: true)
         .map { (it[-1] == null) ? it[0..-2] + ['_'] : it }
     .join(SEROTYPE.out.result, failOnDuplicate: true, remainder: true)
-        .map { (it[-1] == null) ? it[0..-2] + ['_'] * 2 : it }
+        .map { (it[-1] == null) ? it[0..-2] + ['_'] : it }
     .join(MLST.out.result, failOnDuplicate: true, remainder: true)
         .map { (it[-1] == null) ? it[0..-2] + ['_'] * 8 : it }
     .join(GET_PBP_RESISTANCE.out.result, failOnDuplicate: true, remainder: true)
@@ -191,7 +191,7 @@ workflow PIPELINE {
                 'Ref_Cov_%', 'Het-SNP#' , 
                 'S.Pneumo_%', 
                 'GPSC',
-                'Serotype', 'SeroBA_Comment',
+                'Serotype',
                 'ST', 'aroE', 'gdh', 'gki', 'recP', 'spi', 'xpt', 'ddl',
                 'pbp1a', 'pbp2b', 'pbp2x', 'AMX_MIC', 'AMX_Res', 'CRO_MIC', 'CRO_Res(Non-meningital)', 'CRO_Res(Meningital)', 'CTX_MIC', 'CTX_Res(Non-meningital)', 'CTX_Res(Meningital)', 'CXM_MIC', 'CXM_Res', 'MEM_MIC', 'MEM_Res', 'PEN_MIC', 'PEN_Res(Non-meningital)', 'PEN_Res(Meningital)',
                 'CHL_Res', 'CHL_Determinant', 'CLI_Res', 'CLI_Determinant', 'ERY_Res', 'ERY_Determinant', 'FLQ_Res', 'FLQ_Determinant', 'KAN_Res', 'KAN_Determinant', 'LNZ_Res', 'LNZ_Determinant', 'TCY_Res', 'TCY_Determinant', 'TMP_Res', 'TMP_Determinant', 'SSS_Res', 'SSS_Determinant', 'SXT_Res', 'SXT_Determinant'
