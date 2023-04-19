@@ -48,8 +48,8 @@ void workflowSelectMessage(String selectedWorkflow) {
             message = """
             |The main pipeline workflow was selected.
             |
-            |Input Directory: ${readsDir.absolutePath}
-            |Output Directory: ${outputDir.absolutePath}
+            |Input Directory: ${readsDir.canonicalPath}
+            |Output Directory: ${outputDir.canonicalPath}
             """.stripMargin()
             break
         case 'init':
@@ -88,7 +88,7 @@ void endMessage(String selectedWorkflow) {
         case 'pipeline':
             successMessage = """
                 |The pipeline has been completed successfully.
-                |Check the outputs at ${outputDir.absolutePath}.
+                |The output is located at ${outputDir.canonicalPath}.
                 """.stripMargin()
             failMessage = '''
                 |The pipeline has failed.
