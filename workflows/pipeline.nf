@@ -144,11 +144,8 @@ workflow PIPELINE {
     GET_OTHER_RESISTANCE(OTHER_RESISTANCE.out.json)
 
     // Generate results.csv by sorted sample_id based on merged Channels
-    // READ_QC.out.detailed_result,
-    // ASSEMBLY_QC.out.detailed_result,
-    // MAPPING_QC.out.detailed_result,
-    // TAXONOMY_QC.out.detailed_result,
-    // OVERALL_QC.out.result,
+    // READ_QC.out.result, ASSEMBLY_QC.out.result, MAPPING_QC.out.result, TAXONOMY_QC.out.result, OVERALL_QC.out.result,
+    // READ_QC.out.bases, ASSEMBLY_QC.out.info, MAPPING_QC.out.info, TAXONOMY_QC.out.percentage
     // LINEAGE.out.csv,
     // SEROTYPE.out.result,
     // MLST.out.result,
