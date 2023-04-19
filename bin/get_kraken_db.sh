@@ -12,7 +12,12 @@ if  [ ! -f ${DB_LOCAL}/done_kraken.json ] || \
     rm -rf ${DB_LOCAL}/{,.[!.],..?}*
 
     wget ${DB_REMOTE} -O kraken_db.tar.gz
-    tar -xzf kraken_db.tar.gz -C ${DB_LOCAL}
+
+    # Use tmp dir and find to ensure files are saved directly at $DB_LOCAL regardless of archive directory structure
+    mkdir tmp
+    tar -xzf kraken_db.tar.gz -C tmp
+    find tmp -type f -exec mv {} $DB_LOCAL \;
+
     rm -f kraken_db.tar.gz
 
     jq -n \
