@@ -269,7 +269,6 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | `S.Pneumo_%` | Taxonomy | Percentage of reads assigned to *Streptococcus pneumoniae*<br>(Default: > 60% to pass Taxonomy QC) |
   | `GPSC` | Lineage | GPSC Lineage |
   | `Serotype` | Serotype | Serotype |
-  | `SeroBA_Comment` | Serotype | (if any) SeroBA comment on serotype assignment |
   | `ST` | MLST | Sequence Type (ST) |
   | `aroE` | MLST | Allele ID of aroE |
   | `gdh` | MLST | Allele ID of gdh |
