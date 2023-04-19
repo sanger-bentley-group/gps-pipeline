@@ -48,6 +48,11 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 - Java 11 or later (up to 19) ([OpenJDK](https://openjdk.org/)/[Oracle Java](https://www.oracle.com/java/))
 - [Docker](https://www.docker.com/) or [Singularity](https://sylabs.io/singularity/)
 - It is recommended to have at least 16GB of RAM and 100GB of free storage
+  > ℹ️ Details on storage
+  > - The pipeline core files use < 1GB
+  > - All default databases use ~31GB in total
+  > - All Docker images use ~12GB in total; alternatively, Singularity images use ~4GB in total
+  > - The pipeline generates ~2GB intermediate files for each sample on average<br>(These files can be removed when the pipeline run is completed, please refer to [Clean Up](#clean-up))
 ## Accepted Inputs
 - Currently, only Illumina paired-end short reads are supported
 - Each sample is expected to be a pair of raw reads following this file name pattern: 
