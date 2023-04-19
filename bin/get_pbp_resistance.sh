@@ -1,14 +1,16 @@
 # Extract the results from the output file of the PBP AMR predictor
 
+# For all, replace null or space-only string with empty string
 # For resistances, S, I and R in the file are output as SENSITIVE, INTERMEDIATE and RESISTANT respectively
 
 function GET_VALUE {
-    echo $( < $JSON_FILE jq -r --arg target "$1" '.[$target]' )
+    echo $( < $JSON_FILE jq -r --arg target "$1" '.[$target]' \
+        | sed 's/^null$//g;s/^\s+$//g' )
 }
 
 function GET_RES {
     echo $( < $JSON_FILE jq -r --arg target "$1" '.[$target]' \
-        | sed 's/^S$/SENSITIVE/g;s/^I$/INTERMEDIATE/g;s/^R$/RESISTANT/g' )
+        | sed 's/^S$/SENSITIVE/g;s/^I$/INTERMEDIATE/g;s/^R$/RESISTANT/g;s/^null$//g;s/^\s+$//g' )
 }
 
 pbp1a=$(GET_VALUE "pbp1a")
