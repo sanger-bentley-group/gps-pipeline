@@ -144,11 +144,8 @@ workflow PIPELINE {
     GET_OTHER_RESISTANCE(OTHER_RESISTANCE.out.json)
 
     // Generate results.csv by sorted sample_id based on merged Channels
-    // READ_QC.out.detailed_result,
-    // ASSEMBLY_QC.out.detailed_result,
-    // MAPPING_QC.out.detailed_result,
-    // TAXONOMY_QC.out.detailed_result,
-    // OVERALL_QC.out.result,
+    // READ_QC.out.result, ASSEMBLY_QC.out.result, MAPPING_QC.out.result, TAXONOMY_QC.out.result, OVERALL_QC.out.result,
+    // READ_QC.out.bases, ASSEMBLY_QC.out.info, MAPPING_QC.out.info, TAXONOMY_QC.out.percentage
     // LINEAGE.out.csv,
     // SEROTYPE.out.result,
     // MLST.out.result,
@@ -156,14 +153,21 @@ workflow PIPELINE {
     // GET_OTHER_RESISTANCE.out.result
     //
     // Replace null with approiate amount of "_" items when sample_id does not exist in that output (i.e. QC rejected)
-    READ_QC.out.detailed_result
-    .join(ASSEMBLY_QC.out.detailed_result, failOnDuplicate: true, remainder: true)
-        .map { (it[-1] == null) ? it[0..-2] + ['_'] * 3 : it }
-    .join(MAPPING_QC.out.detailed_result, failOnDuplicate: true, remainder: true)
-        .map { (it[-1] == null) ? it[0..-2] + ['_'] * 3 : it }
-    .join(TAXONOMY_QC.out.detailed_result, failOnDuplicate: true, remainder: true)
-        .map { (it[-1] == null) ? it[0..-2] + ['_'] * 2 : it }
+    READ_QC.out.result
+    .join(ASSEMBLY_QC.out.result, failOnDuplicate: true, remainder: true)
+        .map { (it[-1] == null) ? it[0..-2] + ['_'] : it }
+    .join(MAPPING_QC.out.result, failOnDuplicate: true, remainder: true)
+        .map { (it[-1] == null) ? it[0..-2] + ['_'] : it }
+    .join(TAXONOMY_QC.out.result, failOnDuplicate: true, remainder: true)
+        .map { (it[-1] == null) ? it[0..-2] + ['_'] : it }
     .join(OVERALL_QC.out.result, failOnDuplicate: true, remainder: true)
+        .map { (it[-1] == null) ? it[0..-2] + ['FAIL'] : it }
+    .join(READ_QC.out.bases, failOnDuplicate: true, failOnMismatch: true)
+    .join(ASSEMBLY_QC.out.info, failOnDuplicate: true, remainder: true)
+        .map { (it[-1] == null) ? it[0..-2] + ['_'] * 3 : it }
+    .join(MAPPING_QC.out.info, failOnDuplicate: true, remainder: true)
+        .map { (it[-1] == null) ? it[0..-2] + ['_'] * 2 : it }
+    .join(TAXONOMY_QC.out.percentage, failOnDuplicate: true, remainder: true)
         .map { (it[-1] == null) ? it[0..-2] + ['_'] : it }
     .join(LINEAGE.out.csv.splitCsv(skip: 1), failOnDuplicate: true, remainder: true)
         .map { (it[-1] == null) ? it[0..-2] + ['_'] : it }
@@ -181,11 +185,11 @@ workflow PIPELINE {
         storeDir: "$params.output",
         seed: [
                 'Sample_ID',
-                'Bases', 'Read_QC',
-                'Contigs#' , 'Assembly_Length', 'Seq_Depth', 'Assembly_QC',
-                'Ref_Cov_%', 'Het-SNP#' , 'Mapping_QC',
-                'S.Pneumo_%', 'Taxonomy_QC',
-                'Overall_QC',
+                'Read_QC', 'Assembly_QC', 'Mapping_QC', 'Taxonomy_QC', 'Overall_QC',
+                'Bases', 
+                'Contigs#' , 'Assembly_Length', 'Seq_Depth', 
+                'Ref_Cov_%', 'Het-SNP#' , 
+                'S.Pneumo_%', 
                 'GPSC',
                 'Serotype', 'SeroBA_Comment',
                 'ST', 'aroE', 'gdh', 'gki', 'recP', 'spi', 'xpt', 'ddl',

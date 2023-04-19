@@ -141,7 +141,7 @@ process MAPPING_QC {
     val(qc_het_snp_site)
 
     output:
-    tuple val(sample_id), env(COVERAGE), env(HET_SNP), env(MAPPING_QC), emit: detailed_result
+    tuple val(sample_id), env(COVERAGE), env(HET_SNP), emit: info
     tuple val(sample_id), env(MAPPING_QC), emit: result
 
     script:
