@@ -4,7 +4,7 @@
 [![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)
 [![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/singularity/)
 
-The GPS Unified Pipeline is a Nextflow pipeline designed for processing raw reads (FASTQ files) of *Streptococcus pneumoniae* samples. The pipeline assesses the quality of the reads based on assembly, mapping, and taxonomy. If the sample passes all quality controls (QC), the pipeline also provides the sample's serotype, multi-locus sequence typing (MLST), lineage (based on the [Global Pneumococcal Sequence Cluster (GPSC)](https://www.pneumogen.net/gps/GPSC_lineages.html)), and antimicrobial resistance (AMR) against multiple antimicrobials.
+The GPS Unified Pipeline is a Nextflow pipeline designed for processing raw reads (FASTQ files) of *Streptococcus pneumoniae* samples. After preprocessing, the pipeline performs initial assessment based on the total bases in reads. Passed samples will be further assess based on assembly, mapping, and taxonomy. If the sample passes all quality controls (QC), the pipeline also provides the sample's serotype, multi-locus sequence typing (MLST), lineage (based on the [Global Pneumococcal Sequence Cluster (GPSC)](https://www.pneumogen.net/gps/GPSC_lineages.html)), and antimicrobial resistance (AMR) against multiple antimicrobials.
 
 The pipeline is designed to be easy to set up and use, and is suitable for use on local machines. It is also offline-capable, making it an ideal option for cases where the FASTQ files being analysed should not leave the local machine. Additionally, the pipeline only downloads essential files to enable the analysis, and no data is uploaded from the local machine. After initialisation or the first successful complete run, the pipeline can be used offline unless you have changed the selection of any database or container image.
 
@@ -175,6 +175,8 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | `--output` | Any valid path<br />(Default: `"$projectDir/output"`)| Path to the output directory that save the results. |
 
 ## QC Parameters
+> ℹ️ Read QC does not have directly accessible parameters. The minimum base count in reads of Read QC is based on the multiplication of `--length_low` and `--depth` of Assembly QC.
+<!-- -->
   | Option | Values | Description |
   | --- | ---| --- |
   | `--spneumo_percentage` | Any integer or float value<br />(Default: `60.00`) | Minimum *S. pneumoniae* percentage in reads to pass Taxonomy QC. |
@@ -253,16 +255,18 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | Field | Type | Description |
   | --- | --- | --- |
   | `Sample_ID` | Identification | Sample ID based on the raw reads file name |
-  | `Contigs#` | Assembly | Number of contigs in the assembly; < 500 to pass QC |
-  | `Assembly_Length` | Assembly | Total length of the assembly; 1.9 - 2.3 Mb to pass QC |
-  | `Seq_Depth` | Assembly | Sequencing depth of the assembly; ≥ 20x to pass QC |
+  | `Bases` | Read | Number of bases in the reads<br>(Default: ≥ 38 Mb to pass Read QC) |
+  | `Read_QC` | QC | Read quality control result |
+  | `Contigs#` | Assembly | Number of contigs in the assembly<br>(Default: < 500 to pass Assembly QC) |
+  | `Assembly_Length` | Assembly | Total length of the assembly<br>(Default: 1.9 - 2.3 Mb to pass Assembly QC) |
+  | `Seq_Depth` | Assembly | Sequencing depth of the assembly<br>(Default: ≥ 20x to pass Assembly QC) |
   | `Assembly_QC` | QC | Assembly quality control result |
-  | `Ref_Cov_%` | Mapping | Percentage of reference covered by reads; > 60% to pass QC |
-  | `Het-SNP#` | Mapping | Non-cluster heterozygous SNP (Het-SNP) site count; < 220 to pass QC |
+  | `Ref_Cov_%` | Mapping | Percentage of reference covered by reads<br>(Default: > 60% to pass Mapping QC) |
+  | `Het-SNP#` | Mapping | Non-cluster heterozygous SNP (Het-SNP) site count<br>(Default: < 220 to pass Mapping QC) |
   | `Mapping_QC` | QC | Mapping quality control result |
-  | `S.Pneumo_%` | Taxonomy | Percentage of reads assigned to *Streptococcus pneumoniae*; > 60% to pass QC |
+  | `S.Pneumo_%` | Taxonomy | Percentage of reads assigned to *Streptococcus pneumoniae*<br>(Default: > 60% to pass Taxonomy QC) |
   | `Taxonomy_QC` | QC | Taxonomy quality control result  |
-  | `Overall_QC` | QC | Overall quality control result; Based on `Assembly_QC`, `Mapping_QC` and `Taxonomy_QC` |
+  | `Overall_QC` | QC | Overall quality control result<br>(Based on `Assembly_QC`, `Mapping_QC` and `Taxonomy_QC`) |
   | `GPSC` | Lineage | GPSC Lineage |
   | `Serotype` | Serotype | Serotype |
   | `SeroBA_Comment` | Serotype | (if any) SeroBA comment on serotype assignment |

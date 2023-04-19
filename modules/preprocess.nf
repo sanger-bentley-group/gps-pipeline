@@ -23,8 +23,8 @@ process PREPROCESS {
     """
 }
 
-// Extract total base count from output JSON file of fastp 
-process GET_BASES {
+// Extract total base count and determine QC result based on output JSON file of fastp 
+process READ_QC {
     label 'bash_container'
     label 'farm_low'
 
@@ -32,14 +32,20 @@ process GET_BASES {
 
     input:
     tuple val(sample_id), path(json)
+    val(qc_length_low)
+    val(qc_depth)
 
     output:
-    tuple val(sample_id), env(BASES)
+    tuple val(sample_id), env(BASES), emit: bases
+    tuple val(sample_id), env(BASES), env(READ_QC), emit: detailed_result
+    tuple val(sample_id), env(READ_QC), emit: result
 
     script:
     """
     JSON="$json"
-    
-    source get_bases.sh
+    QC_LENGTH_LOW="$qc_length_low"
+    QC_DEPTH="$qc_depth"
+
+    source read_qc.sh
     """
 }
