@@ -211,7 +211,7 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   <!-- -->
   | Option | Values | Description |
   | --- | ---| --- |
-  | `--kraken2_db_remote` | Any valid URL to a Kraken2 database in `.tar.gz` format<br />(Default: [Kraken 2 RefSeq Index Standard-8 (2022-09-12)](https://genome-idx.s3.amazonaws.com/kraken/k2_standard_08gb_20220926.tar.gz)) | URL to a Kraken2 database. |
+  | `--kraken2_db_remote` | Any valid URL to a Kraken2 database in `.tar.gz` or `.tgz` format<br />(Default: [Minikraken v1](https://genome-idx.s3.amazonaws.com/kraken/minikraken2_v1_8GB_201904.tgz)) | URL to a Kraken2 database. |
   | `--kraken2_db_local` | Any valid path<br />(Default: `"$projectDir/databases/kraken"`) | Path to the directory where the remote Kraken2 database should be saved to. |
   | `--kraken2_memory_mapping` | `true` or `false`<br />(Default: `true`) | Using the memory mapping option of Kraken2 or not.<br />`true` means not loading the database into RAM, suitable for memory-limited or fast storage environments. |
 
@@ -229,7 +229,7 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   <!-- -->
   | Option | Values | Description |
   | --- | ---| --- |
-  | `--poppunk_db_remote` | Any valid URL to a PopPUNK database in `.tar.gz` format<br />(Default: [GPS v6](https://gps-project.cog.sanger.ac.uk/GPS_v6.tar.gz)) | URL to a PopPUNK database. |
+  | `--poppunk_db_remote` | Any valid URL to a PopPUNK database in `.tar.gz` or `.tgz` format<br />(Default: [GPS v6](https://gps-project.cog.sanger.ac.uk/GPS_v6.tar.gz)) | URL to a PopPUNK database. |
   | `--poppunk_ext_remote` | Any valid URL to a PopPUNK external clusters file in `.csv` format<br />(Default: [GPS v6 GPSC Designation](https://www.pneumogen.net/gps/GPS_v6_external_clusters.csv)) | URL to a PopPUNK external clusters file. |
   | `--poppunk_local` | Any valid path<br />(Default: `"$projectDir/databases/poppunk"`) | Path to the directory where the remote PopPUNK database and external clusters file should be saved to. |
 
