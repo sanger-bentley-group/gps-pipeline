@@ -1,12 +1,12 @@
 # Extract the results from the output file of the AMRsearch
 
-# For resistances, change NOT_FOUND to NONE, and lower cases to upper cases
+# For resistances, change NOT_FOUND to S, lower cases to upper cases, SENSITIVE to S, INTERMEDIATE to I, RESISTANT to R, null or space-only string to empty string
 # For determinants, determinants are sorted and separated by "; ", and no determinant is output as "_". Each acquired gene is output as "*gene*", each variant is output as "*gene*_*variant*"
 
 function GET_RES {
     echo $( < $JSON_FILE jq -r --arg target "$1" '.resistanceProfile[] | select( .agent.key == $target ) | .state' \
-        | sed 's/NOT_FOUND/NONE/g' \
-        | tr '[:lower:]' '[:upper:]' )
+        | tr '[:lower:]' '[:upper:]' \
+        | sed 's/^NOT_FOUND$/S/g;s/^SENSITIVE$/S/g;s/^INTERMEDIATE$/I/g;s/^RESISTANT$/R/g;s/^null$//g;s/^\s+$//g' )
 }
 
 function GET_DETERMINANTS {
