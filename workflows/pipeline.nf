@@ -193,8 +193,8 @@ workflow PIPELINE {
                 'GPSC',
                 'Serotype',
                 'ST', 'aroE', 'gdh', 'gki', 'recP', 'spi', 'xpt', 'ddl',
-                'pbp1a', 'pbp2b', 'pbp2x', 'AMX_MIC', 'AMX_Res', 'CRO_MIC', 'CRO_Res(Meningital)', 'CRO_Res(Non-meningital)', 'CTX_MIC', 'CTX_Res(Meningital)', 'CTX_Res(Non-meningital)', 'CXM_MIC', 'CXM_Res', 'MEM_MIC', 'MEM_Res', 'PEN_MIC', 'PEN_Res(Meningital)', 'PEN_Res(Non-meningital)', 
-                'CHL_Res', 'CHL_Determinant', 'CLI_Res', 'CLI_Determinant', 'ERY_Res', 'ERY_Determinant', 'FLQ_Res', 'FLQ_Determinant', 'KAN_Res', 'KAN_Determinant', 'LNZ_Res', 'LNZ_Determinant', 'TCY_Res', 'TCY_Determinant', 'TMP_Res', 'TMP_Determinant', 'SSS_Res', 'SSS_Determinant', 'SXT_Res', 'SXT_Determinant'
+                'pbp1a', 'pbp2b', 'pbp2x', 'AMO_MIC', 'AMO_Res', 'CFT_MIC', 'CFT_Res(Meningital)', 'CFT_Res(Non-meningital)', 'TAX_MIC', 'TAX_Res(Meningital)', 'TAX_Res(Non-meningital)', 'CFX_MIC', 'CFX_Res', 'MER_MIC', 'MER_Res', 'PEN_MIC', 'PEN_Res(Meningital)', 'PEN_Res(Non-meningital)', 
+                'CHL_Res', 'CHL_Determinant', 'CLD_Res', 'CLD_Determinant', 'ERY_Res', 'ERY_Determinant', 'FQ_Res', 'FQ_Determinant', 'KAN_Res', 'KAN_Determinant', 'LZO_Res', 'LZO_Determinant', 'TET_Res', 'TET_Determinant', 'TMP_Res', 'TMP_Determinant', 'SMX_Res', 'SMX_Determinant', 'COT_Res', 'COT_Determinant'
             ].join(','),
         sort: { it.split(',')[0] },
         newLine: true
