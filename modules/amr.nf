@@ -29,7 +29,7 @@ process GET_PBP_RESISTANCE {
     tuple val(sample_id), path(json)
 
     output:
-    tuple val(sample_id), env(pbp1a), env(pbp2b), env(pbp2x), env(AMX_MIC), env(AMX), env(CRO_MIC), env(CRO_NONMENINGITIS), env(CRO_MENINGITIS), env(CTX_MIC), env(CTX_NONMENINGITIS), env(CTX_MENINGITIS), env(CXM_MIC), env(CXM), env(MEM_MIC), env(MEM), env(PEN_MIC), env(PEN_NONMENINGITIS), env(PEN_MENINGITIS), emit: result
+    tuple val(sample_id), env(pbp1a), env(pbp2b), env(pbp2x), env(AMO_MIC), env(AMO), env(CFT_MIC), env(CFT_MENINGITIS), env(CFT_NONMENINGITIS), env(TAX_MIC), env(TAX_MENINGITIS), env(TAX_NONMENINGITIS), env(CFX_MIC), env(CFX), env(MER_MIC), env(MER), env(PEN_MIC), env(PEN_MENINGITIS), env(PEN_NONMENINGITIS), emit: result
 
     script:
     """
@@ -70,7 +70,7 @@ process GET_OTHER_RESISTANCE {
     tuple val(sample_id), path(json)
 
     output:
-    tuple val(sample_id), env(CHL_RES), env(CHL_DETERMINANTS), env(CLI_RES), env(CLI_DETERMINANTS), env(ERY_RES), env(ERY_DETERMINANTS), env(FLQ_RES), env(FLQ_DETERMINANTS), env(KAN_RES), env(KAN_DETERMINANTS), env(LNZ_RES), env(LNZ_DETERMINANTS), env(TCY_RES), env(TCY_DETERMINANTS), env(TMP_RES), env(TMP_DETERMINANTS), env(SSS_RES), env(SSS_DETERMINANTS), env(SXT_RES), env(SXT_DETERMINANTS), emit: result
+    tuple val(sample_id), env(CHL_RES), env(CHL_DETERMINANTS), env(CLD_RES), env(CLD_DETERMINANTS), env(ERY_RES), env(ERY_DETERMINANTS), env(FQ_RES), env(FQ_DETERMINANTS), env(KAN_RES), env(KAN_DETERMINANTS), env(LZO_RES), env(LZO_DETERMINANTS), env(TET_RES), env(TET_DETERMINANTS), env(TMP_RES), env(TMP_DETERMINANTS), env(SMX_RES), env(SMX_DETERMINANTS), env(COT_RES), env(COT_DETERMINANTS), emit: result
 
     script:
     """

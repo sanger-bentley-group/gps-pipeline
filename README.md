@@ -257,6 +257,8 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 
 ## Details of `results.csv`
 - The following fields can be found in the output `results.csv`
+  > ℹ️ For resistance phenotypes: S = Sensitive/Susceptible; I = Intermediate; R = Resistant
+  <!-- -->
   | Field | Type | Description |
   | --- | --- | --- |
   | `Sample_ID` | Identification | Sample ID based on the raw reads file name |
@@ -285,41 +287,41 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | `pbp1a` | PBP AMR | Allele ID of pbp1a |
   | `pbp2b` | PBP AMR | Allele ID of pbp2b |
   | `pbp2x` | PBP AMR | Allele ID of pbp2x |
-  | `AMX_MIC` | PBP AMR | Estimated minimum inhibitory concentration (MIC) of amoxicillin (AMX) |
-  | `AMX_Res` | PBP AMR | Resistance phenotype against AMX |
-  | `CRO_MIC` | PBP AMR | Estimated MIC of ceftriaxone (CRO) |
-  | `CRO_Res(Non-meningital)` | PBP AMR | Resistance phenotype against CRO in non-meningital form |
-  | `CRO_Res(Meningital)` | PBP AMR | Resistance phenotype against CRO in meningital form |
-  | `CTX_MIC` | PBP AMR | Estimated MIC of cefotaxime (CTX) |
-  | `CTX_Res(Non-meningital)` | PBP AMR | Resistance phenotype against CTX in non-meningital form |
-  | `CTX_Res(Meningital)` | PBP AMR | Resistance phenotype against CTX in meningital form |
-  | `CXM_MIC` | PBP AMR | Estimated MIC of cefuroxime (CXM) |
-  | `CXM_Res` | PBP AMR | Resistance phenotype against CXM |
-  | `MEM_MIC` | PBP AMR | Estimated MIC of meropenem (MEM) |
-  | `MEM_Res` | PBP AMR | Resistance phenotype against MEM |
+  | `AMO_MIC` | PBP AMR | Estimated minimum inhibitory concentration (MIC) of amoxicillin (AMO) |
+  | `AMO_Res` | PBP AMR | Resistance phenotype against AMO |
+  | `CFT_MIC` | PBP AMR | Estimated MIC of ceftriaxone (CFT) |
+  | `CFT_Res(Meningital)` | PBP AMR | Resistance phenotype against CFT in meningital form |
+  | `CFT_Res(Non-meningital)` | PBP AMR | Resistance phenotype against CFT in non-meningital form |
+  | `TAX_MIC` | PBP AMR | Estimated MIC of cefotaxime (TAX) |
+  | `TAX_Res(Meningital)` | PBP AMR | Resistance phenotype against TAX in meningital form |
+  | `TAX_Res(Non-meningital)` | PBP AMR | Resistance phenotype against TAX in non-meningital form |
+  | `CFX_MIC` | PBP AMR | Estimated MIC of cefuroxime (CFX) |
+  | `CFX_Res` | PBP AMR | Resistance phenotype against CFX |
+  | `MER_MIC` | PBP AMR | Estimated MIC of meropenem (MER) |
+  | `MER_Res` | PBP AMR | Resistance phenotype against MER |
   | `PEN_MIC` | PBP AMR | Estimated MIC of penicillin (PEN) |
-  | `PEN_Res(Non-meningital)` | PBP AMR | Resistance phenotype against PEN in non-meningital form |
   | `PEN_Res(Meningital)` | PBP AMR | Resistance phenotype against PEN in meningital form |
-  | `CHL_Res` | Other AMR | Inferred resistance against Chloramphenicol (CHL) |
+  | `PEN_Res(Non-meningital)` | PBP AMR | Resistance phenotype against PEN in non-meningital form |
+  | `CHL_Res` | Other AMR | Resistance phenotype against Chloramphenicol (CHL) |
   | `CHL_Determinant` | Other AMR | Known determinants that inferred the CHL resistance |
-  | `CLI_Res` | Other AMR | Inferred resistance against Clindamycin (CLI) |
-  | `CLI_Determinant` | Other AMR | Known determinants that inferred the CLI resistance |
-  | `ERY_Res` | Other AMR | Inferred resistance against Erythromycin (ERY) |
+  | `CLD_Res` | Other AMR | Resistance phenotype against Clindamycin (CLD) |
+  | `CLD_Determinant` | Other AMR | Known determinants that inferred the CLD resistance |
+  | `ERY_Res` | Other AMR | Resistance phenotype against Erythromycin (ERY) |
   | `ERY_Determinant` | Other AMR | Known determinants that inferred the ERY resistance |
-  | `FLQ_Res` | Other AMR | Inferred resistance against Fluoroquinolones (FLQ) |
-  | `FLQ_Determinant` | Other AMR | Known determinants that inferred the FLQ resistance |
-  | `KAN_Res` | Other AMR | Inferred resistance against Kanamycin (KAN) |
+  | `FQ_Res` | Other AMR | Resistance phenotype against Fluoroquinolones (FQ) |
+  | `FQ_Determinant` | Other AMR | Known determinants that inferred the FQ resistance |
+  | `KAN_Res` | Other AMR | Resistance phenotype against Kanamycin (KAN) |
   | `KAN_Determinant` | Other AMR | Known determinants that inferred the KAN resistance |
-  | `LNZ_Res` | Other AMR | Inferred resistance against Linezolid (LNZ) |
-  | `LNZ_Determinant` | Other AMR | Known determinants that inferred the LNZ resistance |
-  | `TCY_Res` | Other AMR | Inferred resistance against Tetracycline (TCY) |
-  | `TCY_Determinant` | Other AMR | Known determinants that inferred the TCY resistance |
-  | `TMP_Res` | Other AMR | Inferred resistance against Trimethoprim (TMP) |
+  | `LZO_Res` | Other AMR | Resistance phenotype against Linezolid (LZO) |
+  | `LZO_Determinant` | Other AMR | Known determinants that inferred the LZO resistance |
+  | `TET_Res` | Other AMR | Resistance phenotype against Tetracycline (TET) |
+  | `TET_Determinant` | Other AMR | Known determinants that inferred the TET resistance |
+  | `TMP_Res` | Other AMR | Resistance phenotype against Trimethoprim (TMP) |
   | `TMP_Determinant` | Other AMR | Known determinants that inferred the TMP resistance |
-  | `SSS_Res` | Other AMR | Inferred resistance against Sulfamethoxazole (SSS) |
-  | `SSS_Determinant` | Other AMR | Known determinants that inferred the SSS resistance |
-  | `SXT_Res` | Other AMR | Inferred resistance against Co-Trimoxazole (SXT) |
-  | `SXT_Determinant` | Other AMR | Known determinants that inferred the SXT resistance |
+  | `SMX_Res` | Other AMR | Resistance phenotype against Sulfamethoxazole (SMX) |
+  | `SMX_Determinant` | Other AMR | Known determinants that inferred the SMX resistance |
+  | `COT_Res` | Other AMR | Resistance phenotype against Co-Trimoxazole (COT) |
+  | `COT_Determinant` | Other AMR | Known determinants that inferred the COT resistance |
 
 &nbsp;
 # Credits
