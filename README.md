@@ -288,18 +288,18 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | `AMX_MIC` | PBP AMR | Estimated minimum inhibitory concentration (MIC) of amoxicillin (AMX) |
   | `AMX_Res` | PBP AMR | Resistance phenotype against AMX |
   | `CRO_MIC` | PBP AMR | Estimated MIC of ceftriaxone (CRO) |
-  | `CRO_Res(Non-meningital)` | PBP AMR | Resistance phenotype against CRO in non-meningital form |
   | `CRO_Res(Meningital)` | PBP AMR | Resistance phenotype against CRO in meningital form |
+  | `CRO_Res(Non-meningital)` | PBP AMR | Resistance phenotype against CRO in non-meningital form |
   | `CTX_MIC` | PBP AMR | Estimated MIC of cefotaxime (CTX) |
-  | `CTX_Res(Non-meningital)` | PBP AMR | Resistance phenotype against CTX in non-meningital form |
   | `CTX_Res(Meningital)` | PBP AMR | Resistance phenotype against CTX in meningital form |
+  | `CTX_Res(Non-meningital)` | PBP AMR | Resistance phenotype against CTX in non-meningital form |
   | `CXM_MIC` | PBP AMR | Estimated MIC of cefuroxime (CXM) |
   | `CXM_Res` | PBP AMR | Resistance phenotype against CXM |
   | `MEM_MIC` | PBP AMR | Estimated MIC of meropenem (MEM) |
   | `MEM_Res` | PBP AMR | Resistance phenotype against MEM |
   | `PEN_MIC` | PBP AMR | Estimated MIC of penicillin (PEN) |
-  | `PEN_Res(Non-meningital)` | PBP AMR | Resistance phenotype against PEN in non-meningital form |
   | `PEN_Res(Meningital)` | PBP AMR | Resistance phenotype against PEN in meningital form |
+  | `PEN_Res(Non-meningital)` | PBP AMR | Resistance phenotype against PEN in non-meningital form |
   | `CHL_Res` | Other AMR | Inferred resistance against Chloramphenicol (CHL) |
   | `CHL_Determinant` | Other AMR | Known determinants that inferred the CHL resistance |
   | `CLI_Res` | Other AMR | Inferred resistance against Clindamycin (CLI) |
