@@ -193,7 +193,7 @@ workflow PIPELINE {
                 'GPSC',
                 'Serotype',
                 'ST', 'aroE', 'gdh', 'gki', 'recP', 'spi', 'xpt', 'ddl',
-                'pbp1a', 'pbp2b', 'pbp2x', 'AMX_MIC', 'AMX_Res', 'CRO_MIC', 'CRO_Res(Non-meningital)', 'CRO_Res(Meningital)', 'CTX_MIC', 'CTX_Res(Non-meningital)', 'CTX_Res(Meningital)', 'CXM_MIC', 'CXM_Res', 'MEM_MIC', 'MEM_Res', 'PEN_MIC', 'PEN_Res(Non-meningital)', 'PEN_Res(Meningital)',
+                'pbp1a', 'pbp2b', 'pbp2x', 'AMX_MIC', 'AMX_Res', 'CRO_MIC', 'CRO_Res(Meningital)', 'CRO_Res(Non-meningital)', 'CTX_MIC', 'CTX_Res(Meningital)', 'CTX_Res(Non-meningital)', 'CXM_MIC', 'CXM_Res', 'MEM_MIC', 'MEM_Res', 'PEN_MIC', 'PEN_Res(Meningital)', 'PEN_Res(Non-meningital)', 
                 'CHL_Res', 'CHL_Determinant', 'CLI_Res', 'CLI_Determinant', 'ERY_Res', 'ERY_Determinant', 'FLQ_Res', 'FLQ_Determinant', 'KAN_Res', 'KAN_Determinant', 'LNZ_Res', 'LNZ_Determinant', 'TCY_Res', 'TCY_Determinant', 'TMP_Res', 'TMP_Determinant', 'SSS_Res', 'SSS_Determinant', 'SXT_Res', 'SXT_Determinant'
             ].join(','),
         sort: { it.split(',')[0] },
