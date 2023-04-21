@@ -340,7 +340,7 @@ This project uses open-source components. You can find the homepage or source co
 - These tools are used in `SAM_TO_SORTED_BAM`, `REF_COVERAGE` and `SNP_CALL` processes of the `mapping.nf` module
 
 [BWA](https://github.com/lh3/bwa)
-- Li H. (2013) Aligning sequence reads, clone sequences and assembly contigs with BWA-MER. [arXiv:1303.3997v2](http://arxiv.org/abs/1303.3997) [q-bio.GN]
+- Li H. (2013) Aligning sequence reads, clone sequences and assembly contigs with BWA-MEM. [arXiv:1303.3997v2](http://arxiv.org/abs/1303.3997) [q-bio.GN]
 - License (GPL-3.0): https://github.com/lh3/bwa/blob/master/COPYING
 - This tool is used in `GET_REF_GENOME_BWA_DB_PREFIX` and `MAPPING` processes of the `mapping.nf` module
 
