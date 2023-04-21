@@ -257,6 +257,8 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 
 ## Details of `results.csv`
 - The following fields can be found in the output `results.csv`
+  > ℹ️ For resistance phenotypes: S = Sensitive/Susceptible; I = Intermediate; R = Resistant
+  <!-- -->
   | Field | Type | Description |
   | --- | --- | --- |
   | `Sample_ID` | Identification | Sample ID based on the raw reads file name |
@@ -300,25 +302,25 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | `PEN_MIC` | PBP AMR | Estimated MIC of penicillin (PEN) |
   | `PEN_Res(Meningital)` | PBP AMR | Resistance phenotype against PEN in meningital form |
   | `PEN_Res(Non-meningital)` | PBP AMR | Resistance phenotype against PEN in non-meningital form |
-  | `CHL_Res` | Other AMR | Inferred resistance against Chloramphenicol (CHL) |
+  | `CHL_Res` | Other AMR | Resistance phenotype against Chloramphenicol (CHL) |
   | `CHL_Determinant` | Other AMR | Known determinants that inferred the CHL resistance |
-  | `CLD_Res` | Other AMR | Inferred resistance against Clindamycin (CLD) |
+  | `CLD_Res` | Other AMR | Resistance phenotype against Clindamycin (CLD) |
   | `CLD_Determinant` | Other AMR | Known determinants that inferred the CLD resistance |
-  | `ERY_Res` | Other AMR | Inferred resistance against Erythromycin (ERY) |
+  | `ERY_Res` | Other AMR | Resistance phenotype against Erythromycin (ERY) |
   | `ERY_Determinant` | Other AMR | Known determinants that inferred the ERY resistance |
-  | `FQ_Res` | Other AMR | Inferred resistance against Fluoroquinolones (FQ) |
+  | `FQ_Res` | Other AMR | Resistance phenotype against Fluoroquinolones (FQ) |
   | `FQ_Determinant` | Other AMR | Known determinants that inferred the FQ resistance |
-  | `KAN_Res` | Other AMR | Inferred resistance against Kanamycin (KAN) |
+  | `KAN_Res` | Other AMR | Resistance phenotype against Kanamycin (KAN) |
   | `KAN_Determinant` | Other AMR | Known determinants that inferred the KAN resistance |
-  | `LZO_Res` | Other AMR | Inferred resistance against Linezolid (LZO) |
+  | `LZO_Res` | Other AMR | Resistance phenotype against Linezolid (LZO) |
   | `LZO_Determinant` | Other AMR | Known determinants that inferred the LZO resistance |
-  | `TET_Res` | Other AMR | Inferred resistance against Tetracycline (TET) |
+  | `TET_Res` | Other AMR | Resistance phenotype against Tetracycline (TET) |
   | `TET_Determinant` | Other AMR | Known determinants that inferred the TET resistance |
-  | `TMP_Res` | Other AMR | Inferred resistance against Trimethoprim (TMP) |
+  | `TMP_Res` | Other AMR | Resistance phenotype against Trimethoprim (TMP) |
   | `TMP_Determinant` | Other AMR | Known determinants that inferred the TMP resistance |
-  | `SMX_Res` | Other AMR | Inferred resistance against Sulfamethoxazole (SMX) |
+  | `SMX_Res` | Other AMR | Resistance phenotype against Sulfamethoxazole (SMX) |
   | `SMX_Determinant` | Other AMR | Known determinants that inferred the SMX resistance |
-  | `COT_Res` | Other AMR | Inferred resistance against Co-Trimoxazole (COT) |
+  | `COT_Res` | Other AMR | Resistance phenotype against Co-Trimoxazole (COT) |
   | `COT_Determinant` | Other AMR | Known determinants that inferred the COT resistance |
 
 &nbsp;
