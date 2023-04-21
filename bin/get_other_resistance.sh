@@ -1,12 +1,12 @@
 # Extract the results from the output file of the AMRsearch
 
-# For resistances, change NOT_FOUND to NONE, and lower cases to upper cases
+# For resistances, change NOT_FOUND to S, lower cases to upper cases, SENSITIVE to S, INTERMEDIATE to I, RESISTANT to R, null or space-only string to empty string
 # For determinants, determinants are sorted and separated by "; ", and no determinant is output as "_". Each acquired gene is output as "*gene*", each variant is output as "*gene*_*variant*"
 
 function GET_RES {
     echo $( < $JSON_FILE jq -r --arg target "$1" '.resistanceProfile[] | select( .agent.key == $target ) | .state' \
-        | sed 's/NOT_FOUND/NONE/g' \
-        | tr '[:lower:]' '[:upper:]' )
+        | tr '[:lower:]' '[:upper:]' \
+        | sed 's/^NOT_FOUND$/S/g;s/^SENSITIVE$/S/g;s/^INTERMEDIATE$/I/g;s/^RESISTANT$/R/g;s/^null$//g;s/^\s+$//g' )
 }
 
 function GET_DETERMINANTS {
@@ -35,29 +35,29 @@ function GET_DETERMINANTS {
 CHL_RES=$(GET_RES "CHL")
 CHL_DETERMINANTS=$(GET_DETERMINANTS "CHL")
 
-CLI_RES=$(GET_RES "CLI")
-CLI_DETERMINANTS=$(GET_DETERMINANTS "CLI")
+CLD_RES=$(GET_RES "CLI")
+CLD_DETERMINANTS=$(GET_DETERMINANTS "CLI")
 
 ERY_RES=$(GET_RES "ERY")
 ERY_DETERMINANTS=$(GET_DETERMINANTS "ERY")
 
-FLQ_RES=$(GET_RES "FLQ")
-FLQ_DETERMINANTS=$(GET_DETERMINANTS "FLQ")
+FQ_RES=$(GET_RES "FLQ")
+FQ_DETERMINANTS=$(GET_DETERMINANTS "FLQ")
 
 KAN_RES=$(GET_RES "KAN")
 KAN_DETERMINANTS=$(GET_DETERMINANTS "KAN")
 
-LNZ_RES=$(GET_RES "LNZ")
-LNZ_DETERMINANTS=$(GET_DETERMINANTS "LNZ")
+LZO_RES=$(GET_RES "LNZ")
+LZO_DETERMINANTS=$(GET_DETERMINANTS "LNZ")
 
-TCY_RES=$(GET_RES "TCY")
-TCY_DETERMINANTS=$(GET_DETERMINANTS "TCY")
+TET_RES=$(GET_RES "TCY")
+TET_DETERMINANTS=$(GET_DETERMINANTS "TCY")
 
 TMP_RES=$(GET_RES "TMP")
 TMP_DETERMINANTS=$(GET_DETERMINANTS "TMP")
 
-SSS_RES=$(GET_RES "SSS")
-SSS_DETERMINANTS=$(GET_DETERMINANTS "SSS")
+SMX_RES=$(GET_RES "SSS")
+SMX_DETERMINANTS=$(GET_DETERMINANTS "SSS")
 
-SXT_RES=$(GET_RES "SXT")
-SXT_DETERMINANTS=$(GET_DETERMINANTS "SXT")
+COT_RES=$(GET_RES "SXT")
+COT_DETERMINANTS=$(GET_DETERMINANTS "SXT")
