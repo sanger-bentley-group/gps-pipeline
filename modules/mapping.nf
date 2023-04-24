@@ -53,6 +53,7 @@ process SAM_TO_SORTED_BAM {
 
     input:
     tuple val(sample_id), path(sam)
+    val lite
 
     output:
     tuple val(sample_id), path(bam), emit: bam
@@ -65,6 +66,10 @@ process SAM_TO_SORTED_BAM {
 
     samtools sort -@ `nproc` -o "$bam" mapped.bam
     rm mapped.bam
+
+    if [ $lite = true ]; then
+        rm `readlink -f "$sam"`
+    fi
 
     BAM="$bam"
     source get_ref_coverage.sh
@@ -81,6 +86,7 @@ process SNP_CALL {
     input:
     path reference
     tuple val(sample_id), path(bam)
+    val lite
 
     output:
     tuple val(sample_id), path(vcf), emit: vcf
@@ -89,6 +95,10 @@ process SNP_CALL {
     vcf="${sample_id}.vcf"
     """
     bcftools mpileup --threads `nproc` -f "$reference" "$bam" | bcftools call --threads `nproc` -mv -O v -o "$vcf"
+
+    if [ $lite = true ]; then
+        rm `readlink -f "$bam"`
+    fi
     """
 }
 
