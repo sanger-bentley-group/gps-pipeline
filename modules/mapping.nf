@@ -44,7 +44,7 @@ process MAPPING {
 }
 
 // Convert mapped SAM into BAM and sort it
-// Return mapped and sorted BAM
+// Return mapped and sorted BAM, and reference coverage percentage by the reads
 process SAM_TO_SORTED_BAM {
     label 'samtools_container'
     label 'farm_mid'
@@ -56,6 +56,7 @@ process SAM_TO_SORTED_BAM {
 
     output:
     tuple val(sample_id), path(bam), emit: bam
+    tuple val(sample_id), env(COVERAGE), emit: ref_coverage
 
     script:
     bam="${sample_id}_mapped_sorted.bam"
@@ -64,26 +65,8 @@ process SAM_TO_SORTED_BAM {
 
     samtools sort -@ `nproc` -o "$bam" mapped.bam
     rm mapped.bam
-    """
-}
 
-// Return reference coverage percentage by the reads
-process REF_COVERAGE {
-    label 'samtools_container'
-    label 'farm_mid'
-
-    tag "$sample_id"
-
-    input:
-    tuple val(sample_id), path(bam)
-
-    output:
-    tuple val(sample_id), env(COVERAGE), emit: result
-
-    script:
-    """
     BAM="$bam"
-    
     source get_ref_coverage.sh
     """
 }
