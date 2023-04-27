@@ -24,7 +24,8 @@ validParams = [
     contigs: 'int',
     length_low: 'int',
     length_high: 'int',
-    depth: 'int_float'
+    depth: 'int_float',
+    lite: 'boolean'
 ]
 
 // Validate whether all provided parameters are valid
