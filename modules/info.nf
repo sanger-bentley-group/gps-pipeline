@@ -292,7 +292,7 @@ process PRINT {
     )
 }
 
-// Save I/O, module selection, QC parameters, and version information to info.txt at output dir
+// Save core software, I/O, assembler, QC parameters, databases, tools, container engine and images information to info.txt at output dir
 process SAVE {
     label 'farm_local'
     
