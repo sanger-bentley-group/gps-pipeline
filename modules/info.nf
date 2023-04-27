@@ -292,7 +292,7 @@ process PRINT {
     )
 }
 
-// Save I/O, module selection, QC parameters, and version information to info.txt at output dir
+// Save core software, I/O, assembler, QC parameters, databases, tools, container engine and images information to info.txt at output dir
 process SAVE {
     label 'farm_local'
     
@@ -334,7 +334,7 @@ process SAVE {
     |╔═══════════════════════════╤═══════════════════════════════════════════════════════════════╗
     |${assemblerTextRow('Option', 'Value')}
     |╠═══════════════════════════╪═══════════════════════════════════════════════════════════════╣
-    |${assemblerTextRow('Selected Assembler', params.assembler.capitalize())}
+    |${assemblerTextRow('Assembler', params.assembler.capitalize())}
     |${assemblerTextRow('Minimum contig length', params.min_contig_length)}
     |╚═══════════════════════════╧═══════════════════════════════════════════════════════════════╝
     |""".stripMargin()
@@ -368,6 +368,19 @@ process SAVE {
     |╚══════════════════════════════════════════════════════════════╧════════════════════════════╝
     |""".stripMargin()
 
+    def containerEngineTextRow = { leftContent, rightContent ->
+        textRow(25, 61, leftContent, rightContent)
+    }
+
+    String containerEngineText = """\
+    |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Container Engine Options ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+    |╔═══════════════════════════╤═══════════════════════════════════════════════════════════════╗
+    |${containerEngineTextRow('Option', 'Value')}
+    |╠═══════════════════════════╪═══════════════════════════════════════════════════════════════╣
+    |${containerEngineTextRow('Container Engine', workflow.containerEngine.capitalize())}
+    |╚═══════════════════════════╧═══════════════════════════════════════════════════════════════╝
+    |""".stripMargin()
+
     File output = new File("${params.output}/info.txt")
     output.write(
         """\
@@ -377,6 +390,7 @@ process SAVE {
         |${qcText}
         |${dbText}
         |${toolText}
+        |${containerEngineText}
         |${imageText}
         |""".stripMargin()
     )
