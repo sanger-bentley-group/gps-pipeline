@@ -1,7 +1,7 @@
 // Import process modules
 include { PREPROCESS; READ_QC } from "$projectDir/modules/preprocess"
 include { ASSEMBLY_UNICYCLER; ASSEMBLY_SHOVILL; ASSEMBLY_ASSESS; ASSEMBLY_QC } from "$projectDir/modules/assembly"
-include { GET_REF_GENOME_BWA_DB_PREFIX; MAPPING; SAM_TO_SORTED_BAM; REF_COVERAGE; SNP_CALL; HET_SNP_COUNT; MAPPING_QC } from "$projectDir/modules/mapping"
+include { GET_REF_GENOME_BWA_DB_PREFIX; MAPPING; SAM_TO_SORTED_BAM; SNP_CALL; HET_SNP_COUNT; MAPPING_QC } from "$projectDir/modules/mapping"
 include { GET_KRAKEN_DB; TAXONOMY; TAXONOMY_QC } from "$projectDir/modules/taxonomy"
 include { OVERALL_QC } from "$projectDir/modules/overall_qc"
 include { GET_POPPUNK_DB; GET_POPPUNK_EXT_CLUSTERS; LINEAGE } from "$projectDir/modules/lineage"
@@ -72,19 +72,18 @@ workflow PIPELINE {
     // Output into Channel MAPPING.out.sam
     MAPPING(ref_genome_bwa_db_prefix, READ_QC_PASSED_READS_ch)
 
-    // From Channel MAPPING.out.sam, Convert SAM into sorted BAM
-    // Output into Channel SAM_TO_SORTED_BAM.out.bam
-    SAM_TO_SORTED_BAM(MAPPING.out.sam)
+    // From Channel MAPPING.out.sam, Convert SAM into sorted BAM and calculate reference coverage
+    // Output into Channels SAM_TO_SORTED_BAM.out.bam and SAM_TO_SORTED_BAM.out.ref_coverage
+    SAM_TO_SORTED_BAM(MAPPING.out.sam, params.lite)
 
-    // From Channel SAM_TO_SORTED_BAM.out.bam calculates reference coverage and non-cluster Het-SNP site count respecitvely
-    // Output into Channels REF_COVERAGE.out.result & HET_SNP_COUNT.out.result respectively
-    REF_COVERAGE(SAM_TO_SORTED_BAM.out.bam)
-    SNP_CALL(params.ref_genome, SAM_TO_SORTED_BAM.out.bam) | HET_SNP_COUNT
+    // From Channel SAM_TO_SORTED_BAM.out.bam calculates non-cluster Het-SNP site count
+    // Output into Channel HET_SNP_COUNT.out.result
+    SNP_CALL(params.ref_genome, SAM_TO_SORTED_BAM.out.bam, params.lite) | HET_SNP_COUNT
 
-    // Merge Channels REF_COVERAGE.out.result & HET_SNP_COUNT.out.result to provide Mapping QC Status
+    // Merge Channels SAM_TO_SORTED_BAM.out.ref_coverage & HET_SNP_COUNT.out.result to provide Mapping QC Status
     // Output into Channels MAPPING_QC.out.detailed_result & MAPPING_QC.out.result
     MAPPING_QC(
-        REF_COVERAGE.out.result
+        SAM_TO_SORTED_BAM.out.ref_coverage
         .join(HET_SNP_COUNT.out.result, failOnDuplicate: true, failOnMismatch: true),
         params.ref_coverage,
         params.het_snp_site

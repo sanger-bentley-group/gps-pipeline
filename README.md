@@ -31,6 +31,7 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   - [Serotype](#serotype)
   - [Lineage](#lineage)
   - [Singularity](#singularity)
+  - [Experimental](#experimental)
 - [Output](#output)
   - [Output Content](#output-content)
   - [Details of `results.csv`](#details-of-resultscsv)
@@ -52,7 +53,8 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   > - The pipeline core files use < 1GB
   > - All default databases use ~30GB in total
   > - All Docker images use ~12GB in total; alternatively, Singularity images use ~4GB in total
-  > - The pipeline generates ~2GB intermediate files for each sample on average<br>(These files can be removed when the pipeline run is completed, please refer to [Clean Up](#clean-up))
+  > - The pipeline generates ~1.8GB intermediate files for each sample on average<br>(These files can be removed when the pipeline run is completed, please refer to [Clean Up](#clean-up))<br>
+  (To further reduce storage requirement by sacrificing the ability to resume the pipeline, please refer to [Experimental](#experimental))
 ## Accepted Inputs
 - Currently, only Illumina paired-end short reads are supported
 - Each sample is expected to be a pair of raw reads following this file name pattern: 
@@ -240,6 +242,10 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | --- | ---| --- |
   | `--singularity_cachedir` | Any valid path<br />(Default: `"$projectDir/singularity_cache"`) | Path to the directory where Singularity images should be saved to. |
 
+## Experimental 
+  | Option | Values | Description |
+  | --- | ---| --- |
+  | `--lite` | `true` or `false`<br>(Default: `false`) | ⚠️ Enable this option breaks Nextflow resume function.<br>Reduce storage requirement by removing intermediate `.sam` and `.bam` files once they are no longer needed while the pipeline is still running.<br>The quantity of reduction of storage requirement cannot be guaranteed.<br> Can be enabled by including `--lite` without value. |
 &nbsp;
 # Output
 - By default, the pipeline outputs the results into the `output` directory inside the `gps-unified-pipeline` local repository
