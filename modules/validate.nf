@@ -24,7 +24,8 @@ validParams = [
     contigs: 'int',
     length_low: 'int',
     length_high: 'int',
-    depth: 'int_float'
+    depth: 'int_float',
+    lite: 'boolean'
 ]
 
 // Validate whether all provided parameters are valid
@@ -136,8 +137,8 @@ void validate(Map params) {
                 break
 
             case 'url_targz':
-                if (!(value ==~ /^(https?:\/\/)?(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)\.tar\.gz$/)) {
-                    invalidValues[key] = [value, 'URL that points a .tar.gz file (valid URL ending with .tar.gz)']
+                if (!(value ==~ /^(https?:\/\/)?(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)\.(tar\.gz|tgz)$/)) {
+                    invalidValues[key] = [value, 'URL that points a .tar.gz file (valid URL ending with .tar.gz or .tgz)']
                 }
                 break
 

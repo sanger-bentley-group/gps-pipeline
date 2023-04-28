@@ -4,7 +4,7 @@
 [![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)
 [![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/singularity/)
 
-The GPS Unified Pipeline is a Nextflow pipeline designed for processing raw reads (FASTQ files) of *Streptococcus pneumoniae* samples. The pipeline assesses the quality of the reads based on assembly, mapping, and taxonomy. If the sample passes all quality controls (QC), the pipeline also provides the sample's serotype, multi-locus sequence typing (MLST), lineage (based on the [Global Pneumococcal Sequence Cluster (GPSC)](https://www.pneumogen.net/gps/GPSC_lineages.html)), and antimicrobial resistance (AMR) against multiple antimicrobials.
+The GPS Unified Pipeline is a Nextflow pipeline designed for processing raw reads (FASTQ files) of *Streptococcus pneumoniae* samples. After preprocessing, the pipeline performs initial assessment based on the total bases in reads. Passed samples will be further assess based on assembly, mapping, and taxonomy. If the sample passes all quality controls (QC), the pipeline also provides the sample's serotype, multi-locus sequence typing (MLST), lineage (based on the [Global Pneumococcal Sequence Cluster (GPSC)](https://www.pneumogen.net/gps/GPSC_lineages.html)), and antimicrobial resistance (AMR) against multiple antimicrobials.
 
 The pipeline is designed to be easy to set up and use, and is suitable for use on local machines. It is also offline-capable, making it an ideal option for cases where the FASTQ files being analysed should not leave the local machine. Additionally, the pipeline only downloads essential files to enable the analysis, and no data is uploaded from the local machine. After initialisation or the first successful complete run, the pipeline can be used offline unless you have changed the selection of any database or container image.
 
@@ -31,6 +31,7 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   - [Serotype](#serotype)
   - [Lineage](#lineage)
   - [Singularity](#singularity)
+  - [Experimental](#experimental)
 - [Output](#output)
   - [Output Content](#output-content)
   - [Details of `results.csv`](#details-of-resultscsv)
@@ -48,6 +49,12 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 - Java 11 or later (up to 19) ([OpenJDK](https://openjdk.org/)/[Oracle Java](https://www.oracle.com/java/))
 - [Docker](https://www.docker.com/) or [Singularity](https://sylabs.io/singularity/)
 - It is recommended to have at least 16GB of RAM and 100GB of free storage
+  > ℹ️ Details on storage
+  > - The pipeline core files use < 1GB
+  > - All default databases use ~30GB in total
+  > - All Docker images use ~12GB in total; alternatively, Singularity images use ~4GB in total
+  > - The pipeline generates ~1.8GB intermediate files for each sample on average<br>(These files can be removed when the pipeline run is completed, please refer to [Clean Up](#clean-up))<br>
+  (To further reduce storage requirement by sacrificing the ability to resume the pipeline, please refer to [Experimental](#experimental))
 ## Accepted Inputs
 - Currently, only Illumina paired-end short reads are supported
 - Each sample is expected to be a pair of raw reads following this file name pattern: 
@@ -110,7 +117,7 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | --- | --- |
   | `standard`<br> (Default) | Docker is used as the container engine. <br> Processes are executed locally. |
   | `singularity` |  Singularity is used as the container engine. <br> Processes are executed locally. |
-  | `lsf` | Singularity is used as the container engine. <br> Processes are sent to your LSF cluster. <br> (Tested on Sanger farm5) |
+  | `lsf` | **The pipeline should be launched from a LSF cluster head node with this profile.** <br>Singularity is used as the container engine. <br> Processes are submitted to your LSF cluster via `bsub`. <br> (Tested on Sanger farm5) |
 
 ## Resume
 - If the pipeline is interrupted mid-run, Nextflow's built-in `-resume` option can be used to resume the pipeline execution instead of starting from scratch again
@@ -175,6 +182,8 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | `--output` | Any valid path<br />(Default: `"$projectDir/output"`)| Path to the output directory that save the results. |
 
 ## QC Parameters
+> ℹ️ Read QC does not have directly accessible parameters. The minimum base count in reads of Read QC is based on the multiplication of `--length_low` and `--depth` of Assembly QC.
+<!-- -->
   | Option | Values | Description |
   | --- | ---| --- |
   | `--spneumo_percentage` | Any integer or float value<br />(Default: `60.00`) | Minimum *S. pneumoniae* percentage in reads to pass Taxonomy QC. |
@@ -204,7 +213,7 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   <!-- -->
   | Option | Values | Description |
   | --- | ---| --- |
-  | `--kraken2_db_remote` | Any valid URL to a Kraken2 database in `.tar.gz` format<br />(Default: [Kraken 2 RefSeq Index Standard-8 (2022-09-12)](https://genome-idx.s3.amazonaws.com/kraken/k2_standard_08gb_20220926.tar.gz)) | URL to a Kraken2 database. |
+  | `--kraken2_db_remote` | Any valid URL to a Kraken2 database in `.tar.gz` or `.tgz` format<br />(Default: [Minikraken v1](https://genome-idx.s3.amazonaws.com/kraken/minikraken2_v1_8GB_201904.tgz)) | URL to a Kraken2 database. |
   | `--kraken2_db_local` | Any valid path<br />(Default: `"$projectDir/databases/kraken"`) | Path to the directory where the remote Kraken2 database should be saved to. |
   | `--kraken2_memory_mapping` | `true` or `false`<br />(Default: `true`) | Using the memory mapping option of Kraken2 or not.<br />`true` means not loading the database into RAM, suitable for memory-limited or fast storage environments. |
 
@@ -222,7 +231,7 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   <!-- -->
   | Option | Values | Description |
   | --- | ---| --- |
-  | `--poppunk_db_remote` | Any valid URL to a PopPUNK database in `.tar.gz` format<br />(Default: [GPS v6](https://gps-project.cog.sanger.ac.uk/GPS_v6.tar.gz)) | URL to a PopPUNK database. |
+  | `--poppunk_db_remote` | Any valid URL to a PopPUNK database in `.tar.gz` or `.tgz` format<br />(Default: [GPS v6](https://gps-project.cog.sanger.ac.uk/GPS_v6.tar.gz)) | URL to a PopPUNK database. |
   | `--poppunk_ext_remote` | Any valid URL to a PopPUNK external clusters file in `.csv` format<br />(Default: [GPS v6 GPSC Designation](https://www.pneumogen.net/gps/GPS_v6_external_clusters.csv)) | URL to a PopPUNK external clusters file. |
   | `--poppunk_local` | Any valid path<br />(Default: `"$projectDir/databases/poppunk"`) | Path to the directory where the remote PopPUNK database and external clusters file should be saved to. |
 
@@ -233,6 +242,10 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | --- | ---| --- |
   | `--singularity_cachedir` | Any valid path<br />(Default: `"$projectDir/singularity_cache"`) | Path to the directory where Singularity images should be saved to. |
 
+## Experimental 
+  | Option | Values | Description |
+  | --- | ---| --- |
+  | `--lite` | `true` or `false`<br>(Default: `false`) | ⚠️ Enable this option breaks Nextflow resume function.<br>Reduce storage requirement by removing intermediate `.sam` and `.bam` files once they are no longer needed while the pipeline is still running.<br>The quantity of reduction of storage requirement cannot be guaranteed.<br> Can be enabled by including `--lite` without value. |
 &nbsp;
 # Output
 - By default, the pipeline outputs the results into the `output` directory inside the `gps-unified-pipeline` local repository
@@ -250,22 +263,25 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 
 ## Details of `results.csv`
 - The following fields can be found in the output `results.csv`
+  > ℹ️ For resistance phenotypes: S = Sensitive/Susceptible; I = Intermediate; R = Resistant
+  <!-- -->
   | Field | Type | Description |
   | --- | --- | --- |
   | `Sample_ID` | Identification | Sample ID based on the raw reads file name |
-  | `Contigs#` | Assembly | Number of contigs in the assembly; < 500 to pass QC |
-  | `Assembly_Length` | Assembly | Total length of the assembly; 1.9 - 2.3 Mb to pass QC |
-  | `Seq_Depth` | Assembly | Sequencing depth of the assembly; ≥ 20x to pass QC |
+  | `Read_QC` | QC | Read quality control result |
   | `Assembly_QC` | QC | Assembly quality control result |
-  | `Ref_Cov_%` | Mapping | Percentage of reference covered by reads; > 60% to pass QC |
-  | `Het-SNP#` | Mapping | Non-cluster heterozygous SNP (Het-SNP) site count; < 220 to pass QC |
   | `Mapping_QC` | QC | Mapping quality control result |
-  | `S.Pneumo_%` | Taxonomy | Percentage of reads assigned to *Streptococcus pneumoniae*; > 60% to pass QC |
-  | `Taxonomy_QC` | QC | Taxonomy quality control result  |
-  | `Overall_QC` | QC | Overall quality control result; Based on `Assembly_QC`, `Mapping_QC` and `Taxonomy_QC` |
+  | `Taxonomy_QC` | QC | Taxonomy quality control result |
+  | `Overall_QC` | QC | Overall quality control result<br>(Based on `Assembly_QC`, `Mapping_QC` and `Taxonomy_QC`) |
+  | `Bases` | Read | Number of bases in the reads<br>(Default: ≥ 38 Mb to pass Read QC) |
+  | `Contigs#` | Assembly | Number of contigs in the assembly<br>(Default: < 500 to pass Assembly QC) |
+  | `Assembly_Length` | Assembly | Total length of the assembly<br>(Default: 1.9 - 2.3 Mb to pass Assembly QC) |
+  | `Seq_Depth` | Assembly | Sequencing depth of the assembly<br>(Default: ≥ 20x to pass Assembly QC) |
+  | `Ref_Cov_%` | Mapping | Percentage of reference covered by reads<br>(Default: > 60% to pass Mapping QC) |
+  | `Het-SNP#` | Mapping | Non-cluster heterozygous SNP (Het-SNP) site count<br>(Default: < 220 to pass Mapping QC) |
+  | `S.Pneumo_%` | Taxonomy | Percentage of reads assigned to *Streptococcus pneumoniae*<br>(Default: > 60% to pass Taxonomy QC) |
   | `GPSC` | Lineage | GPSC Lineage |
   | `Serotype` | Serotype | Serotype |
-  | `SeroBA_Comment` | Serotype | (if any) SeroBA comment on serotype assignment |
   | `ST` | MLST | Sequence Type (ST) |
   | `aroE` | MLST | Allele ID of aroE |
   | `gdh` | MLST | Allele ID of gdh |
@@ -277,41 +293,41 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | `pbp1a` | PBP AMR | Allele ID of pbp1a |
   | `pbp2b` | PBP AMR | Allele ID of pbp2b |
   | `pbp2x` | PBP AMR | Allele ID of pbp2x |
-  | `AMX_MIC` | PBP AMR | Estimated minimum inhibitory concentration (MIC) of amoxicillin (AMX) |
-  | `AMX_Res` | PBP AMR | Resistance phenotype against AMX |
-  | `CRO_MIC` | PBP AMR | Estimated MIC of ceftriaxone (CRO) |
-  | `CRO_Res(Non-meningital)` | PBP AMR | Resistance phenotype against CRO in non-meningital form |
-  | `CRO_Res(Meningital)` | PBP AMR | Resistance phenotype against CRO in meningital form |
-  | `CTX_MIC` | PBP AMR | Estimated MIC of cefotaxime (CTX) |
-  | `CTX_Res(Non-meningital)` | PBP AMR | Resistance phenotype against CTX in non-meningital form |
-  | `CTX_Res(Meningital)` | PBP AMR | Resistance phenotype against CTX in meningital form |
-  | `CXM_MIC` | PBP AMR | Estimated MIC of cefuroxime (CXM) |
-  | `CXM_Res` | PBP AMR | Resistance phenotype against CXM |
-  | `MEM_MIC` | PBP AMR | Estimated MIC of meropenem (MEM) |
-  | `MEM_Res` | PBP AMR | Resistance phenotype against MEM |
+  | `AMO_MIC` | PBP AMR | Estimated minimum inhibitory concentration (MIC) of amoxicillin (AMO) |
+  | `AMO_Res` | PBP AMR | Resistance phenotype against AMO |
+  | `CFT_MIC` | PBP AMR | Estimated MIC of ceftriaxone (CFT) |
+  | `CFT_Res(Meningital)` | PBP AMR | Resistance phenotype against CFT in meningital form |
+  | `CFT_Res(Non-meningital)` | PBP AMR | Resistance phenotype against CFT in non-meningital form |
+  | `TAX_MIC` | PBP AMR | Estimated MIC of cefotaxime (TAX) |
+  | `TAX_Res(Meningital)` | PBP AMR | Resistance phenotype against TAX in meningital form |
+  | `TAX_Res(Non-meningital)` | PBP AMR | Resistance phenotype against TAX in non-meningital form |
+  | `CFX_MIC` | PBP AMR | Estimated MIC of cefuroxime (CFX) |
+  | `CFX_Res` | PBP AMR | Resistance phenotype against CFX |
+  | `MER_MIC` | PBP AMR | Estimated MIC of meropenem (MER) |
+  | `MER_Res` | PBP AMR | Resistance phenotype against MER |
   | `PEN_MIC` | PBP AMR | Estimated MIC of penicillin (PEN) |
-  | `PEN_Res(Non-meningital)` | PBP AMR | Resistance phenotype against PEN in non-meningital form |
   | `PEN_Res(Meningital)` | PBP AMR | Resistance phenotype against PEN in meningital form |
-  | `CHL_Res` | Other AMR | Inferred resistance against Chloramphenicol (CHL) |
+  | `PEN_Res(Non-meningital)` | PBP AMR | Resistance phenotype against PEN in non-meningital form |
+  | `CHL_Res` | Other AMR | Resistance phenotype against Chloramphenicol (CHL) |
   | `CHL_Determinant` | Other AMR | Known determinants that inferred the CHL resistance |
-  | `CLI_Res` | Other AMR | Inferred resistance against Clindamycin (CLI) |
-  | `CLI_Determinant` | Other AMR | Known determinants that inferred the CLI resistance |
-  | `ERY_Res` | Other AMR | Inferred resistance against Erythromycin (ERY) |
+  | `CLD_Res` | Other AMR | Resistance phenotype against Clindamycin (CLD) |
+  | `CLD_Determinant` | Other AMR | Known determinants that inferred the CLD resistance |
+  | `ERY_Res` | Other AMR | Resistance phenotype against Erythromycin (ERY) |
   | `ERY_Determinant` | Other AMR | Known determinants that inferred the ERY resistance |
-  | `FLQ_Res` | Other AMR | Inferred resistance against Fluoroquinolones (FLQ) |
-  | `FLQ_Determinant` | Other AMR | Known determinants that inferred the FLQ resistance |
-  | `KAN_Res` | Other AMR | Inferred resistance against Kanamycin (KAN) |
+  | `FQ_Res` | Other AMR | Resistance phenotype against Fluoroquinolones (FQ) |
+  | `FQ_Determinant` | Other AMR | Known determinants that inferred the FQ resistance |
+  | `KAN_Res` | Other AMR | Resistance phenotype against Kanamycin (KAN) |
   | `KAN_Determinant` | Other AMR | Known determinants that inferred the KAN resistance |
-  | `LNZ_Res` | Other AMR | Inferred resistance against Linezolid (LNZ) |
-  | `LNZ_Determinant` | Other AMR | Known determinants that inferred the LNZ resistance |
-  | `TCY_Res` | Other AMR | Inferred resistance against Tetracycline (TCY) |
-  | `TCY_Determinant` | Other AMR | Known determinants that inferred the TCY resistance |
-  | `TMP_Res` | Other AMR | Inferred resistance against Trimethoprim (TMP) |
+  | `LZO_Res` | Other AMR | Resistance phenotype against Linezolid (LZO) |
+  | `LZO_Determinant` | Other AMR | Known determinants that inferred the LZO resistance |
+  | `TET_Res` | Other AMR | Resistance phenotype against Tetracycline (TET) |
+  | `TET_Determinant` | Other AMR | Known determinants that inferred the TET resistance |
+  | `TMP_Res` | Other AMR | Resistance phenotype against Trimethoprim (TMP) |
   | `TMP_Determinant` | Other AMR | Known determinants that inferred the TMP resistance |
-  | `SSS_Res` | Other AMR | Inferred resistance against Sulfamethoxazole (SSS) |
-  | `SSS_Determinant` | Other AMR | Known determinants that inferred the SSS resistance |
-  | `SXT_Res` | Other AMR | Inferred resistance against Co-Trimoxazole (SXT) |
-  | `SXT_Determinant` | Other AMR | Known determinants that inferred the SXT resistance |
+  | `SMX_Res` | Other AMR | Resistance phenotype against Sulfamethoxazole (SMX) |
+  | `SMX_Determinant` | Other AMR | Known determinants that inferred the SMX resistance |
+  | `COT_Res` | Other AMR | Resistance phenotype against Co-Trimoxazole (COT) |
+  | `COT_Determinant` | Other AMR | Known determinants that inferred the COT resistance |
 
 &nbsp;
 # Credits

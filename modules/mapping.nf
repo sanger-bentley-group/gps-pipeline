@@ -44,7 +44,7 @@ process MAPPING {
 }
 
 // Convert mapped SAM into BAM and sort it
-// Return mapped and sorted BAM
+// Return mapped and sorted BAM, and reference coverage percentage by the reads
 process SAM_TO_SORTED_BAM {
     label 'samtools_container'
     label 'farm_mid'
@@ -53,9 +53,11 @@ process SAM_TO_SORTED_BAM {
 
     input:
     tuple val(sample_id), path(sam)
+    val lite
 
     output:
     tuple val(sample_id), path(bam), emit: bam
+    tuple val(sample_id), env(COVERAGE), emit: ref_coverage
 
     script:
     bam="${sample_id}_mapped_sorted.bam"
@@ -64,26 +66,12 @@ process SAM_TO_SORTED_BAM {
 
     samtools sort -@ `nproc` -o "$bam" mapped.bam
     rm mapped.bam
-    """
-}
 
-// Return reference coverage percentage by the reads
-process REF_COVERAGE {
-    label 'samtools_container'
-    label 'farm_mid'
+    if [ $lite = true ]; then
+        rm `readlink -f "$sam"`
+    fi
 
-    tag "$sample_id"
-
-    input:
-    tuple val(sample_id), path(bam)
-
-    output:
-    tuple val(sample_id), env(COVERAGE), emit: result
-
-    script:
-    """
     BAM="$bam"
-    
     source get_ref_coverage.sh
     """
 }
@@ -98,6 +86,7 @@ process SNP_CALL {
     input:
     path reference
     tuple val(sample_id), path(bam)
+    val lite
 
     output:
     tuple val(sample_id), path(vcf), emit: vcf
@@ -106,6 +95,10 @@ process SNP_CALL {
     vcf="${sample_id}.vcf"
     """
     bcftools mpileup --threads `nproc` -f "$reference" "$bam" | bcftools call --threads `nproc` -mv -O v -o "$vcf"
+
+    if [ $lite = true ]; then
+        rm `readlink -f "$bam"`
+    fi
     """
 }
 
@@ -141,7 +134,7 @@ process MAPPING_QC {
     val(qc_het_snp_site)
 
     output:
-    tuple val(sample_id), env(COVERAGE), env(HET_SNP), env(MAPPING_QC), emit: detailed_result
+    tuple val(sample_id), env(COVERAGE), env(HET_SNP), emit: info
     tuple val(sample_id), env(MAPPING_QC), emit: result
 
     script:

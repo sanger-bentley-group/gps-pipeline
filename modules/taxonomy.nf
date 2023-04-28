@@ -39,11 +39,11 @@ process TAXONOMY {
 
     if (kraken2_memory_mapping === true)
         """
-        kraken2 --threads `nproc` --use-names --memory-mapping --db "$kraken_db" --paired "$read1" "$read2" --report "$report"
+        kraken2 --threads `nproc` --use-names --memory-mapping --db "$kraken_db" --paired "$read1" "$read2" --report "$report" --output -
         """
     else if (kraken2_memory_mapping === false)
         """
-        kraken2 --threads `nproc` --use-names --db "$kraken_db" --paired "$read1" "$read2" --report "$report"
+        kraken2 --threads `nproc` --use-names --db "$kraken_db" --paired "$read1" "$read2" --report "$report" --output -
         """
     else
         error "The value for --kraken2_memory_mapping is not valid."
@@ -61,7 +61,7 @@ process TAXONOMY_QC {
     val(qc_spneumo_percentage)
 
     output:
-    tuple val(sample_id), env(PERCENTAGE), env(TAXONOMY_QC), emit: detailed_result
+    tuple val(sample_id), env(PERCENTAGE), emit: percentage
     tuple val(sample_id), env(TAXONOMY_QC), emit: result
 
     script:
