@@ -1,6 +1,6 @@
 # GPS Unified Pipeline <!-- omit in toc -->
 
-[![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-23.04.0-23aa62.svg)](https://www.nextflow.io/)
+[![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-23.04.1-23aa62.svg)](https://www.nextflow.io/)
 [![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)
 [![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/singularity/)
 
@@ -46,7 +46,7 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 # Usage
 ## Requirement
 - A POSIX-compatible system (e.g. Linux, macOS, Windows with [WSL](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux))
-- Java 11 or later (up to 19) ([OpenJDK](https://openjdk.org/)/[Oracle Java](https://www.oracle.com/java/))
+- Java 11 or later (up to 20) ([OpenJDK](https://openjdk.org/)/[Oracle Java](https://www.oracle.com/java/))
 - [Docker](https://www.docker.com/) or [Singularity](https://sylabs.io/singularity/)
 - It is recommended to have at least 16GB of RAM and 100GB of free storage
   > ℹ️ Details on storage
