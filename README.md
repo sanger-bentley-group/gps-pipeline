@@ -310,8 +310,8 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | `PEN_Res(Non-meningital)` | PBP AMR | Resistance phenotype against PEN in non-meningital form |
   | `CHL_Res` | Other AMR | Resistance phenotype against Chloramphenicol (CHL) |
   | `CHL_Determinant` | Other AMR | Known determinants that inferred the CHL resistance |
-  | `CLD_Res` | Other AMR | Resistance phenotype against Clindamycin (CLD) |
-  | `CLD_Determinant` | Other AMR | Known determinants that inferred the CLD resistance |
+  | `CLI_Res` | Other AMR | Resistance phenotype against Clindamycin (CLI) |
+  | `CLI_Determinant` | Other AMR | Known determinants that inferred the CLI resistance |
   | `ERY_Res` | Other AMR | Resistance phenotype against Erythromycin (ERY) |
   | `ERY_Determinant` | Other AMR | Known determinants that inferred the ERY resistance |
   | `FQ_Res` | Other AMR | Resistance phenotype against Fluoroquinolones (FQ) |
