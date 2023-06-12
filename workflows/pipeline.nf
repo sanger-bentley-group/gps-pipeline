@@ -193,7 +193,7 @@ workflow PIPELINE {
                 'Serotype',
                 'ST', 'aroE', 'gdh', 'gki', 'recP', 'spi', 'xpt', 'ddl',
                 'pbp1a', 'pbp2b', 'pbp2x', 'AMO_MIC', 'AMO_Res', 'CFT_MIC', 'CFT_Res(Meningital)', 'CFT_Res(Non-meningital)', 'TAX_MIC', 'TAX_Res(Meningital)', 'TAX_Res(Non-meningital)', 'CFX_MIC', 'CFX_Res', 'MER_MIC', 'MER_Res', 'PEN_MIC', 'PEN_Res(Meningital)', 'PEN_Res(Non-meningital)', 
-                'CHL_Res', 'CHL_Determinant', 'CLD_Res', 'CLD_Determinant', 'ERY_Res', 'ERY_Determinant', 'FQ_Res', 'FQ_Determinant', 'KAN_Res', 'KAN_Determinant', 'LZO_Res', 'LZO_Determinant', 'TET_Res', 'TET_Determinant', 'TMP_Res', 'TMP_Determinant', 'SMX_Res', 'SMX_Determinant', 'COT_Res', 'COT_Determinant'
+                'CHL_Res', 'CHL_Determinant', 'CLI_Res', 'CLI_Determinant', 'ERY_Res', 'ERY_Determinant', 'FQ_Res', 'FQ_Determinant', 'KAN_Res', 'KAN_Determinant', 'LZO_Res', 'LZO_Determinant', 'TET_Res', 'TET_Determinant', 'TMP_Res', 'TMP_Determinant', 'SMX_Res', 'SMX_Determinant', 'COT_Res', 'COT_Determinant'
             ].join(','),
         sort: { it.split(',')[0] },
         newLine: true
