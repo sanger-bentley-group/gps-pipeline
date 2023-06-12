@@ -178,7 +178,7 @@ workflow PIPELINE {
         .map { (it[-1] == null) ? it[0..-2] + ['_'] * 18 : it }
     .join(GET_OTHER_RESISTANCE.out, failOnDuplicate: true, remainder: true)
         .map { (it[-1] == null) ? it[0..-2] + ['_'] * 20 : it }
-    .map { it.join',' }
+    .map { it.collect {"\"$it\""}.join',' }
     .collectFile(
         name: 'results.csv',
         storeDir: "$params.output",
