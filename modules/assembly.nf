@@ -2,7 +2,9 @@
 // Return sample_id and assembly, and hardlink the assembly to ${params.output}/assemblies directory
 process ASSEMBLY_UNICYCLER {
     label 'unicycler_container'
-    label 'farm_high'
+    label 'farm_high_ignore'
+
+    errorStrategy 'ignore'
 
     tag "$sample_id"
 
