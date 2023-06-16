@@ -44,9 +44,14 @@ void validate(Map params) {
         return
     }
 
-    // Add params.singularity_cachedir when workflow.containerEngine === 'singularity'
-    if (workflow.containerEngine === 'singularity') {
+    // Add params.singularity_cachedir when workflow.containerEngine == 'singularity'
+    if (workflow.containerEngine == 'singularity') {
         validParams.put("singularity_cachedir", "path")
+    }
+
+    // Add params.maxretries when workflow.profile == 'lsf' 
+    if (workflow.profile == 'lsf' ) {
+        validParams.put("maxretries", "int")
     }
 
     // For initalisation, skip input and output directories checks
