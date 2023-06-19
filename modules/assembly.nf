@@ -8,7 +8,7 @@ process ASSEMBLY_UNICYCLER {
 
     tag "$sample_id"
 
-    publishDir "${params.output}/assemblies", mode: 'link'
+    publishDir "${params.output}/assemblies", mode: "${params.assembly_publish}"
 
     input:
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
@@ -35,7 +35,7 @@ process ASSEMBLY_SHOVILL {
 
     tag "$sample_id"
 
-    publishDir "${params.output}/assemblies", mode: 'link'
+    publishDir "${params.output}/assemblies", mode: "${params.assembly_publish}"
 
     input:
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
