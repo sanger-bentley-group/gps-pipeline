@@ -31,6 +31,8 @@ process ASSEMBLY_SHOVILL {
     label 'shovill_container'
     label 'farm_high_fallible'
 
+    errorStrategy 'ignore'
+
     tag "$sample_id"
 
     publishDir "${params.output}/assemblies", mode: 'link'
