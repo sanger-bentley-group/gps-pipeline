@@ -2,7 +2,9 @@
 // Return sample_id and assembly, and hardlink the assembly to ${params.output}/assemblies directory
 process ASSEMBLY_UNICYCLER {
     label 'unicycler_container'
-    label 'farm_high'
+    label 'farm_high_fallible'
+
+    errorStrategy 'ignore'
 
     tag "$sample_id"
 
@@ -27,7 +29,9 @@ process ASSEMBLY_UNICYCLER {
 // Return sample_id and assembly, and hardlink the assembly to ${params.output}/assemblies directory
 process ASSEMBLY_SHOVILL {
     label 'shovill_container'
-    label 'farm_high'
+    label 'farm_high_fallible'
+
+    errorStrategy 'ignore'
 
     tag "$sample_id"
 
