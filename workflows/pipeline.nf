@@ -101,17 +101,17 @@ workflow PIPELINE {
     // Output into Channel OVERALL_QC.out.result
     OVERALL_QC(
         ASSEMBLY_QC.out.result
-        .join(MAPPING_QC.out.result, failOnDuplicate: true, failOnMismatch: true)
-        .join(TAXONOMY_QC.out.result, failOnDuplicate: true, failOnMismatch: true)
+        .join(MAPPING_QC.out.result, failOnDuplicate: true, remainder: true)
+        .join(TAXONOMY_QC.out.result, failOnDuplicate: true)
     )
 
     // From Channel READ_QC_PASSED_READS_ch, only output reads of samples passed overall QC based on Channel OVERALL_QC.out.result
-    OVERALL_QC_PASSED_READS_ch = OVERALL_QC.out.result.join(READ_QC_PASSED_READS_ch, failOnDuplicate: true, failOnMismatch: true)
+    OVERALL_QC_PASSED_READS_ch = OVERALL_QC.out.result.join(READ_QC_PASSED_READS_ch, failOnDuplicate: true)
                         .filter { it[1] == 'PASS' }
                         .map { it[0, 2..-1] }
 
     // From Channel ASSEMBLY_ch, only output assemblies of samples passed overall QC based on Channel OVERALL_QC.out.result
-    OVERALL_QC_PASSED_ASSEMBLIES_ch = OVERALL_QC.out.result.join(ASSEMBLY_ch, failOnDuplicate: true, failOnMismatch: true)
+    OVERALL_QC_PASSED_ASSEMBLIES_ch = OVERALL_QC.out.result.join(ASSEMBLY_ch, failOnDuplicate: true)
                             .filter { it[1] == 'PASS' }
                             .map { it[0, 2..-1] }
 
