@@ -265,6 +265,8 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 - The following fields can be found in the output `results.csv`
   > ℹ️ For resistance phenotypes: S = Sensitive/Susceptible; I = Intermediate; R = Resistant
   <!-- -->
+  > ⚠️ If the result of `Overall_QC` of a sample is `ASSEMBLER FAILURE`, the assembler has crashed when trying to assembly the reads. You might want to re-run the sample with [another assembler](#assembly), or discard the sample if it is a low quality one.
+  <!-- -->
   | Field | Type | Description |
   | --- | --- | --- |
   | `Sample_ID` | Identification | Sample ID based on the raw reads file name |
