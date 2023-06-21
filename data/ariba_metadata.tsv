@@ -39,8 +39,8 @@ tetS_M_AY534326	1	0	.	.	Tetracycline resistance
 tetM_M85225	1	0	.	.	Tetracycline resistance
 tetS_FN555436	1	0	.	.	Tetracycline resistance
 tetM_MH283017	1	0	.	.	tetracycline resistance
-folA_AE007317	1	1	I100L	.	Trimethoprim
-folP_AE007317	1	1	.	.	Sulfamethoxazole resistance on if insertions in 56-67 amino acids
+folA_AE007317	1	1	I100L	.	"proteinID-AAL00232.1, Trimethoprim"
+folP_AE007317	1	1	.	.	"proteinID-AAK99071.1, Sulfamethoxazole resistance on if insertions in 56-67 amino acids"
 gyrA_AE007317	1	1	S81F	.	Fluoroquinolone
 gyrA_AE007317	1	1	S81Y	.	Fluoroquinolone
 gyrA_AE007317	1	1	S81C	.	Fluoroquinolone
@@ -62,12 +62,19 @@ parE_AE007317	1	1	P454S	.	Fluoroquinolone
 tetO_Y07780	1	0	.	.	Tetracycline resistance
 ermBups_HG799494	0	0	.	.	Erythromycin and Clindamycin resistance
 ermbTr_CP002121	0	0	.	.	Erythromycin and Clindamycin resistance
-rplD_AE007317	1	1	.	.	Linezolid resistance (deletion within the L4 region of the gene PMID:24492357)
-rpoB_AE007317	1	1	D489E	.	rifampicin resistance PMID:10508007-D415E
-rpoB_AE007317	1	1	H499N	.	rifampicin resistance PMID:10508007-H425N
-rpoB_AE007317	1	1	D489N	.	rifampicin resistance PMID:10508007-H415N
+rplD_AE007317	1	1	.	.	Linezolid resistance (deletion within the L4 region of the gene )
+rpoB_AE007317	1	1	D489E	.	rifampicin resistance -D415E
+rpoB_AE007317	1	1	H499N	.	rifampicin resistance -H425N
+rpoB_AE007317	1	1	D489N	.	rifampicin resistance -H415N
 vanB_KC489787	1	0	.	.	Vacomycin resistance
 vanD_EU999036	1	0	.	.	Vacomycin resistance
 vanE_FJ872411	1	0	.	.	Vacomycin resistance
 vanG_KF704242	1	0	.	.	Vacomycin resistance
 otrA_X53401	1	0	.	.	Tetracycline resistance
+vanA_M97297	1	0	.	.	Vacomycin resistance (E.faecium)
+vanC_AF162694	1	0	.	.	Vacomycin resistance (E.gallinarum)
+23S_NZ_CP018347	0	1	A2114G	.	Macrolide:32347-35250
+23S_NZ_CP018347	0	1	A2115G	.	Macrolide:32347-35250
+23S_NZ_CP018347	0	1	A2118G	.	Macrolide/Streptogramin:32347-35250
+23S_NZ_CP018347	0	1	C2630A	.	Macrolide:32347-35250
+23S_NZ_CP018347	0	1	C2630G	.	Macrolide:32347-35250
