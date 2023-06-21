@@ -7,7 +7,7 @@ include { OVERALL_QC } from "$projectDir/modules/overall_qc"
 include { GET_POPPUNK_DB; GET_POPPUNK_EXT_CLUSTERS; LINEAGE } from "$projectDir/modules/lineage"
 include { GET_SEROBA_DB; CREATE_SEROBA_DB; SEROTYPE } from "$projectDir/modules/serotype"
 include { MLST } from "$projectDir/modules/mlst"
-include { PBP_RESISTANCE; GET_PBP_RESISTANCE; OTHER_RESISTANCE; GET_OTHER_RESISTANCE } from "$projectDir/modules/amr"
+include { PBP_RESISTANCE; GET_PBP_RESISTANCE; CREATE_ARIBA_DB; OTHER_RESISTANCE; GET_OTHER_RESISTANCE } from "$projectDir/modules/amr"
 
 // Main pipeline workflow
 workflow PIPELINE {
@@ -25,6 +25,9 @@ workflow PIPELINE {
     // Get paths to PopPUNK Database and External Clusters, download if necessary
     poppunk_db = GET_POPPUNK_DB(params.poppunk_db_remote, params.poppunk_local)
     poppunk_ext_clusters = GET_POPPUNK_EXT_CLUSTERS(params.poppunk_ext_remote, params.poppunk_local)
+
+    // Get path to ARIBA database, create from reference and metadata
+    ariba_db = CREATE_ARIBA_DB("$projectDir/data/ariba_sequences.fasta", "$projectDir/data/ariba_metadata.tsv")
 
     // Get read pairs into Channel raw_read_pairs_ch
     raw_read_pairs_ch = Channel.fromFilePairs("$params.reads/*_{,R}{1,2}{,_001}.{fq,fastq}{,.gz}", checkIfExists: true)
@@ -139,8 +142,8 @@ workflow PIPELINE {
 
     // From Channel OVERALL_QC_PASSED_ASSEMBLIES_ch, infer resistance (also determinants if any) of other antimicrobials
     // Output into Channel GET_OTHER_RESISTANCE.out.result
-    OTHER_RESISTANCE(OVERALL_QC_PASSED_ASSEMBLIES_ch)
-    GET_OTHER_RESISTANCE(OTHER_RESISTANCE.out.json)
+    OTHER_RESISTANCE(ariba_db, OVERALL_QC_PASSED_READS_ch)
+    GET_OTHER_RESISTANCE(OTHER_RESISTANCE.out.tsv)
 
     // Generate results.csv by sorted sample_id based on merged Channels
     // READ_QC.out.result, ASSEMBLY_QC.out.result, MAPPING_QC.out.result, TAXONOMY_QC.out.result, OVERALL_QC.out.result,
@@ -176,8 +179,8 @@ workflow PIPELINE {
         .map { (it[-1] == null) ? it[0..-2] + ['_'] * 8 : it }
     .join(GET_PBP_RESISTANCE.out.result, failOnDuplicate: true, remainder: true)
         .map { (it[-1] == null) ? it[0..-2] + ['_'] * 18 : it }
-    .join(GET_OTHER_RESISTANCE.out, failOnDuplicate: true, remainder: true)
-        .map { (it[-1] == null) ? it[0..-2] + ['_'] * 20 : it }
+    // .join(GET_OTHER_RESISTANCE.out, failOnDuplicate: true, remainder: true)
+    //     .map { (it[-1] == null) ? it[0..-2] + ['_'] * 20 : it }
     .map { it.collect {"\"$it\""}.join',' }
     .collectFile(
         name: 'results.csv',
@@ -193,7 +196,7 @@ workflow PIPELINE {
                 'Serotype',
                 'ST', 'aroE', 'gdh', 'gki', 'recP', 'spi', 'xpt', 'ddl',
                 'pbp1a', 'pbp2b', 'pbp2x', 'AMO_MIC', 'AMO_Res', 'CFT_MIC', 'CFT_Res(Meningital)', 'CFT_Res(Non-meningital)', 'TAX_MIC', 'TAX_Res(Meningital)', 'TAX_Res(Non-meningital)', 'CFX_MIC', 'CFX_Res', 'MER_MIC', 'MER_Res', 'PEN_MIC', 'PEN_Res(Meningital)', 'PEN_Res(Non-meningital)', 
-                'CHL_Res', 'CHL_Determinant', 'CLI_Res', 'CLI_Determinant', 'ERY_Res', 'ERY_Determinant', 'FQ_Res', 'FQ_Determinant', 'KAN_Res', 'KAN_Determinant', 'LZO_Res', 'LZO_Determinant', 'TET_Res', 'TET_Determinant', 'TMP_Res', 'TMP_Determinant', 'SMX_Res', 'SMX_Determinant', 'COT_Res', 'COT_Determinant'
+                // 'CHL_Res', 'CHL_Determinant', 'CLI_Res', 'CLI_Determinant', 'ERY_Res', 'ERY_Determinant', 'FQ_Res', 'FQ_Determinant', 'KAN_Res', 'KAN_Determinant', 'LZO_Res', 'LZO_Determinant', 'TET_Res', 'TET_Determinant', 'TMP_Res', 'TMP_Determinant', 'SMX_Res', 'SMX_Determinant', 'COT_Res', 'COT_Determinant'
             ].join(','),
         sort: { it.split(',')[0] },
         newLine: true
