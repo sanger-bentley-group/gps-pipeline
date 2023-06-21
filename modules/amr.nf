@@ -39,27 +39,47 @@ process GET_PBP_RESISTANCE {
     """
 }
 
-// Run AMRsearch to infer resistance (also determinants if any) of other antimicrobials
+// Create ARIBA database and return database path
+process CREATE_ARIBA_DB {
+    label 'ariba_container'
+    label 'farm_low'
+
+    input:
+    path(ref_genome)
+    path(metadata)
+
+    output:
+    path ariba_database
+
+    script:
+    """
+    ariba prepareref -f "$ref_genome" -m "$metadata" ariba_database
+    """
+}
+
+// Run ARIBA to identify AMR
 process OTHER_RESISTANCE {
-    label 'amrsearch_container'
+    label 'ariba_container'
     label 'farm_low'
 
     tag "$sample_id"
 
     input:
-    tuple val(sample_id), path(assembly)
+    path ariba_database
+    tuple val(sample_id), path(read1), path(read2), path(unpaired)
 
     output:
-    tuple val(sample_id), path(json), emit: json
+    tuple val(sample_id), path(tsv), emit: tsv
 
     script:
-    json='result.json'
+    tsv='report.tsv'
     """
-    java -jar /paarsnp/paarsnp.jar -i "$assembly" -s 1313 -o > $json
+    ariba run --nucmer_min_id 80 --assembled_threshold 0.80 --assembly_cov 10 $ariba_database $read1 $read2 result
+    mv result/report.tsv "${tsv}"
     """
 }
 
-// Extract the results from the output file of the AMRsearch
+// WIP, for extracting information from ARIBA report
 process GET_OTHER_RESISTANCE {
     label 'bash_container'
     label 'farm_low'
@@ -67,15 +87,10 @@ process GET_OTHER_RESISTANCE {
     tag "$sample_id"
 
     input:
-    tuple val(sample_id), path(json)
-
-    output:
-    tuple val(sample_id), env(CHL_RES), env(CHL_DETERMINANTS), env(CLI_RES), env(CLI_DETERMINANTS), env(ERY_RES), env(ERY_DETERMINANTS), env(FQ_RES), env(FQ_DETERMINANTS), env(KAN_RES), env(KAN_DETERMINANTS), env(LZO_RES), env(LZO_DETERMINANTS), env(TET_RES), env(TET_DETERMINANTS), env(TMP_RES), env(TMP_DETERMINANTS), env(SMX_RES), env(SMX_DETERMINANTS), env(COT_RES), env(COT_DETERMINANTS), emit: result
+    tuple val(sample_id), path(tsv)
 
     script:
     """
-    JSON_FILE="$json"
-    
-    source get_other_resistance.sh
+    # TBC
     """
 }
