@@ -16,7 +16,7 @@ SAMTOOLS=$(grep samtools <<< $IMAGES)
 BCFTOOLS=$(grep bcftools <<< $IMAGES)
 POPPUNK=$(grep poppunk <<< $IMAGES)
 SPN_PBP_AMR=$(grep spn-pbp-amr <<< $IMAGES)
-AMRSEARCH=$(grep amrsearch <<< $IMAGES)
+ARIBA=$(grep ariba <<< $IMAGES)
 MLST=$(grep mlst <<< $IMAGES)
 KRAKEN2=$(grep kraken2 <<< $IMAGES)
 SEROBA=$(grep seroba <<< $IMAGES)
@@ -38,7 +38,7 @@ jq -n \
     --argjson bcftools "$(add_container $BCFTOOLS)" \
     --argjson poppunk "$(add_container $POPPUNK)" \
     --argjson spn_pbp_amr "$(add_container $SPN_PBP_AMR)" \
-    --argjson amrsearch "$(add_container $AMRSEARCH)" \
+    --argjson ariba "$(add_container $ARIBA)" \
     --argjson mlst "$(add_container $MLST)" \
     --argjson kraken2 "$(add_container $KRAKEN2)" \
     --argjson seroba "$(add_container $SEROBA)" \

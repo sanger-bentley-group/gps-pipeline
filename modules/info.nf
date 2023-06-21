@@ -68,6 +68,7 @@ process TOOLS {
     val mlst_version
     val kraken2_version
     val seroba_version
+    val ariba_version
 
     output:
     path(json), emit: json
@@ -88,6 +89,7 @@ process TOOLS {
     MLST_VERSION="$mlst_version"
     KRAKEN2_VERSION="$kraken2_version"
     SEROBA_VERSION="$seroba_version"
+    ARIBA_VERSION="$ariba_version"
     JSON_FILE="$json"
                 
     source get_tools_info.sh
@@ -223,7 +225,7 @@ process PARSE {
         |${toolTextRow('Het-SNP Counter', 'het_snp_count')}
         |${toolTextRow('PopPUNK', 'poppunk')}
         |${toolTextRow('CDC PBP AMR Predictor', 'spn_pbp_amr')}
-        |${toolTextRow('AMRsearch', 'amrsearch')}
+        |${toolTextRow('ARIBA', 'ariba')}
         |${toolTextRow('mlst', 'mlst')}
         |${toolTextRow('Kraken 2', 'kraken2')}
         |${toolTextRow('SeroBA', 'seroba')}
@@ -259,7 +261,7 @@ process PARSE {
         |${imageTextRow('BCFtools', 'bcftools')}
         |${imageTextRow('PopPUNK', 'poppunk')}
         |${imageTextRow('CDC PBP AMR Predictor', 'spn_pbp_amr')}
-        |${imageTextRow('AMRsearch', 'amrsearch')}
+        |${imageTextRow('ARIBA', 'ariba')}
         |${imageTextRow('mlst', 'mlst')}
         |${imageTextRow('Kraken 2', 'kraken2')}
         |${imageTextRow('SeroBA', 'seroba')}
@@ -564,5 +566,18 @@ process SEROBA_VERSION {
     shell:
     $/
     VERSION=$(seroba version)
+    /$
+}
+
+process ARIBA_VERSION {
+    label 'ariba_container'
+    label 'farm_low'
+
+    output:
+    env VERSION
+
+    shell:
+    $/
+    VERSION=$(ariba version | grep ARIBA | sed -r "s/.*:\s(.+)/\1/")
     /$
 }
