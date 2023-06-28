@@ -26,8 +26,8 @@ workflow PIPELINE {
     poppunk_db = GET_POPPUNK_DB(params.poppunk_db_remote, params.poppunk_local)
     poppunk_ext_clusters = GET_POPPUNK_EXT_CLUSTERS(params.poppunk_ext_remote, params.poppunk_local)
 
-    // Get path to ARIBA database, create from reference and metadata
-    ariba_db = CREATE_ARIBA_DB("$projectDir/data/ariba_sequences.fasta", "$projectDir/data/ariba_metadata.tsv")
+    // Get path to ARIBA database, generate from reference sequences and metadata if ncessary
+    ariba_db = CREATE_ARIBA_DB(params.ariba_ref, params.ariba_metadata, params.ariba_db_local)
 
     // Get read pairs into Channel raw_read_pairs_ch
     raw_read_pairs_ch = Channel.fromFilePairs("$params.reads/*_{,R}{1,2}{,_001}.{fq,fastq}{,.gz}", checkIfExists: true)
@@ -143,7 +143,8 @@ workflow PIPELINE {
     // From Channel OVERALL_QC_PASSED_ASSEMBLIES_ch, infer resistance (also determinants if any) of other antimicrobials
     // Output into Channel GET_OTHER_RESISTANCE.out.result
     OTHER_RESISTANCE(ariba_db, OVERALL_QC_PASSED_READS_ch)
-    GET_OTHER_RESISTANCE(OTHER_RESISTANCE.out.tsv)
+    OTHER_RESISTANCE.out.reports.view()
+    GET_OTHER_RESISTANCE(OTHER_RESISTANCE.out.reports)
 
     // Generate results.csv by sorted sample_id based on merged Channels
     // READ_QC.out.result, ASSEMBLY_QC.out.result, MAPPING_QC.out.result, TAXONOMY_QC.out.result, OVERALL_QC.out.result,
