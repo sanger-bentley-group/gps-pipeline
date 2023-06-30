@@ -50,7 +50,7 @@ process CREATE_ARIBA_DB {
     path local
 
     output:
-    path "${local}/${output}"
+    tuple path(local), val(output)
 
     script:
     output='database'
@@ -72,7 +72,7 @@ process OTHER_RESISTANCE {
     tag "$sample_id"
 
     input:
-    path ariba_database
+    tuple path(ariba_database), val(database)
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
 
     output:
@@ -82,7 +82,7 @@ process OTHER_RESISTANCE {
     report='result/report.tsv'
     report_debug='result/debug.report.tsv'
     """
-    ariba run --nucmer_min_id 80 --assembled_threshold 0.80 --assembler spades $ariba_database $read1 $read2 result
+    ariba run --nucmer_min_id 80 --assembled_threshold 0.80 --assembler spades $ariba_database/$database $read1 $read2 result
     """
 }
 
