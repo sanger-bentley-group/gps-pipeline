@@ -143,7 +143,6 @@ workflow PIPELINE {
     // From Channel OVERALL_QC_PASSED_ASSEMBLIES_ch, infer resistance (also determinants if any) of other antimicrobials
     // Output into Channel GET_OTHER_RESISTANCE.out.result
     OTHER_RESISTANCE(ariba_db, OVERALL_QC_PASSED_READS_ch)
-    OTHER_RESISTANCE.out.reports.view()
     GET_OTHER_RESISTANCE(OTHER_RESISTANCE.out.reports)
 
     // Generate results.csv by sorted sample_id based on merged Channels
@@ -204,21 +203,14 @@ workflow PIPELINE {
     )
 
     // Pass to SAVE_INFO sub-workflow
-    DATABASES_INFO = ref_genome_bwa_db.map { it[0] }
-                    .merge(ariba_db.map { it[0] })
-                    .merge(kraken2_db)
-                    .merge(seroba_db.map { it[0] })
-                    .merge(poppunk_db.map { it[0] })
-                    .merge(poppunk_ext_clusters)
-                    .map {
-                        [
-                            bwa_db_path: it[0],
-                            ariba_db_path: it[1],
-                            kraken2_db_path: it[2],
-                            seroba_db_path: it[3],
-                            poppunk_db_path: it[4]
-                        ]
-                    }
+    DATABASES_INFO = ref_genome_bwa_db.map { [["bwa_db_path", it[0]]] }
+                        .merge(ariba_db.map { [["ariba_db_path", it[0]]] })
+                        .merge(kraken2_db.map { [["kraken2_db_path", it]] })
+                        .merge(seroba_db.map { [["seroba_db_path", it[0]]] })
+                        .merge(poppunk_db.map { [["poppunk_db_path", it[0]]] })
+                        .merge(poppunk_ext_clusters.map { [["poppunk_ext_path", it]] })
+                        // Save key-value tuples into a map
+                        .map { it.collectEntries() }
 
     emit:
     databases_info = DATABASES_INFO
