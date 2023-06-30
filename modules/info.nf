@@ -29,6 +29,7 @@ process DATABASES {
 
     input:
     val bwa_db_path
+    val ariba_db_path
     val kraken2_db_path
     val seroba_db_path
     val poppunk_db_path
@@ -38,11 +39,24 @@ process DATABASES {
 
     script:
     json='databases.json'
+    bwa_json='done_bwa_db.json'
+    ariba_json='done_ariba_db.json'
+    seroba_json='done_seroba.json'
+    kraken2_json='done_kraken.json'
+    poppunk_json='done_poppunk.json'
+    poppunk_ext_json='done_poppunk_ext.json'
     """
     BWA_DB_PATH="$bwa_db_path"
+    BWA_JSON="$bwa_json"
+    ARIBA_DB_PATH="$ariba_db_path"
+    ARIBA_JSON="$ariba_json"
     KRAKEN2_DB_PATH="$kraken2_db_path"
+    KRAKEN2_JSON="$kraken2_json"
     SEROBA_DB_PATH="$seroba_db_path"
+    SEROBA_JSON="$seroba_json"
     POPPUNK_DB_PATH="$poppunk_db_path"
+    POPPUNK_JSON="$poppunk_json"
+    POPPUNK_EXT_JSON="$poppunk_ext_json"
     JSON_FILE="$json"
 
     source get_databases_info.sh
@@ -194,6 +208,14 @@ process PARSE {
         |${dbTextRow('Source', json.seroba_db.git)}
         |${dbTextRow('Kmer size', json.seroba_db.kmer)}
         |${dbTextRow('Created', json.seroba_db.create_time)}
+        |╠═══════════════╧═══════════════════════════════════════════════════════════════════════════╣
+        |║ ARIBA database                                                                            ║
+        |╟───────────────┬───────────────────────────────────────────────────────────────────────────╢
+        |${dbTextRow('Reference', json.ariba_db.reference)}
+        |${dbTextRow('Reference MD5', json.ariba_db.reference_md5)}
+        |${dbTextRow('Metadata', json.ariba_db.metadata)}
+        |${dbTextRow('Metadata MD5', json.ariba_db.metadata_md5)}
+        |${dbTextRow('Created', json.ariba_db.create_time)}
         |╚═══════════════╧═══════════════════════════════════════════════════════════════════════════╝
         |""".stripMargin()
 

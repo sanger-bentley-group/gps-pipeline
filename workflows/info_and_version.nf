@@ -8,6 +8,7 @@ workflow PRINT_VERSION {
     main:
         GET_VERSION(
             params.ref_genome_bwa_db_local,
+            params.ariba_db_local,
             params.kraken2_db_local,
             params.seroba_local,
             params.poppunk_local,
@@ -26,6 +27,7 @@ workflow SAVE_INFO {
     main:
         GET_VERSION(
             databases_info.bwa_db_path,
+            databases_info.ariba_db_path,
             databases_info.kraken2_db_path,
             databases_info.seroba_db_path,
             databases_info.poppunk_db_path,
@@ -39,6 +41,7 @@ workflow SAVE_INFO {
 workflow GET_VERSION {
     take:
         bwa_db_path
+        ariba_db_path
         kraken2_db_path
         seroba_db_path
         poppunk_db_path
@@ -49,6 +52,7 @@ workflow GET_VERSION {
 
         DATABASES(
             bwa_db_path,
+            ariba_db_path,
             kraken2_db_path,
             seroba_db_path,
             poppunk_db_path

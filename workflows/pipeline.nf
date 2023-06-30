@@ -205,6 +205,7 @@ workflow PIPELINE {
 
     // Pass to SAVE_INFO sub-workflow
     DATABASES_INFO = ref_genome_bwa_db.map { it[0] }
+                    .merge(ariba_db.map { it[0] })
                     .merge(kraken2_db)
                     .merge(seroba_db.map { it[0] })
                     .merge(poppunk_db.map { it[0] })
@@ -212,9 +213,10 @@ workflow PIPELINE {
                     .map {
                         [
                             bwa_db_path: it[0],
-                            kraken2_db_path: it[1],
-                            seroba_db_path: it[2],
-                            poppunk_db_path: it[3]
+                            ariba_db_path: it[1],
+                            kraken2_db_path: it[2],
+                            seroba_db_path: it[3],
+                            poppunk_db_path: it[4]
                         ]
                     }
 
