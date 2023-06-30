@@ -1,7 +1,7 @@
 // Import process modules
 include { PREPROCESS; READ_QC } from "$projectDir/modules/preprocess"
 include { ASSEMBLY_UNICYCLER; ASSEMBLY_SHOVILL; ASSEMBLY_ASSESS; ASSEMBLY_QC } from "$projectDir/modules/assembly"
-include { GET_REF_GENOME_BWA_DB_PREFIX; MAPPING; SAM_TO_SORTED_BAM; SNP_CALL; HET_SNP_COUNT; MAPPING_QC } from "$projectDir/modules/mapping"
+include { CREATE_REF_GENOME_BWA_DB; MAPPING; SAM_TO_SORTED_BAM; SNP_CALL; HET_SNP_COUNT; MAPPING_QC } from "$projectDir/modules/mapping"
 include { GET_KRAKEN_DB; TAXONOMY; TAXONOMY_QC } from "$projectDir/modules/taxonomy"
 include { OVERALL_QC } from "$projectDir/modules/overall_qc"
 include { GET_POPPUNK_DB; GET_POPPUNK_EXT_CLUSTERS; LINEAGE } from "$projectDir/modules/lineage"
@@ -12,8 +12,8 @@ include { PBP_RESISTANCE; GET_PBP_RESISTANCE; CREATE_ARIBA_DB; OTHER_RESISTANCE;
 // Main pipeline workflow
 workflow PIPELINE {
     main:
-    // Get path to prefix of Reference Genome BWA Database, generate from assembly if necessary
-    ref_genome_bwa_db_prefix = GET_REF_GENOME_BWA_DB_PREFIX(params.ref_genome, params.ref_genome_bwa_db_local)
+    // Get path and prefix of Reference Genome BWA Database, generate from assembly if necessary
+    ref_genome_bwa_db = CREATE_REF_GENOME_BWA_DB(params.ref_genome, params.ref_genome_bwa_db_local)
 
     // Get path to Kraken2 Database, download if necessary
     kraken2_db = GET_KRAKEN_DB(params.kraken2_db_remote, params.kraken2_db_local)
@@ -73,7 +73,7 @@ workflow PIPELINE {
 
     // From Channel READ_QC_PASSED_READS_ch map reads to reference
     // Output into Channel MAPPING.out.sam
-    MAPPING(ref_genome_bwa_db_prefix, READ_QC_PASSED_READS_ch)
+    MAPPING(ref_genome_bwa_db, READ_QC_PASSED_READS_ch)
 
     // From Channel MAPPING.out.sam, Convert SAM into sorted BAM and calculate reference coverage
     // Output into Channels SAM_TO_SORTED_BAM.out.bam and SAM_TO_SORTED_BAM.out.ref_coverage
@@ -204,7 +204,7 @@ workflow PIPELINE {
     )
 
     // Pass to SAVE_INFO sub-workflow
-    DATABASES_INFO = ref_genome_bwa_db_prefix.map { it[0] }
+    DATABASES_INFO = ref_genome_bwa_db.map { it[0] }
                     .merge(kraken2_db)
                     .merge(seroba_db.map { it[0] })
                     .merge(poppunk_db.map { it[0] })
