@@ -1,11 +1,11 @@
 # Check if all file exists and were obtained from the database at the specific link.
-# If not: remove files in database directory, download, and unzip to database directory, also save metadata to done_kraken.json
+# If not: remove files in database directory, download, and unzip to database directory, also save metadata to JSON
 
 DB_NAME=$(basename $DB_REMOTE)
 ZIPPED_DB='kraken2_db.tar.gz'
 
-if  [ ! -f ${DB_LOCAL}/done_kraken.json ] || \
-    [ ! "$DB_REMOTE" == "$(jq -r .url ${DB_LOCAL}/done_kraken.json)"  ] || \
+if  [ ! -f ${DB_LOCAL}/${JSON_FILE} ] || \
+    [ ! "$DB_REMOTE" == "$(jq -r .url ${DB_LOCAL}/${JSON_FILE})"  ] || \
     [ ! -f ${DB_LOCAL}/hash.k2d ] || \
     [ ! -f ${DB_LOCAL}/opts.k2d ] || \
     [ ! -f ${DB_LOCAL}/taxo.k2d ]; then
@@ -24,6 +24,6 @@ if  [ ! -f ${DB_LOCAL}/done_kraken.json ] || \
     jq -n \
         --arg url "${DB_REMOTE}" \
         --arg save_time "$(date +"%Y-%m-%d %H:%M:%S %Z")" \
-        '{"url" : $url, "save_time": $save_time}' > ${DB_LOCAL}/done_kraken.json
+        '{"url" : $url, "save_time": $save_time}' > ${DB_LOCAL}/${JSON_FILE}
 
 fi
