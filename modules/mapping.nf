@@ -8,7 +8,8 @@ process CREATE_REF_GENOME_BWA_DB {
     path local
 
     output:
-    tuple path(local), val(prefix)
+    path(local), emit: path
+    val(prefix), emit: prefix
 
     script:
     prefix='reference'
@@ -30,7 +31,8 @@ process MAPPING {
     tag "$sample_id"
 
     input:
-    tuple path(bwa_ref_db_dir), val(prefix)
+    path bwa_ref_db_dir
+    val prefix
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
 
     output:

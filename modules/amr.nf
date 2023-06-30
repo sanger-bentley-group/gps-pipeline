@@ -50,7 +50,8 @@ process CREATE_ARIBA_DB {
     path local
 
     output:
-    tuple path(local), val(output)
+    path local, emit: path
+    val output, emit: database
 
     script:
     output='database'
@@ -72,7 +73,8 @@ process OTHER_RESISTANCE {
     tag "$sample_id"
 
     input:
-    tuple path(ariba_database), val(database)
+    path ariba_database
+    val database
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
 
     output:

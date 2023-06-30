@@ -8,7 +8,8 @@ process GET_POPPUNK_DB {
     path local
 
     output:
-    tuple path(local), env(DB_NAME)
+    path local, emit: path
+    env DB_NAME, emit: database
 
     script:
     """
@@ -29,7 +30,7 @@ process GET_POPPUNK_EXT_CLUSTERS {
     path local
 
     output:
-    env EXT_CLUSTERS_CSV
+    env EXT_CLUSTERS_CSV, emit: file
 
     script:
     """
@@ -52,7 +53,8 @@ process LINEAGE {
     tag 'All samples'
 
     input:
-    tuple path(poppunk_dir), val(db_name)
+    path poppunk_dir
+    val db_name
     val ext_clusters_file
     path qfile
 
