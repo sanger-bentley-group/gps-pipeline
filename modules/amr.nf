@@ -50,12 +50,17 @@ process CREATE_ARIBA_DB {
     path local
 
     output:
-    path "${local}/database"
+    path "${local}/${output}"
 
     script:
+    output='database'
     """
-    rm -rf "$local/database"
-    ariba prepareref -f "$ref_sequences" -m "$metadata" "$local/database"
+    REF_SEQUENCES="$ref_sequences"
+    METADATA="$metadata"
+    DB_LOCAL="$local"
+    OUTPUT="$output"
+
+    source create_ariba_db.sh
     """
 }
 
