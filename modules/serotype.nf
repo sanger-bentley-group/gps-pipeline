@@ -12,10 +12,12 @@ process GET_SEROBA_DB {
     env CREATE_DB, emit: create_db
 
     script:
+    json='done_seroba.json'
     """
     DB_REMOTE="$remote"
     DB_LOCAL="$local"
     KMER="$kmer"
+    JSON_FILE="$json"
 
     source get_seroba_db.sh
     """
@@ -38,12 +40,14 @@ process CREATE_SEROBA_DB {
 
     script:
     database='database'
+    json='done_seroba.json'
     """
     DATABASE="$database"
     DB_REMOTE="$remote"
     DB_LOCAL="$local"
     KMER="$kmer"
     CREATE_DB="$create_db"
+    JSON_FILE="$json"
 
     source create_seroba_db.sh
     """

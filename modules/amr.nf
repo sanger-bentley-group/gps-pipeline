@@ -55,11 +55,13 @@ process CREATE_ARIBA_DB {
 
     script:
     output='database'
+    json='done_ariba_db.json'
     """
     REF_SEQUENCES="$ref_sequences"
     METADATA="$metadata"
     DB_LOCAL="$local"
     OUTPUT="$output"
+    JSON_FILE="$json"
 
     source create_ariba_db.sh
     """

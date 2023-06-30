@@ -13,10 +13,12 @@ process CREATE_REF_GENOME_BWA_DB {
 
     script:
     prefix='reference'
+    json='done_bwa_db.json'
     """
     REFERENCE="$reference"
     DB_LOCAL="$local"
     PREFIX="$prefix"
+    JSON_FILE="$json"
 
     source create_ref_genome_bwa_db.sh
     """

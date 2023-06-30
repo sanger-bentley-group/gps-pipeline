@@ -11,9 +11,11 @@ process GET_KRAKEN2_DB {
     path local, emit: path
 
     script:
+    json='done_kraken.json'
     """
     DB_REMOTE="$remote"
     DB_LOCAL="$local"
+    JSON_FILE="$json"
 
     source get_kraken2_db.sh
     """
