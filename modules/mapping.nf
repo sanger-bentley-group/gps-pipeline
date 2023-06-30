@@ -1,5 +1,5 @@
-// Return database prefix with path, construct if necessary
-process GET_REF_GENOME_BWA_DB_PREFIX {
+// Return database path and prefix, construct if necessary
+process CREATE_REF_GENOME_BWA_DB {
     label 'bwa_container'
     label 'farm_mid'
 
@@ -17,7 +17,7 @@ process GET_REF_GENOME_BWA_DB_PREFIX {
     DB_LOCAL="$local"
     PREFIX="$prefix"
 
-    source get_ref_genome_bwa_db_prefix.sh
+    source create_ref_genome_bwa_db.sh
     """
 }
 

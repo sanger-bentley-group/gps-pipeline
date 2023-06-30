@@ -1,4 +1,4 @@
-# Check if GET_REF_GENOME_BWA_DB_PREFIX has run successfully on the specific reference.
+# Check if CREATE_REF_GENOME_BWA_DB has run successfully on the specific reference.
 # If not: remove files in database directory, and construct the FM-index database of the reference genome for BWA, also save metadata to done_bwa_db.json
 
 if  [ ! -f ${DB_LOCAL}/done_bwa_db.json ] || \
