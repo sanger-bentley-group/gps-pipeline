@@ -4,12 +4,13 @@ add_bwa_db () {
     BWA_DB_JSON=${BWA_DB_PATH}/done_bwa_db.json
     if [ -f "$BWA_DB_JSON" ]; then
         REFERENCE=$(jq -r .reference $BWA_DB_JSON)
+        REFERENCE_MD5=$(jq -r .reference_md5 $BWA_DB_JSON)
         CREATE_TIME=$(jq -r .create_time $BWA_DB_JSON)
     else
         REFERENCE="Not yet created"
         CREATE_TIME="Not yet created"
     fi
-    jq -n --arg ref "$REFERENCE" --arg create_time "$CREATE_TIME" '. = {"reference": $ref, "create_time": $create_time}'
+    jq -n --arg ref "$REFERENCE" --arg ref_md5 "$REFERENCE_MD5" --arg create_time "$CREATE_TIME" '. = {"reference": $ref, "reference_md5": $ref_md5, "create_time": $create_time}'
 }
 
 add_seroba_db () {
