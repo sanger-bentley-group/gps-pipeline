@@ -2,6 +2,7 @@
 # If not: remove files in database directory, download, and unzip to database directory, also save metadata to done_kraken.json
 
 DB_NAME=$(basename $DB_REMOTE)
+ZIPPED_DB='kraken2_db.tar.gz'
 
 if  [ ! -f ${DB_LOCAL}/done_kraken.json ] || \
     [ ! "$DB_REMOTE" == "$(jq -r .url ${DB_LOCAL}/done_kraken.json)"  ] || \
@@ -11,14 +12,14 @@ if  [ ! -f ${DB_LOCAL}/done_kraken.json ] || \
 
     rm -rf ${DB_LOCAL}/{,.[!.],..?}*
 
-    wget ${DB_REMOTE} -O kraken_db.tar.gz
+    wget ${DB_REMOTE} -O $ZIPPED_DB
 
     # Use tmp dir and find to ensure files are saved directly at $DB_LOCAL regardless of archive directory structure
     mkdir tmp
-    tar -xzf kraken_db.tar.gz -C tmp
+    tar -xzf $ZIPPED_DB -C tmp
     find tmp -type f -exec mv {} $DB_LOCAL \;
 
-    rm -f kraken_db.tar.gz
+    rm -f $ZIPPED_DB
 
     jq -n \
         --arg url "${DB_REMOTE}" \

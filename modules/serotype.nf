@@ -33,7 +33,8 @@ process CREATE_SEROBA_DB {
     val kmer
 
     output:
-    tuple path(local), val(database)
+    path local, emit: path
+    val database, emit: database
 
     script:
     database='database'
@@ -56,7 +57,8 @@ process SEROTYPE {
     tag "$sample_id"
 
     input:
-    tuple path(seroba_dir), val(database)
+    path seroba_dir
+    val database
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
 
     output:

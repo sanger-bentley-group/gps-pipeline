@@ -1,6 +1,6 @@
 // Import process modules
 include { CREATE_REF_GENOME_BWA_DB } from "$projectDir/modules/mapping"
-include { GET_KRAKEN_DB } from "$projectDir/modules/taxonomy"
+include { GET_KRAKEN2_DB } from "$projectDir/modules/taxonomy"
 include { GET_POPPUNK_DB; GET_POPPUNK_EXT_CLUSTERS } from "$projectDir/modules/lineage"
 include { GET_SEROBA_DB; CREATE_SEROBA_DB } from "$projectDir/modules/serotype"
 include { GET_DOCKER_COMPOSE; PULL_IMAGES } from "$projectDir/modules/docker"
@@ -11,7 +11,7 @@ workflow INIT {
     CREATE_REF_GENOME_BWA_DB(params.ref_genome, params.ref_genome_bwa_db_local)
 
     // Check Kraken2 Database, download if necessary
-    kraken2_db = GET_KRAKEN_DB(params.kraken2_db_remote, params.kraken2_db_local)
+    GET_KRAKEN2_DB(params.kraken2_db_remote, params.kraken2_db_local)
 
     // Check SeroBA Databases, clone and rebuild if necessary
     GET_SEROBA_DB(params.seroba_remote, params.seroba_local, params.seroba_kmer)
