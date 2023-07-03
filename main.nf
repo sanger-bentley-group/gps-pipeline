@@ -1,7 +1,7 @@
 #!/usr/bin/env nextflow
 
 // Version of this release
-pipelineVersion = '0.8.0'
+pipelineVersion = '0.8.1'
 
 // Import workflow modules
 include { PIPELINE } from "$projectDir/workflows/pipeline"
@@ -28,7 +28,7 @@ validate(params)
 
 // If Singularity is used as the container engine and not showing help message, do preflight check to prevent parallel pull issues
 // Related issue: https://github.com/nextflow-io/nextflow/issues/1210
-if (workflow.containerEngine === 'singularity' & !params.help) {
+if (workflow.containerEngine == 'singularity' & !params.help) {
     singularityPreflight(workflow.configFiles[0], params.singularity_cachedir)
 }
 

@@ -101,17 +101,17 @@ workflow PIPELINE {
     // Output into Channel OVERALL_QC.out.result
     OVERALL_QC(
         ASSEMBLY_QC.out.result
-        .join(MAPPING_QC.out.result, failOnDuplicate: true, failOnMismatch: true)
-        .join(TAXONOMY_QC.out.result, failOnDuplicate: true, failOnMismatch: true)
+        .join(MAPPING_QC.out.result, failOnDuplicate: true, remainder: true)
+        .join(TAXONOMY_QC.out.result, failOnDuplicate: true)
     )
 
     // From Channel READ_QC_PASSED_READS_ch, only output reads of samples passed overall QC based on Channel OVERALL_QC.out.result
-    OVERALL_QC_PASSED_READS_ch = OVERALL_QC.out.result.join(READ_QC_PASSED_READS_ch, failOnDuplicate: true, failOnMismatch: true)
+    OVERALL_QC_PASSED_READS_ch = OVERALL_QC.out.result.join(READ_QC_PASSED_READS_ch, failOnDuplicate: true)
                         .filter { it[1] == 'PASS' }
                         .map { it[0, 2..-1] }
 
     // From Channel ASSEMBLY_ch, only output assemblies of samples passed overall QC based on Channel OVERALL_QC.out.result
-    OVERALL_QC_PASSED_ASSEMBLIES_ch = OVERALL_QC.out.result.join(ASSEMBLY_ch, failOnDuplicate: true, failOnMismatch: true)
+    OVERALL_QC_PASSED_ASSEMBLIES_ch = OVERALL_QC.out.result.join(ASSEMBLY_ch, failOnDuplicate: true)
                             .filter { it[1] == 'PASS' }
                             .map { it[0, 2..-1] }
 
@@ -178,7 +178,7 @@ workflow PIPELINE {
         .map { (it[-1] == null) ? it[0..-2] + ['_'] * 18 : it }
     .join(GET_OTHER_RESISTANCE.out, failOnDuplicate: true, remainder: true)
         .map { (it[-1] == null) ? it[0..-2] + ['_'] * 20 : it }
-    .map { it.join',' }
+    .map { it.collect {"\"$it\""}.join',' }
     .collectFile(
         name: 'results.csv',
         storeDir: "$params.output",
@@ -193,7 +193,7 @@ workflow PIPELINE {
                 'Serotype',
                 'ST', 'aroE', 'gdh', 'gki', 'recP', 'spi', 'xpt', 'ddl',
                 'pbp1a', 'pbp2b', 'pbp2x', 'AMO_MIC', 'AMO_Res', 'CFT_MIC', 'CFT_Res(Meningital)', 'CFT_Res(Non-meningital)', 'TAX_MIC', 'TAX_Res(Meningital)', 'TAX_Res(Non-meningital)', 'CFX_MIC', 'CFX_Res', 'MER_MIC', 'MER_Res', 'PEN_MIC', 'PEN_Res(Meningital)', 'PEN_Res(Non-meningital)', 
-                'CHL_Res', 'CHL_Determinant', 'CLD_Res', 'CLD_Determinant', 'ERY_Res', 'ERY_Determinant', 'FQ_Res', 'FQ_Determinant', 'KAN_Res', 'KAN_Determinant', 'LZO_Res', 'LZO_Determinant', 'TET_Res', 'TET_Determinant', 'TMP_Res', 'TMP_Determinant', 'SMX_Res', 'SMX_Determinant', 'COT_Res', 'COT_Determinant'
+                'CHL_Res', 'CHL_Determinant', 'CLI_Res', 'CLI_Determinant', 'ERY_Res', 'ERY_Determinant', 'FQ_Res', 'FQ_Determinant', 'KAN_Res', 'KAN_Determinant', 'LZO_Res', 'LZO_Determinant', 'TET_Res', 'TET_Determinant', 'TMP_Res', 'TMP_Determinant', 'SMX_Res', 'SMX_Determinant', 'COT_Res', 'COT_Determinant'
             ].join(','),
         sort: { it.split(',')[0] },
         newLine: true

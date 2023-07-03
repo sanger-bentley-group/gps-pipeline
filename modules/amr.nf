@@ -70,7 +70,7 @@ process GET_OTHER_RESISTANCE {
     tuple val(sample_id), path(json)
 
     output:
-    tuple val(sample_id), env(CHL_RES), env(CHL_DETERMINANTS), env(CLD_RES), env(CLD_DETERMINANTS), env(ERY_RES), env(ERY_DETERMINANTS), env(FQ_RES), env(FQ_DETERMINANTS), env(KAN_RES), env(KAN_DETERMINANTS), env(LZO_RES), env(LZO_DETERMINANTS), env(TET_RES), env(TET_DETERMINANTS), env(TMP_RES), env(TMP_DETERMINANTS), env(SMX_RES), env(SMX_DETERMINANTS), env(COT_RES), env(COT_DETERMINANTS), emit: result
+    tuple val(sample_id), env(CHL_RES), env(CHL_DETERMINANTS), env(CLI_RES), env(CLI_DETERMINANTS), env(ERY_RES), env(ERY_DETERMINANTS), env(FQ_RES), env(FQ_DETERMINANTS), env(KAN_RES), env(KAN_DETERMINANTS), env(LZO_RES), env(LZO_DETERMINANTS), env(TET_RES), env(TET_DETERMINANTS), env(TMP_RES), env(TMP_DETERMINANTS), env(SMX_RES), env(SMX_DETERMINANTS), env(COT_RES), env(COT_DETERMINANTS), emit: result
 
     script:
     """

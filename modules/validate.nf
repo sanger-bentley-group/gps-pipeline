@@ -7,6 +7,7 @@ validParams = [
     output: 'path',
     assembler: 'assembler',
     min_contig_length: 'int',
+    assembly_publish: 'publish_mode',
     seroba_remote: 'url_git',
     seroba_local: 'path',
     seroba_kmer: 'int',
@@ -44,9 +45,14 @@ void validate(Map params) {
         return
     }
 
-    // Add params.singularity_cachedir when workflow.containerEngine === 'singularity'
-    if (workflow.containerEngine === 'singularity') {
+    // Add params.singularity_cachedir when workflow.containerEngine == 'singularity'
+    if (workflow.containerEngine == 'singularity') {
         validParams.put("singularity_cachedir", "path")
+    }
+
+    // Add params.maxretries when workflow.profile == 'lsf' 
+    if (workflow.profile == 'lsf' ) {
+        validParams.put("maxretries", "int")
     }
 
     // For initalisation, skip input and output directories checks
@@ -98,6 +104,12 @@ void validate(Map params) {
             case 'int_float':
                 if (value !instanceof Integer && value !instanceof BigDecimal && value !instanceof Double) {
                     invalidValues[key] = [value, 'integer or float value']
+                }
+                break
+
+            case 'publish_mode':
+                if (!['link', 'symlink', 'copy'].contains(value)) {
+                    invalidValues[key] = [value, 'Nextflow publish mode']
                 }
                 break
 
