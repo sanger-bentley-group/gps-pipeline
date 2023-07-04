@@ -268,6 +268,8 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   <!-- -->
   > ⚠️ If the result of `Overall_QC` of a sample is `ASSEMBLER FAILURE`, the assembler has crashed when trying to assembly the reads. You might want to re-run the sample with [another assembler](#assembly), or discard the sample if it is a low quality one.
   <!-- -->
+  > ⚠️ If the result of `Serotype` of a sample is `SEROBA FAILURE`, SeroBA has crashed when trying to serotype the sample. Please report the issue.
+  <!-- -->
   | Field | Type | Description |
   | --- | --- | --- |
   | `Sample_ID` | Identification | Sample ID based on the raw reads file name |
