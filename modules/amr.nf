@@ -92,16 +92,17 @@ process OTHER_RESISTANCE {
 
 // WIP, for extracting information from ARIBA report
 process GET_OTHER_RESISTANCE {
-    label 'bash_container'
+    label 'python_container'
     label 'farm_low'
 
     tag "$sample_id"
 
     input:
     tuple val(sample_id), path(report), path(report_debug)
+    path metadata
 
     script:
     """
-    # TBC
+    get_other_resistance.py "$report_debug" "$metadata"
     """
 }
