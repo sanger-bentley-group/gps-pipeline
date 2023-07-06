@@ -143,7 +143,7 @@ workflow PIPELINE {
     // From Channel OVERALL_QC_PASSED_ASSEMBLIES_ch, infer resistance (also determinants if any) of other antimicrobials
     // Output into Channel GET_OTHER_RESISTANCE.out.result
     OTHER_RESISTANCE(CREATE_ARIBA_DB.out.path, CREATE_ARIBA_DB.out.database, OVERALL_QC_PASSED_READS_ch)
-    GET_OTHER_RESISTANCE(OTHER_RESISTANCE.out.reports)
+    GET_OTHER_RESISTANCE(OTHER_RESISTANCE.out.reports, params.ariba_metadata)
 
     // Generate results.csv by sorted sample_id based on merged Channels
     // READ_QC.out.result, ASSEMBLY_QC.out.result, MAPPING_QC.out.result, TAXONOMY_QC.out.result, OVERALL_QC.out.result,
