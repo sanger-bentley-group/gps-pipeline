@@ -86,7 +86,7 @@ process OTHER_RESISTANCE {
     report='result/report.tsv'
     report_debug='result/debug.report.tsv'
     """
-    ariba run --nucmer_min_id 80 --assembled_threshold 0.80 --assembler spades $ariba_database/$database $read1 $read2 result
+    ariba run --nucmer_min_id 80 --assembled_threshold 0.80 $ariba_database/$database $read1 $read2 result
     """
 }
 
