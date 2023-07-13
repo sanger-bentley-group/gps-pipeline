@@ -1,4 +1,4 @@
-reference	coding_yes(1)_no(0)	pr/ab(0)_var(1)	description of the variant	Group	FreeText_Drug
+ref_name	gene	var_only	var_change	group	target
 aph_3prime_III_1_M26832	1	0	.	.	KAN
 ermB_1_JN899585	1	0	.	.	ERY CLI
 ermB_10_U86375	1	0	.	.	ERY CLI
