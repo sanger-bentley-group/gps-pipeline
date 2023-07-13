@@ -103,6 +103,6 @@ process GET_OTHER_RESISTANCE {
 
     script:
     """
-    get_other_resistance.py "$report_debug" "$metadata"
+    get_other_resistance.py "$report" "$report_debug" "$metadata"
     """
 }
