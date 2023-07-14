@@ -1,8 +1,11 @@
 #! /usr/bin/env python3
 
+# Output AMR of a sample based on its ARIBA report and ARIBA metadata
+
 import sys
 from itertools import chain
 from collections import defaultdict
+import json
 
 report_path = sys.argv[1]
 debug_report_path = sys.argv[2]
@@ -50,7 +53,7 @@ with open(report_path) as report, open(debug_report_path) as debug_report, open(
 
         # Logic for gene detection. Found means hit.
         if var_only == "0":
-            target_dict[target].add(f'Found {ref_name}')
+            target_dict[target].add(f'{ref_name}')
         
         # Logic for variant detection, further criteria required
         if var_only == "1":
@@ -60,6 +63,27 @@ with open(report_path) as report, open(debug_report_path) as debug_report, open(
                 target_dict[target].add(f'{ref_name} {ref_ctg_effect} at {pos}')
             # Common criteria: the assembly has that variant
             elif has_known_var == "1":
-                target_dict[target].add(f'{ref_name} {known_var_change}')
+                target_dict[target].add(f'{ref_name} Variant {known_var_change}')
 
-    print(target_dict)
+    # For saving final output, where information is saved per-target
+    output = {}
+
+    # Go through targets in metadata
+    for target in target_dict:
+        # 
+        if len(target_dict[target]) == 0:
+            if target.lower().startswith('pili'):
+                output[target] = 'NEG'
+            else:
+                output[f'{target}_Res'] = 'S'
+
+            output[f'{target}_Determinant'] = '_'
+        else:
+            if target.lower().startswith('pili'):
+                output[target] = 'POS'
+            else:
+                output[f'{target}_Res'] = 'R'
+
+            output[f'{target}_Determinant'] = '; '.join(target_dict[target])
+        
+    print(json.dumps(output, indent=4))

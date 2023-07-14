@@ -90,7 +90,7 @@ process OTHER_RESISTANCE {
     """
 }
 
-// WIP, for extracting information from ARIBA report
+// Extracting resistance information from ARIBA report
 process GET_OTHER_RESISTANCE {
     label 'python_container'
     label 'farm_low'
@@ -101,8 +101,15 @@ process GET_OTHER_RESISTANCE {
     tuple val(sample_id), path(report), path(report_debug)
     path metadata
 
+    output:
+    tuple val(sample_id), env(CHL_Res), env(CHL_Determinant), env(ERY_Res), env(ERY_Determinant), env(FQ_Res), env(FQ_Determinant), env(KAN_Res), env(KAN_Determinant), env(TET_Res), env(TET_Determinant), env(TMP_Res), env(TMP_Determinant), env(SMX_Res), env(SMX_Determinant), env(ERY_CLI_Res), env(ERY_CLI_Determinant), env(RIF_Res), env(RIF_Determinant), env(VAN_Res), env(VAN_Determinant), env(PILI1), env(PILI1_Determinant), env(PILI2), env(PILI2_Determinant), emit: result
+
     script:
     """
-    get_other_resistance.py "$report" "$report_debug" "$metadata"
+    REPORT="$report"
+    REPORT_DEBUG="$report_debug"
+    METADATA="$metadata"
+    
+    source get_other_resistance.sh
     """
 }
