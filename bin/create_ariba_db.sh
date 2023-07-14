@@ -5,10 +5,10 @@ REF_SEQUENCES_MD5=$(md5sum $REF_SEQUENCES | awk '{ print $1 }')
 METADATA_MD5=$(md5sum $METADATA | awk '{ print $1 }')
 
 if  [ ! -f ${DB_LOCAL}/${JSON_FILE} ] || \
-    [ ! "$(grep '"reference"' ${DB_LOCAL}/${JSON_FILE} | sed -r 's/.+: "(.*)",/\1/')" == "$REF_SEQUENCES" ] || \
-    [ ! "$(grep '"reference_md5"' ${DB_LOCAL}/${JSON_FILE} | sed -r 's/.+: "(.*)",/\1/')" == "$REF_SEQUENCES_MD5" ] || \
-    [ ! "$(grep '"metadata"' ${DB_LOCAL}/${JSON_FILE} | sed -r 's/.+: "(.*)",/\1/')" == "$METADATA" ] || \
-    [ ! "$(grep '"metadata_md5"' ${DB_LOCAL}/${JSON_FILE} | sed -r 's/.+: "(.*)",/\1/')" == "$METADATA_MD5" ] || \
+    [ ! "$(grep '"reference"' ${DB_LOCAL}/${JSON_FILE} | sed -r 's/.+: "(.*)",?/\1/')" == "$REF_SEQUENCES" ] || \
+    [ ! "$(grep '"reference_md5"' ${DB_LOCAL}/${JSON_FILE} | sed -r 's/.+: "(.*)",?/\1/')" == "$REF_SEQUENCES_MD5" ] || \
+    [ ! "$(grep '"metadata"' ${DB_LOCAL}/${JSON_FILE} | sed -r 's/.+: "(.*)",?/\1/')" == "$METADATA" ] || \
+    [ ! "$(grep '"metadata_md5"' ${DB_LOCAL}/${JSON_FILE} | sed -r 's/.+: "(.*)",?/\1/')" == "$METADATA_MD5" ] || \
     [ ! -f ${DB_LOCAL}/${OUTPUT}/00.info.txt ] || \
     [ ! -f ${DB_LOCAL}/${OUTPUT}/00.version_info.txt ] || \
     [ ! -f ${DB_LOCAL}/${OUTPUT}/01.filter.check_genes.log ] || \
