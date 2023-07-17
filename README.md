@@ -348,7 +348,7 @@ This project uses open-source components. You can find the homepage or source co
 
 [ARIBA](https://sanger-pathogens.github.io/ariba/)
 - ARIBA: rapid antimicrobial resistance genotyping directly from sequencing reads Hunt M, Mather AE, Sánchez-Busó L, Page AJ, Parkhill J , Keane JA, Harris SR. Microbial Genomics 2017. doi: [110.1099/mgen.0.000131](http://mgen.microbiologyresearch.org/content/journal/mgen/10.1099/mgen.0.000131)
-- License (GNU): https://github.com/sanger-pathogens/ariba/blob/master/LICENSE
+- License (GPL-3.0): https://github.com/sanger-pathogens/ariba/blob/master/LICENSE
 - This tool is used in `CREATE_ARIBA_DB` and `OTHER_RESISTANCE` processes of the `amr.nf` module
 
 [BCFtools](https://samtools.github.io/bcftools/) and [SAMtools](https://www.htslib.org/)
@@ -433,6 +433,7 @@ This project uses open-source components. You can find the homepage or source co
 
 [resistanceDatabase](https://github.com/kumarnaren/resistanceDatabase)
 - Narender Kumar ([@kumarnaren](https://github.com/kumarnaren))
+- License (GPL-3.0): https://github.com/kumarnaren/resistanceDatabase/blob/main/LICENSE
 - `sequences.fasta` is renamed to `ariba_ref_sequences-*.fasta` and used as-is
 - `metadata.tsv` is renamed to `ariba_metadata-*.tsv` and modified
 - The files are used as the default inputs of `CREATE_ARIBA_DB` process of the `amr.nf` module
