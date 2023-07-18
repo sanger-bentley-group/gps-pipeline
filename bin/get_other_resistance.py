@@ -124,7 +124,7 @@ with open(report_path) as report, open(debug_report_path) as debug_report, open(
             output['ERY_Res'] = output['ERY_Res'] if 'ERY_Res' in output else 'S'
             output['CLI_Res'] = output['CLI_Res'] if 'CLI_Res' in output else 'S'
         
-        output['ERY_Determinant'] = '; '.join(target_dict['ERY_CLI'].union(target_dict['ERY'])) if 'ERY' in target_dict else output['ERY_CLI_Determinant']
-        output['CLI_Determinant'] = '; '.join(target_dict['ERY_CLI'].union(target_dict['CLI'])) if 'CLI' in target_dict else output['ERY_CLI_Determinant']
+        output['ERY_Determinant'] = '; '.join(target_dict['ERY_CLI'].union(target_dict['ERY'])) if 'ERY' in target_dict and len(target_dict['ERY']) != 0 else output['ERY_CLI_Determinant']
+        output['CLI_Determinant'] = '; '.join(target_dict['ERY_CLI'].union(target_dict['CLI'])) if 'CLI' in target_dict and len(target_dict['CLI']) != 0 else output['ERY_CLI_Determinant']
 
     print(json.dumps(output, indent=4))
