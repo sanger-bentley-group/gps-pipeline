@@ -70,7 +70,7 @@ with open(report_path) as report, open(debug_report_path) as debug_report, open(
 
     # Go through targets in metadata
     for target in target_dict:
-        # 
+        # If the target has no hit, set output as S or NEG (only for PILI-1/2), and determinant as _
         if len(target_dict[target]) == 0:
             if target.lower().startswith('pili'):
                 output[target] = 'NEG'
@@ -78,6 +78,7 @@ with open(report_path) as report, open(debug_report_path) as debug_report, open(
                 output[f'{target}_Res'] = 'S'
 
             output[f'{target}_Determinant'] = '_'
+        # If the target has hit, set output as R or POS (only for PILI-1/2), and join all hits as determinant
         else:
             if target.lower().startswith('pili'):
                 output[target] = 'POS'
@@ -85,5 +86,45 @@ with open(report_path) as report, open(debug_report_path) as debug_report, open(
                 output[f'{target}_Res'] = 'R'
 
             output[f'{target}_Determinant'] = '; '.join(target_dict[target])
+
+    # Special cases to add to output
+
+    # If TET exists and DOX does not: add DOX to output; directly copy output and determinant
+    if 'TET_Res' in output and 'DOX_Res' not in output:
+        output['DOX_Res'] = output['TET_Res']
+        output['DOX_Determinant'] = output['TET_Determinant']
+
+    # If FQ exists and LFX does not: add LFX to output; directly copy output and determinant
+    if 'FQ_Res' in output and 'LFX_Res' not in output:
+        output['LFX_Res'] = output['FQ_Res']
+        output['LFX_Determinant'] = output['FQ_Determinant']
+
+    # If both TMP and SMX exists, and COT does not: add COT to output.
+    # If R in both, COT is R; if R in one of them, COT is I; if S in both, COT is S
+    # Copy TMP_Determinant and SMX_Determinant to COT_Determinant
+    if 'TMP_Res' in output and 'SMX_Res' in output and 'COT_Res' not in output:
+        if output['TMP_Res'] == 'R' and output['SMX_Res'] == 'R':
+            output['COT_Res'] = 'R'
+            output['COT_Determinant'] = '; '.join(target_dict['TMP'].union(target_dict['SMX']))
+        elif (output['TMP_Res'] == 'R') ^ (output['SMX_Res'] == 'R'):
+            output['COT_Res'] = 'I'
+            output['COT_Determinant'] = '; '.join(target_dict['TMP'].union(target_dict['SMX']))
+        elif output['TMP_Res'] == 'S' and output['SMX_Res'] == 'S':
+            output['COT_Res'] = 'S'
+            output['COT_Determinant'] = '_'
+
+    # If ERY_CLI exists, add ERY and CLI to output.
+    # If ERY_CLI is R, ERY and CLI are R, and add ERY_CLI determinant to their determinants
+    # If ERY_CLI is S, ERY and CLI are S if they do not already exist, otherwise leave them unchanged
+    if 'ERY_CLI_Res' in output:
+        if output['ERY_CLI_Res'] == 'R':
+            output['ERY_Res'] = 'R'
+            output['CLI_Res'] = 'R'
+        elif output['ERY_CLI_Res'] == 'S':
+            output['ERY_Res'] = output['ERY_Res'] if 'ERY_Res' in output else 'S'
+            output['CLI_Res'] = output['CLI_Res'] if 'CLI_Res' in output else 'S'
         
+        output['ERY_Determinant'] = '; '.join(target_dict['ERY_CLI'].union(target_dict['ERY'])) if 'ERY' in target_dict else output['ERY_CLI_Determinant']
+        output['CLI_Determinant'] = '; '.join(target_dict['ERY_CLI'].union(target_dict['CLI'])) if 'CLI' in target_dict else output['ERY_CLI_Determinant']
+
     print(json.dumps(output, indent=4))
