@@ -325,18 +325,26 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | `CHL_Determinant` | Other AMR | Known determinants that inferred the CHL resistance |
   | `ERY_Res` | Other AMR | Resistance phenotype against Erythromycin (ERY) |
   | `ERY_Determinant` | Other AMR | Known determinants that inferred the ERY resistance |
+  | `CLI_Res` | Other AMR | Resistance phenotype against Clindamycin (CLI) |
+  | `CLI_Determinant` | Other AMR | Known determinants that inferred the CLI resistance |
+  | `ERY_CLI_Res` | Other AMR | Resistance phenotype against Erythromycin (ERY) and Clindamycin (CLI) |
+  | `ERY_CLI_Determinant` | Other AMR | Known determinants that inferred the ERY and CLI resistance |
   | `FQ_Res` | Other AMR | Resistance phenotype against Fluoroquinolones (FQ) |
   | `FQ_Determinant` | Other AMR | Known determinants that inferred the FQ resistance |
+  | `LFX_Res` | Other AMR | Resistance phenotype against Levofloxacin (LFX) |
+  | `LFX_Determinant` | Other AMR | Known determinants that inferred the LFX resistance |
   | `KAN_Res` | Other AMR | Resistance phenotype against Kanamycin (KAN) |
   | `KAN_Determinant` | Other AMR | Known determinants that inferred the KAN resistance |
   | `TET_Res` | Other AMR | Resistance phenotype against Tetracycline (TET) |
   | `TET_Determinant` | Other AMR | Known determinants that inferred the TET resistance |
+  | `DOX_Res` | Other AMR | Resistance phenotype against Doxycycline (DOX) |
+  | `DOX_Determinant` | Other AMR | Known determinants that inferred the DOX resistance |
   | `TMP_Res` | Other AMR | Resistance phenotype against Trimethoprim (TMP) |
   | `TMP_Determinant` | Other AMR | Known determinants that inferred the TMP resistance |
   | `SMX_Res` | Other AMR | Resistance phenotype against Sulfamethoxazole (SMX) |
   | `SMX_Determinant` | Other AMR | Known determinants that inferred the SMX resistance |
-  | `ERY_CLI_Res` | Other AMR | Resistance phenotype against Erythromycin (ERY) and Clindamycin (CLI) |
-  | `ERY_CLI_Determinant` | Other AMR | Known determinants that inferred the ERY and CLI resistance |
+  | `COT_Res` | Other AMR | Resistance phenotype against Co-Trimoxazole (COT) |
+  | `COT_Determinant` | Other AMR | Known determinants that inferred the COT resistance |
   | `RIF_Res` | Other AMR | Resistance phenotype against Rifampin (RIF) |
   | `RIF_Determinant` | Other AMR | Known determinants that inferred the RIF resistance |
   | `VAN_Res` | Other AMR | Resistance phenotype against Vancomycin (VAN) |
