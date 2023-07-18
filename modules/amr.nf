@@ -102,7 +102,7 @@ process GET_OTHER_RESISTANCE {
     path metadata
 
     output:
-    tuple val(sample_id), env(CHL_Res), env(CHL_Determinant), env(ERY_Res), env(ERY_Determinant), env(FQ_Res), env(FQ_Determinant), env(KAN_Res), env(KAN_Determinant), env(TET_Res), env(TET_Determinant), env(TMP_Res), env(TMP_Determinant), env(SMX_Res), env(SMX_Determinant), env(ERY_CLI_Res), env(ERY_CLI_Determinant), env(RIF_Res), env(RIF_Determinant), env(VAN_Res), env(VAN_Determinant), env(PILI1), env(PILI1_Determinant), env(PILI2), env(PILI2_Determinant), emit: result
+    tuple val(sample_id), env(CHL_Res), env(CHL_Determinant), env(ERY_Res), env(ERY_Determinant), env(CLI_Res), env(CLI_Determinant), env(ERY_CLI_Res), env(ERY_CLI_Determinant), env(FQ_Res), env(FQ_Determinant), env(LFX_Res), env(LFX_Determinant), env(KAN_Res), env(KAN_Determinant), env(TET_Res), env(TET_Determinant), env(DOX_Res), env(DOX_Determinant), env(TMP_Res), env(TMP_Determinant), env(SMX_Res), env(SMX_Determinant), env(COT_Res), env(COT_Determinant), env(RIF_Res), env(RIF_Determinant), env(VAN_Res), env(VAN_Determinant), env(PILI1), env(PILI1_Determinant), env(PILI2), env(PILI2_Determinant), emit: result
 
     script:
     """
