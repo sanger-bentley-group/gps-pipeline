@@ -323,24 +323,28 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | `PEN_Res(Non-meningital)` | PBP AMR | Resistance phenotype against PEN in non-meningital form |
   | `CHL_Res` | Other AMR | Resistance phenotype against Chloramphenicol (CHL) |
   | `CHL_Determinant` | Other AMR | Known determinants that inferred the CHL resistance |
-  | `CLI_Res` | Other AMR | Resistance phenotype against Clindamycin (CLI) |
-  | `CLI_Determinant` | Other AMR | Known determinants that inferred the CLI resistance |
   | `ERY_Res` | Other AMR | Resistance phenotype against Erythromycin (ERY) |
   | `ERY_Determinant` | Other AMR | Known determinants that inferred the ERY resistance |
   | `FQ_Res` | Other AMR | Resistance phenotype against Fluoroquinolones (FQ) |
   | `FQ_Determinant` | Other AMR | Known determinants that inferred the FQ resistance |
   | `KAN_Res` | Other AMR | Resistance phenotype against Kanamycin (KAN) |
   | `KAN_Determinant` | Other AMR | Known determinants that inferred the KAN resistance |
-  | `LZO_Res` | Other AMR | Resistance phenotype against Linezolid (LZO) |
-  | `LZO_Determinant` | Other AMR | Known determinants that inferred the LZO resistance |
   | `TET_Res` | Other AMR | Resistance phenotype against Tetracycline (TET) |
   | `TET_Determinant` | Other AMR | Known determinants that inferred the TET resistance |
   | `TMP_Res` | Other AMR | Resistance phenotype against Trimethoprim (TMP) |
   | `TMP_Determinant` | Other AMR | Known determinants that inferred the TMP resistance |
   | `SMX_Res` | Other AMR | Resistance phenotype against Sulfamethoxazole (SMX) |
   | `SMX_Determinant` | Other AMR | Known determinants that inferred the SMX resistance |
-  | `COT_Res` | Other AMR | Resistance phenotype against Co-Trimoxazole (COT) |
-  | `COT_Determinant` | Other AMR | Known determinants that inferred the COT resistance |
+  | `ERY_CLI_Res` | Other AMR | Resistance phenotype against Erythromycin (ERY) and Clindamycin (CLI) |
+  | `ERY_CLI_Determinant` | Other AMR | Known determinants that inferred the ERY and CLI resistance |
+  | `RIF_Res` | Other AMR | Resistance phenotype against Rifampin (RIF) |
+  | `RIF_Determinant` | Other AMR | Known determinants that inferred the RIF resistance |
+  | `VAN_Res` | Other AMR | Resistance phenotype against Vancomycin (VAN) |
+  | `VAN_Determinant` | Other AMR | Known determinants that inferred the VAN resistance |
+  | `PILI-1` | Other AMR | Expression of PILI-1 |
+  | `PILI-1_Determinant` | Other AMR | Known determinants that inferred the PILI-1 expression |
+  | `PILI-2` | Other AMR | Expression of PILI-2 |
+  | `PILI-2_Determinant` | Other AMR | Known determinants that inferred the PILI-2 expression |
 
 &nbsp;
 # Credits
