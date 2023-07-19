@@ -29,6 +29,7 @@ process DATABASES {
 
     input:
     val bwa_db_path
+    val ariba_db_path
     val kraken2_db_path
     val seroba_db_path
     val poppunk_db_path
@@ -38,11 +39,24 @@ process DATABASES {
 
     script:
     json='databases.json'
+    bwa_json='done_bwa_db.json'
+    ariba_json='done_ariba_db.json'
+    seroba_json='done_seroba.json'
+    kraken2_json='done_kraken.json'
+    poppunk_json='done_poppunk.json'
+    poppunk_ext_json='done_poppunk_ext.json'
     """
     BWA_DB_PATH="$bwa_db_path"
+    BWA_JSON="$bwa_json"
+    ARIBA_DB_PATH="$ariba_db_path"
+    ARIBA_JSON="$ariba_json"
     KRAKEN2_DB_PATH="$kraken2_db_path"
+    KRAKEN2_JSON="$kraken2_json"
     SEROBA_DB_PATH="$seroba_db_path"
+    SEROBA_JSON="$seroba_json"
     POPPUNK_DB_PATH="$poppunk_db_path"
+    POPPUNK_JSON="$poppunk_json"
+    POPPUNK_EXT_JSON="$poppunk_ext_json"
     JSON_FILE="$json"
 
     source get_databases_info.sh
@@ -68,6 +82,7 @@ process TOOLS {
     val mlst_version
     val kraken2_version
     val seroba_version
+    val ariba_version
 
     output:
     path(json), emit: json
@@ -88,6 +103,7 @@ process TOOLS {
     MLST_VERSION="$mlst_version"
     KRAKEN2_VERSION="$kraken2_version"
     SEROBA_VERSION="$seroba_version"
+    ARIBA_VERSION="$ariba_version"
     JSON_FILE="$json"
                 
     source get_tools_info.sh
@@ -160,38 +176,47 @@ process PARSE {
         |""".stripMargin()
 
     def dbTextRow = { leftContent, rightContent ->
-        textRow(9, 77, leftContent, rightContent)
+        textRow(13, 73, leftContent, rightContent)
     }
 
     dbText = """\
         |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Databases Information ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
         |╔═══════════════════════════════════════════════════════════════════════════════════════════╗
         |║ BWA reference genome FM-index database                                                    ║
-        |╟───────────┬───────────────────────────────────────────────────────────────────────────────╢
+        |╟───────────────┬───────────────────────────────────────────────────────────────────────────╢
         |${dbTextRow('Reference', json.bwa_db.reference)}
+        |${dbTextRow('Reference MD5', json.bwa_db.reference_md5)}
         |${dbTextRow('Created', json.bwa_db.create_time)}
-        |╠═══════════╧═══════════════════════════════════════════════════════════════════════════════╣
+        |╠═══════════════╧═══════════════════════════════════════════════════════════════════════════╣
         |║ Kraken 2 database                                                                         ║
-        |╟───────────┬───────────────────────────────────────────────────────────────────────────────╢
+        |╟───────────────┬───────────────────────────────────────────────────────────────────────────╢
         |${dbTextRow('Source', json.kraken2_db.url)}
         |${dbTextRow('Saved', json.kraken2_db.save_time)}
-        |╠═══════════╧═══════════════════════════════════════════════════════════════════════════════╣
+        |╠═══════════════╧═══════════════════════════════════════════════════════════════════════════╣
         |║ PopPUNK database                                                                          ║
-        |╟───────────┬───────────────────────────────────────────────────────────────────────────────╢
+        |╟───────────────┬───────────────────────────────────────────────────────────────────────────╢
         |${dbTextRow('Source', json.poppunnk_db.url)}
         |${dbTextRow('Saved', json.poppunnk_db.save_time)}
-        |╠═══════════╧═══════════════════════════════════════════════════════════════════════════════╣
+        |╠═══════════════╧═══════════════════════════════════════════════════════════════════════════╣
         |║ PopPUNK external clusters file                                                            ║
-        |╟───────────┬───────────────────────────────────────────────────────────────────────────────╢
+        |╟───────────────┬───────────────────────────────────────────────────────────────────────────╢
         |${dbTextRow('Source', json.poppunk_ext.url)}
         |${dbTextRow('Saved', json.poppunk_ext.save_time)}
-        |╠═══════════╧═══════════════════════════════════════════════════════════════════════════════╣
+        |╠═══════════════╧═══════════════════════════════════════════════════════════════════════════╣
         |║ SeroBA database                                                                           ║
-        |╟───────────┬───────────────────────────────────────────────────────────────────────────────╢
+        |╟───────────────┬───────────────────────────────────────────────────────────────────────────╢
         |${dbTextRow('Source', json.seroba_db.git)}
         |${dbTextRow('Kmer size', json.seroba_db.kmer)}
         |${dbTextRow('Created', json.seroba_db.create_time)}
-        |╚═══════════╧═══════════════════════════════════════════════════════════════════════════════╝
+        |╠═══════════════╧═══════════════════════════════════════════════════════════════════════════╣
+        |║ ARIBA database                                                                            ║
+        |╟───────────────┬───────────────────────────────────────────────────────────────────────────╢
+        |${dbTextRow('Reference', json.ariba_db.reference)}
+        |${dbTextRow('Reference MD5', json.ariba_db.reference_md5)}
+        |${dbTextRow('Metadata', json.ariba_db.metadata)}
+        |${dbTextRow('Metadata MD5', json.ariba_db.metadata_md5)}
+        |${dbTextRow('Created', json.ariba_db.create_time)}
+        |╚═══════════════╧═══════════════════════════════════════════════════════════════════════════╝
         |""".stripMargin()
 
     def getVersion = { tool ->
@@ -223,7 +248,7 @@ process PARSE {
         |${toolTextRow('Het-SNP Counter', 'het_snp_count')}
         |${toolTextRow('PopPUNK', 'poppunk')}
         |${toolTextRow('CDC PBP AMR Predictor', 'spn_pbp_amr')}
-        |${toolTextRow('AMRsearch', 'amrsearch')}
+        |${toolTextRow('ARIBA', 'ariba')}
         |${toolTextRow('mlst', 'mlst')}
         |${toolTextRow('Kraken 2', 'kraken2')}
         |${toolTextRow('SeroBA', 'seroba')}
@@ -259,7 +284,7 @@ process PARSE {
         |${imageTextRow('BCFtools', 'bcftools')}
         |${imageTextRow('PopPUNK', 'poppunk')}
         |${imageTextRow('CDC PBP AMR Predictor', 'spn_pbp_amr')}
-        |${imageTextRow('AMRsearch', 'amrsearch')}
+        |${imageTextRow('ARIBA', 'ariba')}
         |${imageTextRow('mlst', 'mlst')}
         |${imageTextRow('Kraken 2', 'kraken2')}
         |${imageTextRow('SeroBA', 'seroba')}
@@ -564,5 +589,18 @@ process SEROBA_VERSION {
     shell:
     $/
     VERSION=$(seroba version)
+    /$
+}
+
+process ARIBA_VERSION {
+    label 'ariba_container'
+    label 'farm_low'
+
+    output:
+    env VERSION
+
+    shell:
+    $/
+    VERSION=$(ariba version | grep ARIBA | sed -r "s/.*:\s(.+)/\1/")
     /$
 }

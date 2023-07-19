@@ -8,12 +8,15 @@ process GET_POPPUNK_DB {
     path local
 
     output:
-    tuple path(local), env(DB_NAME)
+    path local, emit: path
+    env DB_NAME, emit: database
 
     script:
+    json='done_poppunk.json'
     """
     DB_REMOTE="$db_remote"
     DB_LOCAL="$local"
+    JSON_FILE="$json"
 
     source get_poppunk_db.sh
     """
@@ -29,12 +32,14 @@ process GET_POPPUNK_EXT_CLUSTERS {
     path local
 
     output:
-    env EXT_CLUSTERS_CSV
+    env EXT_CLUSTERS_CSV, emit: file
 
     script:
+    json='done_poppunk_ext.json'
     """
     EXT_CLUSTERS_REMOTE="$ext_clusters_remote"
     EXT_CLUSTERS_LOCAL="$local"
+    JSON_FILE="$json"
 
     source get_poppunk_ext_clusters.sh    
     """
@@ -52,7 +57,8 @@ process LINEAGE {
     tag 'All samples'
 
     input:
-    tuple path(poppunk_dir), val(db_name)
+    path poppunk_dir
+    val db_name
     val ext_clusters_file
     path qfile
 

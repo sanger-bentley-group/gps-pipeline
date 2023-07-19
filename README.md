@@ -30,6 +30,7 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   - [Taxonomy](#taxonomy)
   - [Serotype](#serotype)
   - [Lineage](#lineage)
+  - [Other AMR](#other-amr)
   - [Singularity](#singularity)
   - [Experimental](#experimental)
 - [Output](#output)
@@ -236,6 +237,15 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | `--poppunk_ext_remote` | Any valid URL to a PopPUNK external clusters file in `.csv` format<br />(Default: [GPS v6 GPSC Designation](https://www.pneumogen.net/gps/GPS_v6_external_clusters.csv)) | URL to a PopPUNK external clusters file. |
   | `--poppunk_local` | Any valid path<br />(Default: `"$projectDir/databases/poppunk"`) | Path to the directory where the remote PopPUNK database and external clusters file should be saved to. |
 
+## Other AMR
+  > ⚠️ `--ariba_db_local` does not accept user provided local database, directory content will be overwritten 
+  <!-- -->
+  | Option | Values | Description |
+  | --- | ---| --- |
+  | `--ariba_ref` | Any valid path to a `.fa` or `.fasta` file<br />(Default: `"$projectDir/data/ariba_ref_sequences-20230712.fasta"`) | Path to the reference sequences for ARIBA. |
+  | `--ariba_metadata` | Any valid path to a `tsv` file<br />(Default: `"$projectDir/data/ariba_metadata-20230712.tsv"`) | Path to the metadata file for ARIBA. |
+  | `--ariba_db_local` | Any valid path<br />(Default: `"$projectDir/databases/ariba"`) | Path to the directory where ARIBA reference database should be saved to. |
+
 ## Singularity
   > ℹ️ This section is only valid when Singularity is used as the container engine
 
@@ -315,35 +325,45 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | `PEN_Res(Non-meningital)` | PBP AMR | Resistance phenotype against PEN in non-meningital form |
   | `CHL_Res` | Other AMR | Resistance phenotype against Chloramphenicol (CHL) |
   | `CHL_Determinant` | Other AMR | Known determinants that inferred the CHL resistance |
-  | `CLI_Res` | Other AMR | Resistance phenotype against Clindamycin (CLI) |
-  | `CLI_Determinant` | Other AMR | Known determinants that inferred the CLI resistance |
   | `ERY_Res` | Other AMR | Resistance phenotype against Erythromycin (ERY) |
   | `ERY_Determinant` | Other AMR | Known determinants that inferred the ERY resistance |
+  | `CLI_Res` | Other AMR | Resistance phenotype against Clindamycin (CLI) |
+  | `CLI_Determinant` | Other AMR | Known determinants that inferred the CLI resistance |
+  | `ERY_CLI_Res` | Other AMR | Resistance phenotype against Erythromycin (ERY) and Clindamycin (CLI) |
+  | `ERY_CLI_Determinant` | Other AMR | Known determinants that inferred the ERY and CLI resistance |
   | `FQ_Res` | Other AMR | Resistance phenotype against Fluoroquinolones (FQ) |
   | `FQ_Determinant` | Other AMR | Known determinants that inferred the FQ resistance |
+  | `LFX_Res` | Other AMR | Resistance phenotype against Levofloxacin (LFX) |
+  | `LFX_Determinant` | Other AMR | Known determinants that inferred the LFX resistance |
   | `KAN_Res` | Other AMR | Resistance phenotype against Kanamycin (KAN) |
   | `KAN_Determinant` | Other AMR | Known determinants that inferred the KAN resistance |
-  | `LZO_Res` | Other AMR | Resistance phenotype against Linezolid (LZO) |
-  | `LZO_Determinant` | Other AMR | Known determinants that inferred the LZO resistance |
   | `TET_Res` | Other AMR | Resistance phenotype against Tetracycline (TET) |
   | `TET_Determinant` | Other AMR | Known determinants that inferred the TET resistance |
+  | `DOX_Res` | Other AMR | Resistance phenotype against Doxycycline (DOX) |
+  | `DOX_Determinant` | Other AMR | Known determinants that inferred the DOX resistance |
   | `TMP_Res` | Other AMR | Resistance phenotype against Trimethoprim (TMP) |
   | `TMP_Determinant` | Other AMR | Known determinants that inferred the TMP resistance |
   | `SMX_Res` | Other AMR | Resistance phenotype against Sulfamethoxazole (SMX) |
   | `SMX_Determinant` | Other AMR | Known determinants that inferred the SMX resistance |
   | `COT_Res` | Other AMR | Resistance phenotype against Co-Trimoxazole (COT) |
   | `COT_Determinant` | Other AMR | Known determinants that inferred the COT resistance |
+  | `RIF_Res` | Other AMR | Resistance phenotype against Rifampin (RIF) |
+  | `RIF_Determinant` | Other AMR | Known determinants that inferred the RIF resistance |
+  | `VAN_Res` | Other AMR | Resistance phenotype against Vancomycin (VAN) |
+  | `VAN_Determinant` | Other AMR | Known determinants that inferred the VAN resistance |
+  | `PILI-1` | Other AMR | Expression of PILI-1 |
+  | `PILI-1_Determinant` | Other AMR | Known determinants that inferred the PILI-1 expression |
+  | `PILI-2` | Other AMR | Expression of PILI-2 |
+  | `PILI-2_Determinant` | Other AMR | Known determinants that inferred the PILI-2 expression |
 
 &nbsp;
 # Credits
 This project uses open-source components. You can find the homepage or source code of their open-source projects along with license information below. I acknowledge and am grateful to these developers for their contributions to open source.
 
-[AMRsearch](https://github.com/pathogenwatch-oss/amr-search)
-- [Pathogenwatch](https://pathogen.watch/) ([@pathogenwatch-oss](https://github.com/pathogenwatch-oss))
-- License (MIT): https://github.com/pathogenwatch-oss/amr-search/blob/main/LICENSE
-- This project uses a Docker image built from a [custom fork](https://github.com/HarryHung/amr-search)
-  - The fork changes the Docker image from a Docker executable image to a Docker environment for Nextflow integration
-  - The Docker image provides the containerised environment for `OTHER_RESISTANCE` process of the `amr.nf` module 
+[ARIBA](https://sanger-pathogens.github.io/ariba/)
+- ARIBA: rapid antimicrobial resistance genotyping directly from sequencing reads Hunt M, Mather AE, Sánchez-Busó L, Page AJ, Parkhill J , Keane JA, Harris SR. Microbial Genomics 2017. doi: [110.1099/mgen.0.000131](http://mgen.microbiologyresearch.org/content/journal/mgen/10.1099/mgen.0.000131)
+- License (GPL-3.0): https://github.com/sanger-pathogens/ariba/blob/master/LICENSE
+- This tool is used in `CREATE_ARIBA_DB` and `OTHER_RESISTANCE` processes of the `amr.nf` module
 
 [BCFtools](https://samtools.github.io/bcftools/) and [SAMtools](https://www.htslib.org/)
 - Twelve years of SAMtools and BCFtools. Petr Danecek, James K Bonfield, Jennifer Liddle, John Marshall, Valeriu Ohan, Martin O Pollard, Andrew Whitwham, Thomas Keane, Shane A McCarthy, Robert M Davies, Heng Li. **GigaScience**, Volume 10, Issue 2, February 2021, giab008, https://doi.org/10.1093/gigascience/giab008
@@ -357,7 +377,7 @@ This project uses open-source components. You can find the homepage or source co
 - License (GPL-3.0): https://github.com/lh3/bwa/blob/master/COPYING
 - This tool is used in `GET_REF_GENOME_BWA_DB_PREFIX` and `MAPPING` processes of the `mapping.nf` module
 
-[Docker Images](https://hub.docker.com/u/staphb) of [BCFtools](https://hub.docker.com/r/staphb/bcftools), [BWA](https://hub.docker.com/r/staphb/bwa), [fastp](https://hub.docker.com/r/staphb/fastp), [Kraken 2](https://hub.docker.com/r/staphb/kraken2), [mlst](https://hub.docker.com/r/staphb/mlst), [PopPUNK](https://hub.docker.com/r/staphb/poppunk), [QUAST](https://hub.docker.com/r/staphb/quast), [SAMtools](https://hub.docker.com/r/staphb/samtools), [SeroBA](https://hub.docker.com/r/staphb/seroba), [Shovill](https://hub.docker.com/r/staphb/shovill), [Unicycler](https://hub.docker.com/r/staphb/unicycler) 
+[Docker Images](https://hub.docker.com/u/staphb) of [BCFtools](https://hub.docker.com/r/staphb/bcftools), [BWA](https://hub.docker.com/r/staphb/bwa), [fastp](https://hub.docker.com/r/staphb/fastp), [Kraken 2](https://hub.docker.com/r/staphb/kraken2), [mlst](https://hub.docker.com/r/staphb/mlst), [PopPUNK](https://hub.docker.com/r/staphb/poppunk), [QUAST](https://hub.docker.com/r/staphb/quast), [SAMtools](https://hub.docker.com/r/staphb/samtools), [Shovill](https://hub.docker.com/r/staphb/shovill), [Unicycler](https://hub.docker.com/r/staphb/unicycler) 
 - [State Public Health Bioinformatics Workgroup](https://staphb.org/) ([@StaPH-B](https://github.com/StaPH-B))
 - License (GPL-3.0): https://github.com/StaPH-B/docker-builds/blob/master/LICENSE
 - These Docker images provide containerised environments for processes of multiple modules 
@@ -375,7 +395,7 @@ This project uses open-source components. You can find the homepage or source co
 [Docker Image of Python](https://hub.docker.com/_/python)
 - The Docker Community ([@docker-library](https://github.com/docker-library))
 - License (MIT): https://github.com/docker-library/python/blob/master/LICENSE
-- This Docker image provides the containerised environment for `HET_SNP_COUNT` process of the `mapping.nf` module 
+- This Docker image provides the containerised environment for `HET_SNP_COUNT` process of the `mapping.nf` module and `GET_OTHER_RESISTANCE` process of the `amr.nf` module
 
 [fastp](https://github.com/OpenGene/fastp)
 - Shifu Chen, Yanqing Zhou, Yaru Chen, Jia Gu; fastp: an ultra-fast all-in-one FASTQ preprocessor, Bioinformatics, Volume 34, Issue 17, 1 September 2018, Pages i884–i890, https://doi.org/10.1093/bioinformatics/bty560
@@ -395,7 +415,7 @@ This project uses open-source components. You can find the homepage or source co
 [mecA-HetSites-calculator](https://github.com/kumarnaren/mecA-HetSites-calculator) 
 - Narender Kumar ([@kumarnaren](https://github.com/kumarnaren))
 - License (GPL-3.0): https://github.com/kumarnaren/mecA-HetSites-calculator/blob/master/LICENSE
-- Code was rewritten into `HET_SNP_COUNT` process of the `mapping.nf` module
+- Code was rewritten into the `het_snp_count.py` script used by `HET_SNP_COUNT` process of the `mapping.nf` module
 
 [mlst](https://github.com/tseemann/mlst)
 - Torsten Seemann ([@tseemann](https://github.com/tseemann))
@@ -421,9 +441,16 @@ This project uses open-source components. You can find the homepage or source co
 [SeroBA](https://sanger-pathogens.github.io/seroba/)
 - **SeroBA: rapid high-throughput serotyping of Streptococcus pneumoniae from whole genome sequence data**. Epping L, van Tonder, AJ, Gladstone RA, GPS Consortium, Bentley SD, Page AJ, Keane JA, Microbial Genomics 2018, doi: [10.1099/mgen.0.000186](http://mgen.microbiologyresearch.org/content/journal/mgen/10.1099/mgen.0.000186)
 - License (GPL-3.0): https://github.com/sanger-pathogens/seroba/blob/master/LICENSE
-- This project uses a Docker image built from a [fork](https://github.com/HarryHung/seroba)
+- This project uses a Docker image built from a [custom fork](https://github.com/HarryHung/seroba)
   - The fork includes critical bug fixes for SeroBA as the original repository is no longer maintained
   - The Docker image provides the containerised environment for `CREATE_SEROBA_DB` and `SEROTYPE` processes of the `serotype.nf` module
+
+[resistanceDatabase](https://github.com/kumarnaren/resistanceDatabase)
+- Narender Kumar ([@kumarnaren](https://github.com/kumarnaren))
+- License (GPL-3.0): https://github.com/kumarnaren/resistanceDatabase/blob/main/LICENSE
+- `sequences.fasta` is renamed to `ariba_ref_sequences-*.fasta` and used as-is
+- `metadata.tsv` is renamed to `ariba_metadata-*.tsv` and modified
+- The files are used as the default inputs of `CREATE_ARIBA_DB` process of the `amr.nf` module
 
 [Shovill](https://github.com/tseemann/shovill)
 - Torsten Seemann ([@tseemann](https://github.com/tseemann))
