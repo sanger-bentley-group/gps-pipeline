@@ -12,10 +12,12 @@ process GET_SEROBA_DB {
     env CREATE_DB, emit: create_db
 
     script:
+    json='done_seroba.json'
     """
     DB_REMOTE="$remote"
     DB_LOCAL="$local"
     KMER="$kmer"
+    JSON_FILE="$json"
 
     source get_seroba_db.sh
     """
@@ -33,16 +35,19 @@ process CREATE_SEROBA_DB {
     val kmer
 
     output:
-    tuple path(local), val(database)
+    path local, emit: path
+    val database, emit: database
 
     script:
     database='database'
+    json='done_seroba.json'
     """
     DATABASE="$database"
     DB_REMOTE="$remote"
     DB_LOCAL="$local"
     KMER="$kmer"
     CREATE_DB="$create_db"
+    JSON_FILE="$json"
 
     source create_seroba_db.sh
     """
@@ -56,7 +61,8 @@ process SEROTYPE {
     tag "$sample_id"
 
     input:
-    tuple path(seroba_dir), val(database)
+    path seroba_dir
+    val database
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
 
     output:

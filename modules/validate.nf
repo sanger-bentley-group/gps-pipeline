@@ -26,6 +26,9 @@ validParams = [
     length_low: 'int',
     length_high: 'int',
     depth: 'int_float',
+    ariba_ref: 'path_fasta',
+    ariba_metadata: 'path_tsv',
+    ariba_db_local: 'path',
     lite: 'boolean'
 ]
 
@@ -139,6 +142,15 @@ void validate(Map params) {
                     invalidValues[key] = [value, 'path to a fasta file (file does not exist)']
                 } else if (!(value ==~ /.+\.(fa|fasta)$/)) {
                     invalidValues[key] = [value, 'path to a fasta file (file does not have an filename extension of .fasta or .fa)']
+                }
+                break
+            
+            case 'path_tsv':
+                File tsv = new File(value)
+                if (!tsv.exists()) {
+                    invalidValues[key] = [value, 'path to a TSV file (file does not exist)']
+                } else if (!(value ==~ /.+\.tsv$/)) {
+                    invalidValues[key] = [value, 'path to a TSV file (file does not have an filename extension of .tsv)']
                 }
                 break
 

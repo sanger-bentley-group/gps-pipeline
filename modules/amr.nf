@@ -39,42 +39,76 @@ process GET_PBP_RESISTANCE {
     """
 }
 
-// Run AMRsearch to infer resistance (also determinants if any) of other antimicrobials
-process OTHER_RESISTANCE {
-    label 'amrsearch_container'
+// Create ARIBA database and return database path
+process CREATE_ARIBA_DB {
+    label 'ariba_container'
     label 'farm_low'
 
-    tag "$sample_id"
-
     input:
-    tuple val(sample_id), path(assembly)
+    path ref_sequences
+    path metadata
+    path local
 
     output:
-    tuple val(sample_id), path(json), emit: json
+    path local, emit: path
+    val output, emit: database
 
     script:
-    json='result.json'
+    output='database'
+    json='done_ariba_db.json'
     """
-    java -jar /paarsnp/paarsnp.jar -i "$assembly" -s 1313 -o > $json
+    REF_SEQUENCES="$ref_sequences"
+    METADATA="$metadata"
+    DB_LOCAL="$local"
+    OUTPUT="$output"
+    JSON_FILE="$json"
+
+    source create_ariba_db.sh
     """
 }
 
-// Extract the results from the output file of the AMRsearch
-process GET_OTHER_RESISTANCE {
-    label 'bash_container'
+// Run ARIBA to identify AMR
+process OTHER_RESISTANCE {
+    label 'ariba_container'
     label 'farm_low'
 
     tag "$sample_id"
 
     input:
-    tuple val(sample_id), path(json)
+    path ariba_database
+    val database
+    tuple val(sample_id), path(read1), path(read2), path(unpaired)
 
     output:
-    tuple val(sample_id), env(CHL_RES), env(CHL_DETERMINANTS), env(CLI_RES), env(CLI_DETERMINANTS), env(ERY_RES), env(ERY_DETERMINANTS), env(FQ_RES), env(FQ_DETERMINANTS), env(KAN_RES), env(KAN_DETERMINANTS), env(LZO_RES), env(LZO_DETERMINANTS), env(TET_RES), env(TET_DETERMINANTS), env(TMP_RES), env(TMP_DETERMINANTS), env(SMX_RES), env(SMX_DETERMINANTS), env(COT_RES), env(COT_DETERMINANTS), emit: result
+    tuple val(sample_id), path(report), path(report_debug), emit: reports
+
+    script:
+    report='result/report.tsv'
+    report_debug='result/debug.report.tsv'
+    """
+    ariba run --nucmer_min_id 80 --assembled_threshold 0.80 $ariba_database/$database $read1 $read2 result
+    """
+}
+
+// Extracting resistance information from ARIBA report
+process GET_OTHER_RESISTANCE {
+    label 'python_container'
+    label 'farm_low'
+
+    tag "$sample_id"
+
+    input:
+    tuple val(sample_id), path(report), path(report_debug)
+    path metadata
+
+    output:
+    tuple val(sample_id), env(CHL_Res), env(CHL_Determinant), env(ERY_Res), env(ERY_Determinant), env(CLI_Res), env(CLI_Determinant), env(ERY_CLI_Res), env(ERY_CLI_Determinant), env(FQ_Res), env(FQ_Determinant), env(LFX_Res), env(LFX_Determinant), env(KAN_Res), env(KAN_Determinant), env(TET_Res), env(TET_Determinant), env(DOX_Res), env(DOX_Determinant), env(TMP_Res), env(TMP_Determinant), env(SMX_Res), env(SMX_Determinant), env(COT_Res), env(COT_Determinant), env(RIF_Res), env(RIF_Determinant), env(VAN_Res), env(VAN_Determinant), env(PILI1), env(PILI1_Determinant), env(PILI2), env(PILI2_Determinant), emit: result
 
     script:
     """
-    JSON_FILE="$json"
+    REPORT="$report"
+    REPORT_DEBUG="$report_debug"
+    METADATA="$metadata"
     
     source get_other_resistance.sh
     """

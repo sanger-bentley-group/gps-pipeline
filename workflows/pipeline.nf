@@ -1,30 +1,33 @@
 // Import process modules
 include { PREPROCESS; READ_QC } from "$projectDir/modules/preprocess"
 include { ASSEMBLY_UNICYCLER; ASSEMBLY_SHOVILL; ASSEMBLY_ASSESS; ASSEMBLY_QC } from "$projectDir/modules/assembly"
-include { GET_REF_GENOME_BWA_DB_PREFIX; MAPPING; SAM_TO_SORTED_BAM; SNP_CALL; HET_SNP_COUNT; MAPPING_QC } from "$projectDir/modules/mapping"
-include { GET_KRAKEN_DB; TAXONOMY; TAXONOMY_QC } from "$projectDir/modules/taxonomy"
+include { CREATE_REF_GENOME_BWA_DB; MAPPING; SAM_TO_SORTED_BAM; SNP_CALL; HET_SNP_COUNT; MAPPING_QC } from "$projectDir/modules/mapping"
+include { GET_KRAKEN2_DB; TAXONOMY; TAXONOMY_QC } from "$projectDir/modules/taxonomy"
 include { OVERALL_QC } from "$projectDir/modules/overall_qc"
 include { GET_POPPUNK_DB; GET_POPPUNK_EXT_CLUSTERS; LINEAGE } from "$projectDir/modules/lineage"
 include { GET_SEROBA_DB; CREATE_SEROBA_DB; SEROTYPE } from "$projectDir/modules/serotype"
 include { MLST } from "$projectDir/modules/mlst"
-include { PBP_RESISTANCE; GET_PBP_RESISTANCE; OTHER_RESISTANCE; GET_OTHER_RESISTANCE } from "$projectDir/modules/amr"
+include { PBP_RESISTANCE; GET_PBP_RESISTANCE; CREATE_ARIBA_DB; OTHER_RESISTANCE; GET_OTHER_RESISTANCE } from "$projectDir/modules/amr"
 
 // Main pipeline workflow
 workflow PIPELINE {
     main:
-    // Get path to prefix of Reference Genome BWA Database, generate from assembly if necessary
-    ref_genome_bwa_db_prefix = GET_REF_GENOME_BWA_DB_PREFIX(params.ref_genome, params.ref_genome_bwa_db_local)
+    // Get path and prefix of Reference Genome BWA Database, generate from assembly if necessary
+    CREATE_REF_GENOME_BWA_DB(params.ref_genome, params.ref_genome_bwa_db_local)
 
     // Get path to Kraken2 Database, download if necessary
-    kraken2_db = GET_KRAKEN_DB(params.kraken2_db_remote, params.kraken2_db_local)
+    GET_KRAKEN2_DB(params.kraken2_db_remote, params.kraken2_db_local)
 
     // Get path to SeroBA Databases, clone and rebuild if necessary
     GET_SEROBA_DB(params.seroba_remote, params.seroba_local, params.seroba_kmer)
-    seroba_db = CREATE_SEROBA_DB(params.seroba_remote, params.seroba_local, GET_SEROBA_DB.out.create_db, params.seroba_kmer)
+    CREATE_SEROBA_DB(params.seroba_remote, params.seroba_local, GET_SEROBA_DB.out.create_db, params.seroba_kmer)
 
     // Get paths to PopPUNK Database and External Clusters, download if necessary
-    poppunk_db = GET_POPPUNK_DB(params.poppunk_db_remote, params.poppunk_local)
-    poppunk_ext_clusters = GET_POPPUNK_EXT_CLUSTERS(params.poppunk_ext_remote, params.poppunk_local)
+    GET_POPPUNK_DB(params.poppunk_db_remote, params.poppunk_local)
+    GET_POPPUNK_EXT_CLUSTERS(params.poppunk_ext_remote, params.poppunk_local)
+
+    // Get path to ARIBA database, generate from reference sequences and metadata if ncessary
+    CREATE_ARIBA_DB(params.ariba_ref, params.ariba_metadata, params.ariba_db_local)
 
     // Get read pairs into Channel raw_read_pairs_ch
     raw_read_pairs_ch = Channel.fromFilePairs("$params.reads/*_{,R}{1,2}{,_001}.{fq,fastq}{,.gz}", checkIfExists: true)
@@ -70,7 +73,7 @@ workflow PIPELINE {
 
     // From Channel READ_QC_PASSED_READS_ch map reads to reference
     // Output into Channel MAPPING.out.sam
-    MAPPING(ref_genome_bwa_db_prefix, READ_QC_PASSED_READS_ch)
+    MAPPING(CREATE_REF_GENOME_BWA_DB.out.path, CREATE_REF_GENOME_BWA_DB.out.prefix, READ_QC_PASSED_READS_ch)
 
     // From Channel MAPPING.out.sam, Convert SAM into sorted BAM and calculate reference coverage
     // Output into Channels SAM_TO_SORTED_BAM.out.bam and SAM_TO_SORTED_BAM.out.ref_coverage
@@ -91,7 +94,7 @@ workflow PIPELINE {
 
     // From Channel READ_QC_PASSED_READS_ch assess Streptococcus pneumoniae percentage in reads
     // Output into Channels TAXONOMY.out.detailed_result & TAXONOMY.out.result report
-    TAXONOMY(kraken2_db, params.kraken2_memory_mapping, READ_QC_PASSED_READS_ch)
+    TAXONOMY(GET_KRAKEN2_DB.out.path, params.kraken2_memory_mapping, READ_QC_PASSED_READS_ch)
 
     // From Channel TAXONOMY.out.report, provide taxonomy QC status
     // Output into Channels TAXONOMY_QC.out.detailed_result & TAXONOMY_QC.out.result report
@@ -122,11 +125,11 @@ workflow PIPELINE {
                     .collectFile(name: 'qfile.txt', newLine: true)
 
     // From generated POPPUNK_QFILE, assign GPSC to samples passed overall QC
-    LINEAGE(poppunk_db, poppunk_ext_clusters, POPPUNK_QFILE)
+    LINEAGE(GET_POPPUNK_DB.out.path, GET_POPPUNK_DB.out.database, GET_POPPUNK_EXT_CLUSTERS.out.file, POPPUNK_QFILE)
 
     // From Channel OVERALL_QC_PASSED_READS_ch, serotype the preprocess reads of samples passed overall QC
     // Output into Channel SEROTYPE.out.result
-    SEROTYPE(seroba_db, OVERALL_QC_PASSED_READS_ch)
+    SEROTYPE(CREATE_SEROBA_DB.out.path, CREATE_SEROBA_DB.out.database, OVERALL_QC_PASSED_READS_ch)
 
     // From Channel OVERALL_QC_PASSED_ASSEMBLIES_ch, PubMLST typing the assemblies of samples passed overall QC
     // Output into Channel MLST.out.result
@@ -139,8 +142,8 @@ workflow PIPELINE {
 
     // From Channel OVERALL_QC_PASSED_ASSEMBLIES_ch, infer resistance (also determinants if any) of other antimicrobials
     // Output into Channel GET_OTHER_RESISTANCE.out.result
-    OTHER_RESISTANCE(OVERALL_QC_PASSED_ASSEMBLIES_ch)
-    GET_OTHER_RESISTANCE(OTHER_RESISTANCE.out.json)
+    OTHER_RESISTANCE(CREATE_ARIBA_DB.out.path, CREATE_ARIBA_DB.out.database, OVERALL_QC_PASSED_READS_ch)
+    GET_OTHER_RESISTANCE(OTHER_RESISTANCE.out.reports, params.ariba_metadata)
 
     // Generate results.csv by sorted sample_id based on merged Channels
     // READ_QC.out.result, ASSEMBLY_QC.out.result, MAPPING_QC.out.result, TAXONOMY_QC.out.result, OVERALL_QC.out.result,
@@ -177,7 +180,7 @@ workflow PIPELINE {
     .join(GET_PBP_RESISTANCE.out.result, failOnDuplicate: true, remainder: true)
         .map { (it[-1] == null) ? it[0..-2] + ['_'] * 18 : it }
     .join(GET_OTHER_RESISTANCE.out, failOnDuplicate: true, remainder: true)
-        .map { (it[-1] == null) ? it[0..-2] + ['_'] * 20 : it }
+        .map { (it[-1] == null) ? it[0..-2] + ['_'] * 24 : it }
     .map { it.collect {"\"$it\""}.join',' }
     .collectFile(
         name: 'results.csv',
@@ -193,26 +196,21 @@ workflow PIPELINE {
                 'Serotype',
                 'ST', 'aroE', 'gdh', 'gki', 'recP', 'spi', 'xpt', 'ddl',
                 'pbp1a', 'pbp2b', 'pbp2x', 'AMO_MIC', 'AMO_Res', 'CFT_MIC', 'CFT_Res(Meningital)', 'CFT_Res(Non-meningital)', 'TAX_MIC', 'TAX_Res(Meningital)', 'TAX_Res(Non-meningital)', 'CFX_MIC', 'CFX_Res', 'MER_MIC', 'MER_Res', 'PEN_MIC', 'PEN_Res(Meningital)', 'PEN_Res(Non-meningital)', 
-                'CHL_Res', 'CHL_Determinant', 'CLI_Res', 'CLI_Determinant', 'ERY_Res', 'ERY_Determinant', 'FQ_Res', 'FQ_Determinant', 'KAN_Res', 'KAN_Determinant', 'LZO_Res', 'LZO_Determinant', 'TET_Res', 'TET_Determinant', 'TMP_Res', 'TMP_Determinant', 'SMX_Res', 'SMX_Determinant', 'COT_Res', 'COT_Determinant'
+                'CHL_Res', 'CHL_Determinant', 'ERY_Res', 'ERY_Determinant', 'CLI_Res', 'CLI_Determinant', 'ERY_CLI_Res', 'ERY_CLI_Determinant', 'FQ_Res', 'FQ_Determinant', 'LFX_Res', 'LFX_Determinant', 'KAN_Res', 'KAN_Determinant', 'TET_Res', 'TET_Determinant', 'DOX_Res', 'DOX_Determinant', 'TMP_Res', 'TMP_Determinant', 'SMX_Res', 'SMX_Determinant', 'COT_Res', 'COT_Determinant', 'RIF_Res', 'RIF_Determinant', 'VAN_Res', 'VAN_Determinant', 'PILI1', 'PILI1_Determinant', 'PILI2', 'PILI2_Determinant'
             ].join(','),
         sort: { it.split(',')[0] },
         newLine: true
     )
 
     // Pass to SAVE_INFO sub-workflow
-    DATABASES_INFO = ref_genome_bwa_db_prefix.map { it[0] }
-                    .merge(kraken2_db)
-                    .merge(seroba_db.map { it[0] })
-                    .merge(poppunk_db.map { it[0] })
-                    .merge(poppunk_ext_clusters)
-                    .map {
-                        [
-                            bwa_db_path: it[0],
-                            kraken2_db_path: it[1],
-                            seroba_db_path: it[2],
-                            poppunk_db_path: it[3]
-                        ]
-                    }
+    DATABASES_INFO = CREATE_REF_GENOME_BWA_DB.out.path.map { [["bwa_db_path", it]] }
+                        .merge(CREATE_ARIBA_DB.out.path.map { [["ariba_db_path", it]] })
+                        .merge(GET_KRAKEN2_DB.out.path.map { [["kraken2_db_path", it]] })
+                        .merge(CREATE_SEROBA_DB.out.path.map { [["seroba_db_path", it]] })
+                        .merge(GET_POPPUNK_DB.out.path.map { [["poppunk_db_path", it]] })
+                        .merge(GET_POPPUNK_EXT_CLUSTERS.out.file.map { [["poppunk_ext_file", it]] })
+                        // Save key-value tuples into a map
+                        .map { it.collectEntries() }
 
     emit:
     databases_info = DATABASES_INFO

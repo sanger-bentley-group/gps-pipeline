@@ -1,6 +1,6 @@
-# Extract taxonomy QC information and determine QC result based on kraken_report.txt
+# Extract taxonomy QC information and determine QC result based on kraken2_report.txt
 
-PERCENTAGE=$(awk -F"\t" '$4 ~ /^S$/ && $6 ~ /Streptococcus pneumoniae$/ { gsub(/^[ \t]+/, "", $1); printf "%.2f", $1 }' $KRAKEN_REPORT)
+PERCENTAGE=$(awk -F"\t" '$4 ~ /^S$/ && $6 ~ /Streptococcus pneumoniae$/ { gsub(/^[ \t]+/, "", $1); printf "%.2f", $1 }' $KRAKEN2_REPORT)
 
 if [ -z "$PERCENTAGE" ]; then
     PERCENTAGE="0.00"

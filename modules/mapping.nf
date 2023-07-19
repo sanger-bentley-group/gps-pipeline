@@ -1,5 +1,5 @@
-// Return database prefix with path, construct if necessary
-process GET_REF_GENOME_BWA_DB_PREFIX {
+// Return database path and prefix, construct if necessary
+process CREATE_REF_GENOME_BWA_DB {
     label 'bwa_container'
     label 'farm_mid'
 
@@ -8,16 +8,19 @@ process GET_REF_GENOME_BWA_DB_PREFIX {
     path local
 
     output:
-    tuple path(local), val(prefix)
+    path(local), emit: path
+    val(prefix), emit: prefix
 
     script:
     prefix='reference'
+    json='done_bwa_db.json'
     """
     REFERENCE="$reference"
     DB_LOCAL="$local"
     PREFIX="$prefix"
+    JSON_FILE="$json"
 
-    source get_ref_genome_bwa_db_prefix.sh
+    source create_ref_genome_bwa_db.sh
     """
 }
 
@@ -30,7 +33,8 @@ process MAPPING {
     tag "$sample_id"
 
     input:
-    tuple path(bwa_ref_db_dir), val(prefix)
+    path bwa_ref_db_dir
+    val prefix
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
 
     output:
