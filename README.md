@@ -278,6 +278,8 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   <!-- -->
   > ⚠️ If the result of `Overall_QC` of a sample is `ASSEMBLER FAILURE`, the assembler has crashed when trying to assembly the reads. You might want to re-run the sample with [another assembler](#assembly), or discard the sample if it is a low quality one.
   <!-- -->
+  > ⚠️ If the result of `Serotype` of a sample is `SEROBA FAILURE`, SeroBA has crashed when trying to serotype the sample. Please report the issue.
+  <!-- -->
   | Field | Type | Description |
   | --- | --- | --- |
   | `Sample_ID` | Identification | Sample ID based on the raw reads file name |
@@ -440,7 +442,7 @@ This project uses open-source components. You can find the homepage or source co
 - **SeroBA: rapid high-throughput serotyping of Streptococcus pneumoniae from whole genome sequence data**. Epping L, van Tonder, AJ, Gladstone RA, GPS Consortium, Bentley SD, Page AJ, Keane JA, Microbial Genomics 2018, doi: [10.1099/mgen.0.000186](http://mgen.microbiologyresearch.org/content/journal/mgen/10.1099/mgen.0.000186)
 - License (GPL-3.0): https://github.com/sanger-pathogens/seroba/blob/master/LICENSE
 - This project uses a Docker image built from a [custom fork](https://github.com/HarryHung/seroba)
-  - The fork integrates bug fixes
+  - The fork includes critical bug fixes for SeroBA as the original repository is no longer maintained
   - The Docker image provides the containerised environment for `CREATE_SEROBA_DB` and `SEROTYPE` processes of the `serotype.nf` module
 
 [resistanceDatabase](https://github.com/kumarnaren/resistanceDatabase)
