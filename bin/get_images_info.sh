@@ -1,25 +1,25 @@
 # Extract containers information from nextflow.config and save into a JSON file
 
-IMAGES=$(grep -E "container\s?=" $NEXTFLOW_CONFIG \
-                | sort -u \
-                | sed -r "s/\s+container\s?=\s?'(.+)'/\1/")
+find_image () {
+    grep -E "container\s?=" -B 1 $NEXTFLOW_CONFIG | grep -v -- "^--$" | paste - - | sort -u | grep $1 | sed -r "s/.+container\s?=\s?'(.+)'/\1/"
+}
 
-BASH=$(grep network-multitool <<< $IMAGES)
-GIT=$(grep git <<< $IMAGES)
-PYTHON=$(grep python <<< $IMAGES)
-FASTP=$(grep fastp <<< $IMAGES)
-UNICYCLER=$(grep unicycler <<< $IMAGES)
-SHOVILL=$(grep shovill <<< $IMAGES)
-QUAST=$(grep quast <<< $IMAGES)
-BWA=$(grep bwa <<< $IMAGES)
-SAMTOOLS=$(grep samtools <<< $IMAGES)
-BCFTOOLS=$(grep bcftools <<< $IMAGES)
-POPPUNK=$(grep poppunk <<< $IMAGES)
-SPN_PBP_AMR=$(grep spn-pbp-amr <<< $IMAGES)
-ARIBA=$(grep ariba <<< $IMAGES)
-MLST=$(grep mlst <<< $IMAGES)
-KRAKEN2=$(grep kraken2 <<< $IMAGES)
-SEROBA=$(grep seroba <<< $IMAGES)
+BASH=$(find_image bash)
+GIT=$(find_image git)
+PYTHON=$(find_image python)
+FASTP=$(find_image fastp)
+UNICYCLER=$(find_image unicycler)
+SHOVILL=$(find_image shovill)
+QUAST=$(find_image quast)
+BWA=$(find_image bwa)
+SAMTOOLS=$(find_image samtools)
+BCFTOOLS=$(find_image bcftools)
+POPPUNK=$(find_image poppunk)
+SPN_PBP_AMR=$(find_image spn-pbp-amr)
+ARIBA=$(find_image ariba)
+MLST=$(find_image mlst)
+KRAKEN2=$(find_image kraken2)
+SEROBA=$(find_image seroba)
 
 add_container () {
     jq -n --arg container $1 '.container = $container'
