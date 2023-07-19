@@ -245,7 +245,6 @@ process PARSE {
         |${toolTextRow('BWA', 'bwa')}
         |${toolTextRow('SAMtools', 'samtools')}
         |${toolTextRow('BCFtools', 'bcftools')}
-        |${toolTextRow('Het-SNP Counter', 'het_snp_count')}
         |${toolTextRow('PopPUNK', 'poppunk')}
         |${toolTextRow('CDC PBP AMR Predictor', 'spn_pbp_amr')}
         |${toolTextRow('ARIBA', 'ariba')}
