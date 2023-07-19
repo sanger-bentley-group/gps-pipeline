@@ -445,7 +445,7 @@ process PYTHON_VERSION {
 
     shell:
     $/
-    VERSION=$(python --version | sed -r "s/.*\s(.+)/\1/")
+    VERSION=$(python3 --version | sed -r "s/.*\s(.+)/\1/")
     /$
 }
 
