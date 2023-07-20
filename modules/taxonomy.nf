@@ -63,13 +63,15 @@ process TAXONOMY_QC {
     val(qc_spneumo_percentage)
 
     output:
-    tuple val(sample_id), env(PERCENTAGE), emit: percentage
     tuple val(sample_id), env(TAXONOMY_QC), emit: result
+    tuple val(sample_id), path(taxonomy_qc_report), emit: report
 
     script:
+    taxonomy_qc_report='taxonomy_qc_report.csv'
     """
     KRAKEN2_REPORT="$kraken2_report"
     QC_SPNEUMO_PERCENTAGE="$qc_spneumo_percentage"
+    TAXONOMY_QC_REPORT="$taxonomy_qc_report"
 
     source taxonomy_qc.sh
     """

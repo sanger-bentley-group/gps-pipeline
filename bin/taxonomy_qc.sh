@@ -11,3 +11,6 @@ if (( $(echo "$PERCENTAGE > $QC_SPNEUMO_PERCENTAGE" | bc -l) )); then
 else
     TAXONOMY_QC="FAIL"
 fi
+
+echo \"Taxonomy_QC\",\"S.Pneumo_%\" > $TAXONOMY_QC_REPORT
+echo \"$TAXONOMY_QC\",\"$PERCENTAGE\" >> $TAXONOMY_QC_REPORT

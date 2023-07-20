@@ -85,10 +85,11 @@ process ASSEMBLY_QC {
     val(qc_depth)
 
     output:
-    tuple val(sample_id), env(CONTIGS), env(LENGTH), env(DEPTH), emit: info
     tuple val(sample_id), env(ASSEMBLY_QC), emit: result
+    tuple val(sample_id), path(assembly_qc_report), emit: report
 
     script:
+    assembly_qc_report='assembly_qc_report.csv'
     """
     REPORT="$report"
     BASES="$bases"
@@ -96,6 +97,7 @@ process ASSEMBLY_QC {
     QC_LENGTH_LOW="$qc_length_low"
     QC_LENGTH_HIGH="$qc_length_high"
     QC_DEPTH="$qc_depth"
+    ASSEMBLY_QC_REPORT="$assembly_qc_report"
     
     source assembly_qc.sh      
     """

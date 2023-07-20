@@ -38,12 +38,15 @@ process READ_QC {
     output:
     tuple val(sample_id), env(BASES), emit: bases
     tuple val(sample_id), env(READ_QC), emit: result
+    tuple val(sample_id), path(read_qc_report), emit: report
 
     script:
+    read_qc_report='read_qc_report.csv'
     """
     JSON="$json"
     QC_LENGTH_LOW="$qc_length_low"
     QC_DEPTH="$qc_depth"
+    READ_QC_REPORT="$read_qc_report"
 
     source read_qc.sh
     """

@@ -138,15 +138,17 @@ process MAPPING_QC {
     val(qc_het_snp_site)
 
     output:
-    tuple val(sample_id), env(COVERAGE), env(HET_SNP), emit: info
     tuple val(sample_id), env(MAPPING_QC), emit: result
+    tuple val(sample_id), path(mapping_qc_report), emit: report
 
     script:
+    mapping_qc_report='mapping_qc_report.csv'
     """
     COVERAGE="$ref_coverage"
     HET_SNP="$het_snp_count"
     QC_REF_COVERAGE="$qc_ref_coverage"
     QC_HET_SNP_SITE="$qc_het_snp_site"
+    MAPPING_QC_REPORT="$mapping_qc_report"
 
     source mapping_qc.sh
     """
