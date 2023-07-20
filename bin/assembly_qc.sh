@@ -9,3 +9,6 @@ if (( $CONTIGS < $QC_CONTIGS )) && (( $LENGTH >= $QC_LENGTH_LOW )) && (( $LENGTH
 else
     ASSEMBLY_QC="FAIL"
 fi
+
+echo \"Assembly_QC\",\"Contigs#\",\"Assembly_Length\",\"Seq_Depth\" > $ASSEMBLY_QC_REPORT
+echo \"$ASSEMBLY_QC\",\"$CONTIGS\",\"$LENGTH\",\"$DEPTH\" >> $ASSEMBLY_QC_REPORT

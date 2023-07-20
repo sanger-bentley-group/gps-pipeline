@@ -7,3 +7,6 @@ if (( $(echo "$BASES >= ($QC_LENGTH_LOW*$QC_DEPTH)" | bc -l) )); then
 else
     READ_QC="FAIL"
 fi
+
+echo \"Read_QC\",\"Bases\" > $READ_QC_REPORT
+echo \"$READ_QC\",\"$BASES\" >> $READ_QC_REPORT
