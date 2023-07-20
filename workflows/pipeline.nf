@@ -8,6 +8,7 @@ include { GET_POPPUNK_DB; GET_POPPUNK_EXT_CLUSTERS; LINEAGE } from "$projectDir/
 include { GET_SEROBA_DB; CREATE_SEROBA_DB; SEROTYPE } from "$projectDir/modules/serotype"
 include { MLST } from "$projectDir/modules/mlst"
 include { PBP_RESISTANCE; GET_PBP_RESISTANCE; CREATE_ARIBA_DB; OTHER_RESISTANCE; GET_OTHER_RESISTANCE } from "$projectDir/modules/amr"
+include { GENERATE_SAMPLE_REPORT } from "$projectDir/modules/output"
 
 // Main pipeline workflow
 workflow PIPELINE {
@@ -103,9 +104,10 @@ workflow PIPELINE {
     // Merge Channels ASSEMBLY_QC.out.result & MAPPING_QC.out.result & TAXONOMY_QC.out.result to provide Overall QC Status
     // Output into Channel OVERALL_QC.out.result
     OVERALL_QC(
-        ASSEMBLY_QC.out.result
+        READ_QC.out.result
+        .join(ASSEMBLY_QC.out.result, failOnDuplicate: true, remainder: true)
         .join(MAPPING_QC.out.result, failOnDuplicate: true, remainder: true)
-        .join(TAXONOMY_QC.out.result, failOnDuplicate: true)
+        .join(TAXONOMY_QC.out.result, failOnDuplicate: true, remainder: true)
     )
 
     // From Channel READ_QC_PASSED_READS_ch, only output reads of samples passed overall QC based on Channel OVERALL_QC.out.result
@@ -155,52 +157,64 @@ workflow PIPELINE {
     // GET_OTHER_RESISTANCE.out.result
     //
     // Replace null with approiate amount of "_" items when sample_id does not exist in that output (i.e. QC rejected)
-    READ_QC.out.result
-    .join(ASSEMBLY_QC.out.result, failOnDuplicate: true, remainder: true)
-        .map { (it[-1] == null) ? it[0..-2] + ['_'] : it }
-    .join(MAPPING_QC.out.result, failOnDuplicate: true, remainder: true)
-        .map { (it[-1] == null) ? it[0..-2] + ['_'] : it }
-    .join(TAXONOMY_QC.out.result, failOnDuplicate: true, remainder: true)
-        .map { (it[-1] == null) ? it[0..-2] + ['_'] : it }
-    .join(OVERALL_QC.out.result, failOnDuplicate: true, remainder: true)
-        .map { (it[-1] == null) ? it[0..-2] + ['FAIL'] : it }
-    .join(READ_QC.out.bases, failOnDuplicate: true, failOnMismatch: true)
-    .join(ASSEMBLY_QC.out.info, failOnDuplicate: true, remainder: true)
-        .map { (it[-1] == null) ? it[0..-2] + ['_'] * 3 : it }
-    .join(MAPPING_QC.out.info, failOnDuplicate: true, remainder: true)
-        .map { (it[-1] == null) ? it[0..-2] + ['_'] * 2 : it }
-    .join(TAXONOMY_QC.out.percentage, failOnDuplicate: true, remainder: true)
-        .map { (it[-1] == null) ? it[0..-2] + ['_'] : it }
-    .join(LINEAGE.out.csv.splitCsv(skip: 1), failOnDuplicate: true, remainder: true)
-        .map { (it[-1] == null) ? it[0..-2] + ['_'] : it }
-    .join(SEROTYPE.out.result, failOnDuplicate: true, remainder: true)
-        .map { (it[-1] == null) ? it[0..-2] + ['_'] : it }
-    .join(MLST.out.result, failOnDuplicate: true, remainder: true)
-        .map { (it[-1] == null) ? it[0..-2] + ['_'] * 8 : it }
-    .join(GET_PBP_RESISTANCE.out.result, failOnDuplicate: true, remainder: true)
-        .map { (it[-1] == null) ? it[0..-2] + ['_'] * 18 : it }
-    .join(GET_OTHER_RESISTANCE.out, failOnDuplicate: true, remainder: true)
-        .map { (it[-1] == null) ? it[0..-2] + ['_'] * 24 : it }
-    .map { it.collect {"\"$it\""}.join',' }
-    .collectFile(
-        name: 'results.csv',
-        storeDir: "$params.output",
-        seed: [
-                'Sample_ID',
-                'Read_QC', 'Assembly_QC', 'Mapping_QC', 'Taxonomy_QC', 'Overall_QC',
-                'Bases', 
-                'Contigs#' , 'Assembly_Length', 'Seq_Depth', 
-                'Ref_Cov_%', 'Het-SNP#' , 
-                'S.Pneumo_%', 
-                'GPSC',
-                'Serotype',
-                'ST', 'aroE', 'gdh', 'gki', 'recP', 'spi', 'xpt', 'ddl',
-                'pbp1a', 'pbp2b', 'pbp2x', 'AMO_MIC', 'AMO_Res', 'CFT_MIC', 'CFT_Res(Meningital)', 'CFT_Res(Non-meningital)', 'TAX_MIC', 'TAX_Res(Meningital)', 'TAX_Res(Non-meningital)', 'CFX_MIC', 'CFX_Res', 'MER_MIC', 'MER_Res', 'PEN_MIC', 'PEN_Res(Meningital)', 'PEN_Res(Non-meningital)', 
-                'CHL_Res', 'CHL_Determinant', 'ERY_Res', 'ERY_Determinant', 'CLI_Res', 'CLI_Determinant', 'ERY_CLI_Res', 'ERY_CLI_Determinant', 'FQ_Res', 'FQ_Determinant', 'LFX_Res', 'LFX_Determinant', 'KAN_Res', 'KAN_Determinant', 'TET_Res', 'TET_Determinant', 'DOX_Res', 'DOX_Determinant', 'TMP_Res', 'TMP_Determinant', 'SMX_Res', 'SMX_Determinant', 'COT_Res', 'COT_Determinant', 'RIF_Res', 'RIF_Determinant', 'VAN_Res', 'VAN_Determinant', 'PILI1', 'PILI1_Determinant', 'PILI2', 'PILI2_Determinant'
-            ].join(','),
-        sort: { it.split(',')[0] },
-        newLine: true
-    )
+    
+    GENERATE_SAMPLE_REPORT(
+        READ_QC.out.report
+        .join(ASSEMBLY_QC.out.report, failOnDuplicate: true, remainder: true)
+        .join(MAPPING_QC.out.report, failOnDuplicate: true, remainder: true)
+        .join(TAXONOMY_QC.out.report, failOnDuplicate: true, remainder: true)
+        .join(OVERALL_QC.out.report, failOnDuplicate: true, remainder: true)
+        .map { [it[0], it[1..-1].minus(null)] }
+    ).view()
+
+    // GENERATE_OVERALL_REPORT
+
+    // READ_QC.out.result
+    // .join(ASSEMBLY_QC.out.result, failOnDuplicate: true, remainder: true)
+    //     .map { (it[-1] == null) ? it[0..-2] + ['_'] : it }
+    // .join(MAPPING_QC.out.result, failOnDuplicate: true, remainder: true)
+    //     .map { (it[-1] == null) ? it[0..-2] + ['_'] : it }
+    // .join(TAXONOMY_QC.out.result, failOnDuplicate: true, remainder: true)
+    //     .map { (it[-1] == null) ? it[0..-2] + ['_'] : it }
+    // .join(OVERALL_QC.out.result, failOnDuplicate: true, remainder: true)
+    //     .map { (it[-1] == null) ? it[0..-2] + ['FAIL'] : it }
+    // .join(READ_QC.out.bases, failOnDuplicate: true, failOnMismatch: true)
+    // .join(ASSEMBLY_QC.out.info, failOnDuplicate: true, remainder: true)
+    //     .map { (it[-1] == null) ? it[0..-2] + ['_'] * 3 : it }
+    // .join(MAPPING_QC.out.info, failOnDuplicate: true, remainder: true)
+    //     .map { (it[-1] == null) ? it[0..-2] + ['_'] * 2 : it }
+    // .join(TAXONOMY_QC.out.percentage, failOnDuplicate: true, remainder: true)
+    //     .map { (it[-1] == null) ? it[0..-2] + ['_'] : it }
+    // .join(LINEAGE.out.csv.splitCsv(skip: 1), failOnDuplicate: true, remainder: true)
+    //     .map { (it[-1] == null) ? it[0..-2] + ['_'] : it }
+    // .join(SEROTYPE.out.result, failOnDuplicate: true, remainder: true)
+    //     .map { (it[-1] == null) ? it[0..-2] + ['_'] : it }
+    // .join(MLST.out.result, failOnDuplicate: true, remainder: true)
+    //     .map { (it[-1] == null) ? it[0..-2] + ['_'] * 8 : it }
+    // .join(GET_PBP_RESISTANCE.out.result, failOnDuplicate: true, remainder: true)
+    //     .map { (it[-1] == null) ? it[0..-2] + ['_'] * 18 : it }
+    // .join(GET_OTHER_RESISTANCE.out, failOnDuplicate: true, remainder: true)
+    //     .map { (it[-1] == null) ? it[0..-2] + ['_'] * 24 : it }
+    // .map { it.collect {"\"$it\""}.join',' }
+    // .collectFile(
+    //     name: 'results.csv',
+    //     storeDir: "$params.output",
+    //     seed: [
+    //             'Sample_ID',
+    //             'Read_QC', 'Assembly_QC', 'Mapping_QC', 'Taxonomy_QC', 'Overall_QC',
+    //             'Bases', 
+    //             'Contigs#' , 'Assembly_Length', 'Seq_Depth', 
+    //             'Ref_Cov_%', 'Het-SNP#' , 
+    //             'S.Pneumo_%', 
+    //             'GPSC',
+    //             'Serotype',
+    //             'ST', 'aroE', 'gdh', 'gki', 'recP', 'spi', 'xpt', 'ddl',
+    //             'pbp1a', 'pbp2b', 'pbp2x', 'AMO_MIC', 'AMO_Res', 'CFT_MIC', 'CFT_Res(Meningital)', 'CFT_Res(Non-meningital)', 'TAX_MIC', 'TAX_Res(Meningital)', 'TAX_Res(Non-meningital)', 'CFX_MIC', 'CFX_Res', 'MER_MIC', 'MER_Res', 'PEN_MIC', 'PEN_Res(Meningital)', 'PEN_Res(Non-meningital)', 
+    //             'CHL_Res', 'CHL_Determinant', 'ERY_Res', 'ERY_Determinant', 'CLI_Res', 'CLI_Determinant', 'ERY_CLI_Res', 'ERY_CLI_Determinant', 'FQ_Res', 'FQ_Determinant', 'LFX_Res', 'LFX_Determinant', 'KAN_Res', 'KAN_Determinant', 'TET_Res', 'TET_Determinant', 'DOX_Res', 'DOX_Determinant', 'TMP_Res', 'TMP_Determinant', 'SMX_Res', 'SMX_Determinant', 'COT_Res', 'COT_Determinant', 'RIF_Res', 'RIF_Determinant', 'VAN_Res', 'VAN_Determinant', 'PILI1', 'PILI1_Determinant', 'PILI2', 'PILI2_Determinant'
+    //         ].join(','),
+    //     sort: { it.split(',')[0] },
+    //     newLine: true
+    // )
 
     // Pass to SAVE_INFO sub-workflow
     DATABASES_INFO = CREATE_REF_GENOME_BWA_DB.out.path.map { [["bwa_db_path", it]] }
