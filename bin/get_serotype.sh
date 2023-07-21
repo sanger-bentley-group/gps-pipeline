@@ -4,3 +4,6 @@
 } || {
     SEROTYPE="SEROBA FAILURE"
 }
+
+echo \"Serotype\" > $SEROTYPE_REPORT
+echo \"$SEROTYPE\" >> $SEROTYPE_REPORT
