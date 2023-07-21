@@ -5,11 +5,13 @@
 import sys
 from itertools import chain
 from collections import defaultdict
-import json
+import pandas as pd
+import csv
 
 report_path = sys.argv[1]
 debug_report_path = sys.argv[2]
 metadata_path = sys.argv[3]
+output_file = sys.argv[4]
 
 with open(report_path) as report, open(debug_report_path) as debug_report, open(metadata_path) as metadata:
     # For saving (reference, gene, var_only) combinations as key and their information ({var_change: target}) as value found in metadata
@@ -127,4 +129,5 @@ with open(report_path) as report, open(debug_report_path) as debug_report, open(
         output['ERY_Determinant'] = '; '.join(target_dict['ERY_CLI'].union(target_dict['ERY'])) if 'ERY' in target_dict and len(target_dict['ERY']) != 0 else output['ERY_CLI_Determinant']
         output['CLI_Determinant'] = '; '.join(target_dict['ERY_CLI'].union(target_dict['CLI'])) if 'CLI' in target_dict and len(target_dict['CLI']) != 0 else output['ERY_CLI_Determinant']
 
-    print(json.dumps(output, indent=4))
+    # Save output dict as csv
+    pd.DataFrame([output]).to_csv(output_file, index=False, quoting=csv.QUOTE_ALL)
