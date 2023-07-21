@@ -10,4 +10,4 @@ poppunk_assign --db "${POPPUNK_DIR}/${DB_NAME}" --external-clustering "${POPPUNK
 sed 's/^prefix_//' output/output_external_clusters.csv > result.txt
 
 
-awk -F , 'NR!=1 { print "GPSC\n" "\"" $2 "\"" > $1 ".csv" }' result.txt
+awk -F , 'NR!=1 { print "\"GPSC\"\n" "\"" $2 "\"" > $1 ".csv" }' result.txt
