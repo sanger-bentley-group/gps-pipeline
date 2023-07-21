@@ -29,11 +29,13 @@ process GET_PBP_RESISTANCE {
     tuple val(sample_id), path(json)
 
     output:
-    tuple val(sample_id), env(pbp1a), env(pbp2b), env(pbp2x), env(AMO_MIC), env(AMO), env(CFT_MIC), env(CFT_MENINGITIS), env(CFT_NONMENINGITIS), env(TAX_MIC), env(TAX_MENINGITIS), env(TAX_NONMENINGITIS), env(CFX_MIC), env(CFX), env(MER_MIC), env(MER), env(PEN_MIC), env(PEN_MENINGITIS), env(PEN_NONMENINGITIS), emit: result
+    tuple val(sample_id), path(pbp_amr_report), emit: report
 
     script:
+    pbp_amr_report='pbp_amr_report.csv'
     """
     JSON_FILE="$json"
+    PBP_AMR_REPORT="$pbp_amr_report"
 
     source get_pbp_resistance.sh
     """
