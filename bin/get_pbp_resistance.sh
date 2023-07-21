@@ -30,3 +30,6 @@ MER=$(GET_RES "mem")
 PEN_MIC=$(GET_VALUE "penMic")
 PEN_NONMENINGITIS=$(GET_RES "penNonMeningitis")
 PEN_MENINGITIS=$(GET_RES "penMeningitis")
+
+echo \"pbp1a\",\"pbp2b\",\"pbp2x\",\"AMO_MIC\",\"AMO_Res\",\"CFT_MIC\",\"CFT_Res\(Meningital\)\",\"CFT_Res\(Non-meningital\)\",\"TAX_MIC\",\"TAX_Res\(Meningital\)\",\"TAX_Res\(Non-meningital\)\",\"CFX_MIC\",\"CFX_Res\",\"MER_MIC\",\"MER_Res\",\"PEN_MIC\",\"PEN_Res\(Meningital\)\",\"PEN_Res\(Non-meningital\)\" > $PBP_AMR_REPORT
+echo \"$pbp1a\",\"$pbp2b\",\"$pbp2x\",\"$AMO_MIC\",\"$AMO\",\"$CFT_MIC\",\"$CFT_MENINGITIS\",\"$CFT_NONMENINGITIS\",\"$TAX_MIC\",\"$TAX_MENINGITIS\",\"$TAX_NONMENINGITIS\",\"$CFX_MIC\",\"$CFX\",\"$MER_MIC\",\"$MER\",\"$PEN_MIC\",\"$PEN_MENINGITIS\",\"$PEN_NONMENINGITIS\" >> $PBP_AMR_REPORT
