@@ -12,3 +12,6 @@ recP=$(awk -F'\t' 'FNR == 2 {print $7}' $OUTPUT)
 spi=$(awk -F'\t' 'FNR == 2 {print $8}' $OUTPUT)
 xpt=$(awk -F'\t' 'FNR == 2 {print $9}' $OUTPUT)
 ddl=$(awk -F'\t' 'FNR == 2 {print $10}' $OUTPUT)
+
+echo \"ST\",\"aroE\",\"gdh\",\"gki\",\"recP\",\"spi\",\"xpt\",\"ddl\" > $MLST_REPORT
+echo \"$ST\",\"$aroE\",\"$gdh\",\"$gki\",\"$recP\",\"$spi\",\"$xpt\",\"$ddl\" >> $MLST_REPORT

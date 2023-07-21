@@ -9,11 +9,13 @@ process MLST {
     tuple val(sample_id), path(assembly)
 
     output:
-    tuple val(sample_id), env(ST), env(aroE), env(gdh), env(gki), env(recP), env(spi), env(xpt), env(ddl), emit: result
+    tuple val(sample_id), path(mlst_report), emit: report
 
     script:
+    mlst_report='mlst_report.csv'
     """
     ASSEMBLY="$assembly"
+    MLST_REPORT="$mlst_report"
 
     source get_mlst.sh
     """
