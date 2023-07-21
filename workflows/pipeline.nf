@@ -164,6 +164,7 @@ workflow PIPELINE {
         .join(MAPPING_QC.out.report, failOnDuplicate: true, remainder: true)
         .join(TAXONOMY_QC.out.report, failOnDuplicate: true, remainder: true)
         .join(OVERALL_QC.out.report, failOnDuplicate: true, remainder: true)
+        .join(LINEAGE.out.reports.flatten().map { [it.name.take(it.name.lastIndexOf('.')), it] }, failOnDuplicate: true, remainder: true) // Turn reports list into channel, and map back Sample_ID based on output file name
         .map { [it[0], it[1..-1].minus(null)] }
     ).view()
 

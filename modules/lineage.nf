@@ -46,8 +46,7 @@ process GET_POPPUNK_EXT_CLUSTERS {
 }
 
 // Run PopPUNK to assign GPSCs to samples
-// Add "prefix_" to all sample names in qfile to avoid poppunk_assign crashing due to sample name already exists in database
-// Remove "prefix_" from all sample names in the output
+// Save results of individual sample into .csv with its name as filename 
 process LINEAGE {
     label 'poppunk_container'
     label 'farm_high'
@@ -63,13 +62,15 @@ process LINEAGE {
     path qfile
 
     output:
-    path(result), emit: csv
+    path '*.csv', emit: reports
 
     script:
-    result='result.csv'
     """
-    sed 's/^/prefix_/' "$qfile" > safe_qfile.txt
-    poppunk_assign --db "${poppunk_dir}/${db_name}" --external-clustering "${poppunk_dir}/${ext_clusters_file}" --query safe_qfile.txt --output output --threads `nproc`
-    sed 's/^prefix_//' output/output_external_clusters.csv > "$result"
+    QFILE="$qfile"
+    POPPUNK_DIR="$poppunk_dir"
+    DB_NAME="$db_name"
+    EXT_CLUSTERS_FILE="$ext_clusters_file"
+
+    source get_lineage.sh
     """
 }
