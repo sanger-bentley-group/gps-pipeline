@@ -351,10 +351,10 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | `RIF_Determinant` | Other AMR | Known determinants that inferred the RIF resistance |
   | `VAN_Res` | Other AMR | Resistance phenotype against Vancomycin (VAN) |
   | `VAN_Determinant` | Other AMR | Known determinants that inferred the VAN resistance |
-  | `PILI-1` | Other AMR | Expression of PILI-1 |
-  | `PILI-1_Determinant` | Other AMR | Known determinants that inferred the PILI-1 expression |
-  | `PILI-2` | Other AMR | Expression of PILI-2 |
-  | `PILI-2_Determinant` | Other AMR | Known determinants that inferred the PILI-2 expression |
+  | `PILI1` | Other AMR | Expression of PILI-1 |
+  | `PILI1_Determinant` | Other AMR | Known determinants that inferred the PILI-1 expression |
+  | `PILI2` | Other AMR | Expression of PILI-2 |
+  | `PILI2_Determinant` | Other AMR | Known determinants that inferred the PILI-2 expression |
 
 &nbsp;
 # Credits
