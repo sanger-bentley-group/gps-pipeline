@@ -147,17 +147,7 @@ workflow PIPELINE {
     OTHER_RESISTANCE(CREATE_ARIBA_DB.out.path, CREATE_ARIBA_DB.out.database, OVERALL_QC_PASSED_READS_ch)
     GET_OTHER_RESISTANCE(OTHER_RESISTANCE.out.reports, params.ariba_metadata)
 
-    // Generate results.csv by sorted sample_id based on merged Channels
-    // READ_QC.out.result, ASSEMBLY_QC.out.result, MAPPING_QC.out.result, TAXONOMY_QC.out.result, OVERALL_QC.out.result,
-    // READ_QC.out.bases, ASSEMBLY_QC.out.info, MAPPING_QC.out.info, TAXONOMY_QC.out.percentage
-    // LINEAGE.out.csv,
-    // SEROTYPE.out.result,
-    // MLST.out.result,
-    // GET_PBP_RESISTANCE.out.result,
-    // GET_OTHER_RESISTANCE.out.result
-    //
-    // Replace null with approiate amount of "_" items when sample_id does not exist in that output (i.e. QC rejected)
-    
+    // Generate sample reports by merging outputs from all result-generating modules
     GENERATE_SAMPLE_REPORT(
         READ_QC.out.report
         .join(ASSEMBLY_QC.out.report, failOnDuplicate: true, remainder: true)
@@ -169,59 +159,13 @@ workflow PIPELINE {
         .join(GET_PBP_RESISTANCE.out.report, failOnDuplicate: true, remainder: true)
         .join(GET_OTHER_RESISTANCE.out.report, failOnDuplicate: true, remainder: true)
         .join(LINEAGE.out.reports.flatten().map { [it.name.take(it.name.lastIndexOf('.')), it] }, failOnDuplicate: true, remainder: true) // Turn reports list into channel, and map back Sample_ID based on output file name
-        .map { [it[0], it[1..-1].minus(null)] }
+        .map { [it[0], it[1..-1].minus(null)] } // Map Sample_ID to index 0 and all reports (with null entries removed) as a list to index 1
     )
 
+    // Generate overall report by concatenating sample reports
     GENERATE_OVERALL_REPORT(GENERATE_SAMPLE_REPORT.out.report.collect(), params.ariba_metadata)
 
-    // READ_QC.out.result
-    // .join(ASSEMBLY_QC.out.result, failOnDuplicate: true, remainder: true)
-    //     .map { (it[-1] == null) ? it[0..-2] + ['_'] : it }
-    // .join(MAPPING_QC.out.result, failOnDuplicate: true, remainder: true)
-    //     .map { (it[-1] == null) ? it[0..-2] + ['_'] : it }
-    // .join(TAXONOMY_QC.out.result, failOnDuplicate: true, remainder: true)
-    //     .map { (it[-1] == null) ? it[0..-2] + ['_'] : it }
-    // .join(OVERALL_QC.out.result, failOnDuplicate: true, remainder: true)
-    //     .map { (it[-1] == null) ? it[0..-2] + ['FAIL'] : it }
-    // .join(READ_QC.out.bases, failOnDuplicate: true, failOnMismatch: true)
-    // .join(ASSEMBLY_QC.out.info, failOnDuplicate: true, remainder: true)
-    //     .map { (it[-1] == null) ? it[0..-2] + ['_'] * 3 : it }
-    // .join(MAPPING_QC.out.info, failOnDuplicate: true, remainder: true)
-    //     .map { (it[-1] == null) ? it[0..-2] + ['_'] * 2 : it }
-    // .join(TAXONOMY_QC.out.percentage, failOnDuplicate: true, remainder: true)
-    //     .map { (it[-1] == null) ? it[0..-2] + ['_'] : it }
-    // .join(LINEAGE.out.csv.splitCsv(skip: 1), failOnDuplicate: true, remainder: true)
-    //     .map { (it[-1] == null) ? it[0..-2] + ['_'] : it }
-    // .join(SEROTYPE.out.result, failOnDuplicate: true, remainder: true)
-    //     .map { (it[-1] == null) ? it[0..-2] + ['_'] : it }
-    // .join(MLST.out.result, failOnDuplicate: true, remainder: true)
-    //     .map { (it[-1] == null) ? it[0..-2] + ['_'] * 8 : it }
-    // .join(GET_PBP_RESISTANCE.out.result, failOnDuplicate: true, remainder: true)
-    //     .map { (it[-1] == null) ? it[0..-2] + ['_'] * 18 : it }
-    // .join(GET_OTHER_RESISTANCE.out, failOnDuplicate: true, remainder: true)
-    //     .map { (it[-1] == null) ? it[0..-2] + ['_'] * 24 : it }
-    // .map { it.collect {"\"$it\""}.join',' }
-    // .collectFile(
-    //     name: 'results.csv',
-    //     storeDir: "$params.output",
-    //     seed: [
-    //             'Sample_ID',
-    //             'Read_QC', 'Assembly_QC', 'Mapping_QC', 'Taxonomy_QC', 'Overall_QC',
-    //             'Bases', 
-    //             'Contigs#' , 'Assembly_Length', 'Seq_Depth', 
-    //             'Ref_Cov_%', 'Het-SNP#' , 
-    //             'S.Pneumo_%', 
-    //             'GPSC',
-    //             'Serotype',
-    //             'ST', 'aroE', 'gdh', 'gki', 'recP', 'spi', 'xpt', 'ddl',
-    //             'pbp1a', 'pbp2b', 'pbp2x', 'AMO_MIC', 'AMO_Res', 'CFT_MIC', 'CFT_Res(Meningital)', 'CFT_Res(Non-meningital)', 'TAX_MIC', 'TAX_Res(Meningital)', 'TAX_Res(Non-meningital)', 'CFX_MIC', 'CFX_Res', 'MER_MIC', 'MER_Res', 'PEN_MIC', 'PEN_Res(Meningital)', 'PEN_Res(Non-meningital)', 
-    //             'CHL_Res', 'CHL_Determinant', 'ERY_Res', 'ERY_Determinant', 'CLI_Res', 'CLI_Determinant', 'ERY_CLI_Res', 'ERY_CLI_Determinant', 'FQ_Res', 'FQ_Determinant', 'LFX_Res', 'LFX_Determinant', 'KAN_Res', 'KAN_Determinant', 'TET_Res', 'TET_Determinant', 'DOX_Res', 'DOX_Determinant', 'TMP_Res', 'TMP_Determinant', 'SMX_Res', 'SMX_Determinant', 'COT_Res', 'COT_Determinant', 'RIF_Res', 'RIF_Determinant', 'VAN_Res', 'VAN_Determinant', 'PILI1', 'PILI1_Determinant', 'PILI2', 'PILI2_Determinant'
-    //         ].join(','),
-    //     sort: { it.split(',')[0] },
-    //     newLine: true
-    // )
-
-    // Pass to SAVE_INFO sub-workflow
+    // Pass databases information to SAVE_INFO sub-workflow
     DATABASES_INFO = CREATE_REF_GENOME_BWA_DB.out.path.map { [["bwa_db_path", it]] }
                         .merge(CREATE_ARIBA_DB.out.path.map { [["ariba_db_path", it]] })
                         .merge(GET_KRAKEN2_DB.out.path.map { [["kraken2_db_path", it]] })
