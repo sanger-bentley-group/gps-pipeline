@@ -184,7 +184,7 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | `--assembly_publish` | `"link"` or `"symlink"` or `"copy"`<br />(Default: `"link"`)| Method used by Nextflow to publish the generated assemblies.<br>(The default setting `"link"` means hard link, therefore will fail if the output directory is set to outside of the working file system) |
 
 ## QC Parameters
-> ℹ️ Read QC does not have directly accessible parameters. The minimum base count in reads of Read QC is based on the multiplication of `--length_low` and `--depth` of Assembly QC.
+> ℹ️ Read QC does not have directly accessible parameters. The minimum base count in reads of Read QC is based on the multiplication of `--length_low` and `--depth` of Assembly QC (i.e. default value is `38000000`).
 <!-- -->
   | Option | Values | Description |
   | --- | ---| --- |
