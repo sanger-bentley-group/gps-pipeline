@@ -28,14 +28,13 @@ process GENERATE_OVERALL_REPORT {
 
     input:
     path 'report*.csv'
-    path "$ariba_metadata"
+    path 'ariba_metadata'
 
     output:
     path "$overall_report", emit: report
 
     script:
     overall_report='results.csv'
-    ariba_metadata='ariba_metadata.tsv'
     """
     generate_overall_report.py `pwd` $ariba_metadata $overall_report
     """
