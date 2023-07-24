@@ -8,7 +8,7 @@ include { GET_POPPUNK_DB; GET_POPPUNK_EXT_CLUSTERS; LINEAGE } from "$projectDir/
 include { GET_SEROBA_DB; CREATE_SEROBA_DB; SEROTYPE } from "$projectDir/modules/serotype"
 include { MLST } from "$projectDir/modules/mlst"
 include { PBP_RESISTANCE; GET_PBP_RESISTANCE; CREATE_ARIBA_DB; OTHER_RESISTANCE; GET_OTHER_RESISTANCE } from "$projectDir/modules/amr"
-include { GENERATE_SAMPLE_REPORT } from "$projectDir/modules/output"
+include { GENERATE_SAMPLE_REPORT; GENERATE_OVERALL_REPORT } from "$projectDir/modules/output"
 
 // Main pipeline workflow
 workflow PIPELINE {
@@ -170,9 +170,9 @@ workflow PIPELINE {
         .join(GET_OTHER_RESISTANCE.out.report, failOnDuplicate: true, remainder: true)
         .join(LINEAGE.out.reports.flatten().map { [it.name.take(it.name.lastIndexOf('.')), it] }, failOnDuplicate: true, remainder: true) // Turn reports list into channel, and map back Sample_ID based on output file name
         .map { [it[0], it[1..-1].minus(null)] }
-    ).view()
+    )
 
-    // GENERATE_OVERALL_REPORT
+    GENERATE_OVERALL_REPORT(GENERATE_SAMPLE_REPORT.out.report.collect(), params.ariba_metadata)
 
     // READ_QC.out.result
     // .join(ASSEMBLY_QC.out.result, failOnDuplicate: true, remainder: true)
