@@ -23,7 +23,7 @@ COLUMNS_BY_CATEGORY = {
 }
 
 
-# Check argv and save the global variables
+# Check argv and save to global variables
 if len(sys.argv) != 4:
     sys.exit('Usage: generate_overall_report.py WORKDIR_PATH ARIBA_METADATA OUTPUT_FILE')
 WORKDIR_PATH = sys.argv[1]
@@ -35,7 +35,7 @@ def main():
     output_columns = get_output_columns()
     df_output = get_df_output(output_columns)
 
-    # Saving df_output to output_file in csv format
+    # Saving df_output to OUTPUT_FILE in csv format
     df_output.to_csv(OUTPUT_FILE, index=False, na_rep='_')
 
 
