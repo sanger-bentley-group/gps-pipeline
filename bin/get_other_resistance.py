@@ -28,12 +28,13 @@ def main():
     pd.DataFrame([output]).to_csv(OUTPUT_FILE, index=False, quoting=csv.QUOTE_ALL)
 
 
+# Prepare targets_dict for searching hits and hits_dict for saving hits
 def prepare_dicts():
-    # For saving (reference, gene, var_only) combinations as key and their information ({var_change: target}) as value found in metadata
+    # For saving (reference, gene, var_only) combinations as keys and their information found in metadata as values in dict format (i.e. {var_change: target})
     # Used to search whether there is a hit in the ARIBA result
     targets_dict = defaultdict(dict)
 
-    # For saving targets found in metadata as key and their determinants (i.e. hits) found in ARIBA result as values in set
+    # For saving targets found in metadata as key and their determinants (i.e. hits) found in ARIBA result as values in set format
     hits_dict = {}
 
     with open(METADATA_PATH) as metadata:
@@ -54,6 +55,7 @@ def prepare_dicts():
     return targets_dict, hits_dict
 
 
+# Finding hits in ARIBA results based on targets_dict and save hits to hits_dict
 def find_hits(targets_dict, hits_dict):
     with open(REPORT_PATH) as report, open(DEBUG_REPORT_PATH) as debug_report:
         # Skip the header in report and debug report
@@ -91,6 +93,7 @@ def find_hits(targets_dict, hits_dict):
                     hits_dict[target].add(f'{ref_name} Variant {known_var_change}')
 
 
+# Generating final output dataframe based on hits_dict
 def get_output(hits_dict):
     # For saving final output, where information is saved per-target
     output = {}
