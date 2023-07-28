@@ -11,5 +11,5 @@ else
     OVERALL_QC="FAIL"
 fi
 
-echo \"Overall_QC\" > $OVERALL_QC_REPORT
-echo \"$OVERALL_QC\" >> $OVERALL_QC_REPORT
+echo \"Overall_QC\" > "$OVERALL_QC_REPORT"
+echo \""$OVERALL_QC"\" >> "$OVERALL_QC_REPORT"

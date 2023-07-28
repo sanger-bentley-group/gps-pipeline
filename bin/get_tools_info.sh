@@ -1,7 +1,7 @@
 # Save received tools versions into a JSON file
 
 add_version () {
-    jq -n --arg version $1 '.version = $version'
+    jq -n --arg version "$1" '.version = $version'
 }
 
 jq -n \
@@ -19,4 +19,4 @@ jq -n \
     --argjson kraken2 "$(add_version "$KRAKEN2_VERSION")" \
     --argjson seroba "$(add_version "$SEROBA_VERSION")" \
     --argjson ariba "$(add_version "$ARIBA_VERSION")" \
-    '$ARGS.named' > $JSON_FILE
+    '$ARGS.named' > "$JSON_FILE"
