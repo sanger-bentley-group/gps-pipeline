@@ -9,4 +9,4 @@ else
 fi
 
 echo \"Mapping_QC\",\"Ref_Cov_%\",\"Het-SNP#\" > "$MAPPING_QC_REPORT"
-echo \"$MAPPING_QC\",\""$COVERAGE"\",\""$QC_HET_SNP_SITE"\" >> "$MAPPING_QC_REPORT"
+echo \"$MAPPING_QC\",\""$COVERAGE"\",\""$HET_SNP"\" >> "$MAPPING_QC_REPORT"
