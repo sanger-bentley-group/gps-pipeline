@@ -120,8 +120,10 @@ process HET_SNP_COUNT {
     tuple val(sample_id), env(OUTPUT), emit: result
 
     script:
+    het_snp_count_output='output.txt'
     """
-    OUTPUT=`het_snp_count.py "$vcf" 50`
+    het_snp_count.py "$vcf" 50 "$het_snp_count_output"
+    OUTPUT=`cat $het_snp_count_output`
     """
 }
 
