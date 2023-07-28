@@ -81,7 +81,7 @@ def get_df_output(output_columns):
     dfs = [df_manifest]
     reports = glob.glob(WORKDIR_PATH +'/*.csv')
     for report in reports:
-        df = pd.read_csv(report)
+        df = pd.read_csv(report, dtype=str)
         dfs.append(df)
     df_output = pd.concat(dfs, ignore_index=True).sort_values(by=['Sample_ID'])
 
