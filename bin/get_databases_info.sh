@@ -1,7 +1,7 @@
 # Save received databases information into a JSON file
 
 add_bwa_db () {
-    BWA_DB_JSON=${BWA_DB_PATH}/${BWA_JSON}
+    BWA_DB_JSON="${BWA_DB_PATH}/${BWA_JSON}"
     if [ -f "$BWA_DB_JSON" ]; then
         REFERENCE=$(jq -r .reference "$BWA_DB_JSON")
         REFERENCE_MD5=$(jq -r .reference_md5 "$BWA_DB_JSON")
@@ -15,7 +15,7 @@ add_bwa_db () {
 }
 
 add_ariba_db () {
-    ARIBA_DB_JSON=${ARIBA_DB_PATH}/${ARIBA_JSON}
+    ARIBA_DB_JSON="${ARIBA_DB_PATH}/${ARIBA_JSON}"
     if [ -f "$ARIBA_DB_JSON" ]; then
         REFERENCE=$(jq -r .reference "$ARIBA_DB_JSON")
         REFERENCE_MD5=$(jq -r .reference_md5 "$ARIBA_DB_JSON")
@@ -33,7 +33,7 @@ add_ariba_db () {
 }
 
 add_seroba_db () {
-    SEROBA_DB_JSON=${SEROBA_DB_PATH}/${SEROBA_JSON}
+    SEROBA_DB_JSON="${SEROBA_DB_PATH}/${SEROBA_JSON}"
     if [ -f "$SEROBA_DB_JSON" ]; then
         GIT=$(jq -r .git "$SEROBA_DB_JSON")
         KMER=$(jq -r .kmer "$SEROBA_DB_JSON")
@@ -47,7 +47,7 @@ add_seroba_db () {
 }
 
 add_url_db () {
-    DB_JSON=$1
+    DB_JSON="$1"
     if [ -f "$DB_JSON" ]; then
         URL=$(jq -r .url "$DB_JSON")
         SAVE_TIME=$(jq -r .save_time "$DB_JSON")
