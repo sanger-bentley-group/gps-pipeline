@@ -9,4 +9,4 @@ else
 fi
 
 echo \"Read_QC\",\"Bases\" > "$READ_QC_REPORT"
-echo \"$READ_QC\",\""$BASES"\" >> "$READ_QC_REPORT"
+echo \""$READ_QC"\",\""$BASES"\" >> "$READ_QC_REPORT"
