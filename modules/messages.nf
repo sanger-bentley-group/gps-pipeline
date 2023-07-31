@@ -46,7 +46,7 @@ void workflowSelectMessage(String selectedWorkflow) {
     switch (selectedWorkflow) {
         case 'pipeline':
             message = """
-            |The main pipeline workflow was selected.
+            |The main pipeline workflow has been selected.
             |
             |Input Directory: ${readsDir.canonicalPath}
             |Output Directory: ${outputDir.canonicalPath}
@@ -54,12 +54,12 @@ void workflowSelectMessage(String selectedWorkflow) {
             break
         case 'init':
             message = '''
-            |The alternative workflow for initialisation was selected.
+            |The alternative workflow for initialisation has been selected.
             '''.stripMargin()
             break
         case 'version':
             message = '''
-            |The alternative workflow for getting versions of pipeline, tools and databases was selected.
+            |The alternative workflow for getting versions of pipeline, tools and databases has been selected.
             '''.stripMargin()
             break
     }
