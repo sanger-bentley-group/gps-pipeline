@@ -13,4 +13,4 @@ else
 fi
 
 echo \"Taxonomy_QC\",\"S.Pneumo_%\" > "$TAXONOMY_QC_REPORT"
-echo \"$TAXONOMY_QC\",\""$PERCENTAGE"\" >> "$TAXONOMY_QC_REPORT"
+echo \""$TAXONOMY_QC"\",\""$PERCENTAGE"\" >> "$TAXONOMY_QC_REPORT"
