@@ -48,6 +48,6 @@ process READ_QC {
     QC_DEPTH="$qc_depth"
     READ_QC_REPORT="$read_qc_report"
 
-    source read_qc.sh
+    source get_read_qc.sh
     """
 }

@@ -19,7 +19,7 @@ process PBP_RESISTANCE {
 }
 
 // Extract the results from the output file of the PBP AMR predictor
-process GET_PBP_RESISTANCE {
+process PARSE_PBP_RESISTANCE {
     label 'bash_container'
     label 'farm_low'
 
@@ -37,12 +37,12 @@ process GET_PBP_RESISTANCE {
     JSON_FILE="$json"
     PBP_AMR_REPORT="$pbp_amr_report"
 
-    source get_pbp_resistance.sh
+    source parse_pbp_resistance.sh
     """
 }
 
-// Create ARIBA database and return database path
-process CREATE_ARIBA_DB {
+// Return database path, create if necessary
+process GET_ARIBA_DB {
     label 'ariba_container'
     label 'farm_low'
 
@@ -65,7 +65,7 @@ process CREATE_ARIBA_DB {
     OUTPUT="$output"
     JSON_FILE="$json"
 
-    source create_ariba_db.sh
+    source check-create_ariba_db.sh
     """
 }
 
@@ -88,12 +88,12 @@ process OTHER_RESISTANCE {
     report='result/report.tsv'
     report_debug='result/debug.report.tsv'
     """
-    ariba run --nucmer_min_id 80 --assembled_threshold 0.80 $ariba_database/$database $read1 $read2 result
+    ariba run --nucmer_min_id 80 --assembled_threshold 0.80 "$ariba_database/$database" "$read1" "$read2" result
     """
 }
 
 // Extracting resistance information from ARIBA report
-process GET_OTHER_RESISTANCE {
+process PARSE_OTHER_RESISTANCE {
     label 'python_container'
     label 'farm_low'
 
@@ -109,6 +109,6 @@ process GET_OTHER_RESISTANCE {
     script:
     output_file="other_amr_report.csv"
     """
-    get_other_resistance.py "$report" "$report_debug" "$metadata" "$output_file"
+    parse_other_resistance.py "$report" "$report_debug" "$metadata" "$output_file"
     """
 }

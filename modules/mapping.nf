@@ -1,5 +1,5 @@
 // Return database path and prefix, construct if necessary
-process CREATE_REF_GENOME_BWA_DB {
+process GET_REF_GENOME_BWA_DB {
     label 'bwa_container'
     label 'farm_mid'
 
@@ -20,7 +20,7 @@ process CREATE_REF_GENOME_BWA_DB {
     PREFIX="$prefix"
     JSON_FILE="$json"
 
-    source create_ref_genome_bwa_db.sh
+    source check-create_ref_genome_bwa_db.sh
     """
 }
 
@@ -152,6 +152,6 @@ process MAPPING_QC {
     QC_HET_SNP_SITE="$qc_het_snp_site"
     MAPPING_QC_REPORT="$mapping_qc_report"
 
-    source mapping_qc.sh
+    source get_mapping_qc.sh
     """
 }

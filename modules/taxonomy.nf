@@ -17,7 +17,7 @@ process GET_KRAKEN2_DB {
     DB_LOCAL="$local"
     JSON_FILE="$json"
 
-    source get_kraken2_db.sh
+    source check-download_kraken2_db.sh
     """
 }
 
@@ -73,6 +73,6 @@ process TAXONOMY_QC {
     QC_SPNEUMO_PERCENTAGE="$qc_spneumo_percentage"
     TAXONOMY_QC_REPORT="$taxonomy_qc_report"
 
-    source taxonomy_qc.sh
+    source get_taxonomy_qc.sh
     """
 }
