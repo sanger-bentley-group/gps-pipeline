@@ -1,4 +1,4 @@
-# Check if CREATE_ARIBA_DB has run successfully on the specific reference sequences and metadata.
+# Check if ARIBA database was prepared from the specific reference sequences and metadata.
 # If not: remove the $OUTPUT directory, and prepare the ARIBA database from reference sequences and metadata, also save metadata to JSON
 
 REF_SEQUENCES_MD5=$(md5sum "$REF_SEQUENCES" | awk '{ print $1 }')

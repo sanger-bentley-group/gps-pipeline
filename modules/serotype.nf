@@ -1,5 +1,5 @@
-// Return boolean of CREATE_DB, download if necessary
-process GET_SEROBA_DB {
+// Return boolean of CREATE_DB, remove and clone if necessary
+process CHECK_SEROBA_DB {
     label 'git_container'
     label 'farm_low'
 
@@ -19,12 +19,12 @@ process GET_SEROBA_DB {
     KMER="$kmer"
     JSON_FILE="$json"
 
-    source get_seroba_db.sh
+    source check_seroba_db.sh
     """
 }
 
 // Return SeroBA databases path, create databases if necessary
-process CREATE_SEROBA_DB {
+process GET_SEROBA_DB {
     label 'seroba_container'
     label 'farm_low'
 

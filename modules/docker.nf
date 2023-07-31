@@ -15,7 +15,7 @@ process GET_DOCKER_COMPOSE {
     NEXTFLOW_CONFIG="$nextflowConfig"
     COMPOSE="$compose"
     
-    source get_docker_compose.sh
+    source create_docker_compose.sh
     """
 }
 

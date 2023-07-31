@@ -21,6 +21,6 @@ process OVERALL_QC {
     TAXONOMY_QC="$taxonomy_qc"
     OVERALL_QC_REPORT="$overall_qc_report"
 
-    source overall_qc.sh
+    source get_overall_qc.sh
     """
 }

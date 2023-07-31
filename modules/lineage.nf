@@ -18,7 +18,7 @@ process GET_POPPUNK_DB {
     DB_LOCAL="$local"
     JSON_FILE="$json"
 
-    source get_poppunk_db.sh
+    source check-download_poppunk_db.sh
     """
 }
 
@@ -41,7 +41,7 @@ process GET_POPPUNK_EXT_CLUSTERS {
     EXT_CLUSTERS_LOCAL="$local"
     JSON_FILE="$json"
 
-    source get_poppunk_ext_clusters.sh    
+    source check-download_poppunk_ext_clusters.sh    
     """
 }
 

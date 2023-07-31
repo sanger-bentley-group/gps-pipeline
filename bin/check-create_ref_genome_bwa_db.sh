@@ -1,4 +1,4 @@
-# Check if CREATE_REF_GENOME_BWA_DB has run successfully on the specific reference.
+# Check if BWA database was prepared from the specific reference.
 # If not: remove files in database directory, and construct the FM-index database of the reference genome for BWA, also save metadata to JSON
 
 REFERENCE_MD5=$(md5sum "$REFERENCE" | awk '{ print $1 }')

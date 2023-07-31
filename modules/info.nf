@@ -18,7 +18,7 @@ process IMAGES {
     NEXTFLOW_CONFIG="$nextflowConfig"
     JSON_FILE="$json"
 
-    source get_images_info.sh
+    source save_images_info.sh
     """
 }
 
@@ -59,7 +59,7 @@ process DATABASES {
     POPPUNK_EXT_JSON="$poppunk_ext_json"
     JSON_FILE="$json"
 
-    source get_databases_info.sh
+    source save_databases_info.sh
     """
 }
 
@@ -106,7 +106,7 @@ process TOOLS {
     ARIBA_VERSION="$ariba_version"
     JSON_FILE="$json"
                 
-    source get_tools_info.sh
+    source save_tools_info.sh
     """
 }
 
@@ -135,7 +135,7 @@ process COMBINE_INFO {
     TOOLS="$tools"
     JSON_FILE="$json"
 
-    source combine_info.sh
+    source save_combined_info.sh
     """
 }
 

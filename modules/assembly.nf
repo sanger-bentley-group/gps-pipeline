@@ -1,5 +1,5 @@
 // Run Unicycler to get assembly
-// Return sample_id and assembly, and hardlink the assembly to ${params.output}/assemblies directory
+// Return sample_id and assembly, and publish the assembly to ${params.output}/assemblies directory based on ${params.assembly_publish}
 process ASSEMBLY_UNICYCLER {
     label 'unicycler_container'
     label 'farm_high_fallible'
@@ -26,7 +26,7 @@ process ASSEMBLY_UNICYCLER {
 }
 
 // Run Shovill to get assembly
-// Return sample_id and assembly, and hardlink the assembly to ${params.output}/assemblies directory
+// Return sample_id and assembly, and publish the assembly to ${params.output}/assemblies directory based on ${params.assembly_publish}
 process ASSEMBLY_SHOVILL {
     label 'shovill_container'
     label 'farm_high_fallible'
@@ -99,6 +99,6 @@ process ASSEMBLY_QC {
     QC_DEPTH="$qc_depth"
     ASSEMBLY_QC_REPORT="$assembly_qc_report"
     
-    source assembly_qc.sh      
+    source get_assembly_qc.sh      
     """
 }
