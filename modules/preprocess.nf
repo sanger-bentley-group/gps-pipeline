@@ -19,7 +19,7 @@ process PREPROCESS {
     processed_two="processed-${sample_id}_2.fastq.gz"
     processed_unpaired="processed-${sample_id}_unpaired.fastq.gz"
     """
-    fastp --thread `nproc` --in1 "$read_one" --in2 "$read_two" --out1 "$processed_one" --out2 "$processed_two" --unpaired1 "$processed_unpaired" --unpaired2 "$processed_unpaired"
+    fastp --thread "`nproc`" --in1 "$read_one" --in2 "$read_two" --out1 "$processed_one" --out2 "$processed_two" --unpaired1 "$processed_unpaired" --unpaired2 "$processed_unpaired"
     """
 }
 
