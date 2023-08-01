@@ -78,12 +78,12 @@ workflow PIPELINE {
     MAPPING(GET_REF_GENOME_BWA_DB.out.path, GET_REF_GENOME_BWA_DB.out.prefix, READ_QC_PASSED_READS_ch)
 
     // From Channel MAPPING.out.sam, Convert SAM into sorted BAM and calculate reference coverage
-    // Output into Channels SAM_TO_SORTED_BAM.out.bam and SAM_TO_SORTED_BAM.out.ref_coverage
+    // Output into Channels SAM_TO_SORTED_BAM.out.sorted_bam and SAM_TO_SORTED_BAM.out.ref_coverage
     SAM_TO_SORTED_BAM(MAPPING.out.sam, params.lite)
 
-    // From Channel SAM_TO_SORTED_BAM.out.bam calculates non-cluster Het-SNP site count
+    // From Channel SAM_TO_SORTED_BAM.out.sorted_bam calculates non-cluster Het-SNP site count
     // Output into Channel HET_SNP_COUNT.out.result
-    SNP_CALL(params.ref_genome, SAM_TO_SORTED_BAM.out.bam, params.lite)
+    SNP_CALL(params.ref_genome, SAM_TO_SORTED_BAM.out.sorted_bam, params.lite)
     HET_SNP_COUNT(SNP_CALL.out.vcf)
 
     // Merge Channels SAM_TO_SORTED_BAM.out.ref_coverage & HET_SNP_COUNT.out.result to provide Mapping QC Status

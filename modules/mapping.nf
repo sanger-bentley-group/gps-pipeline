@@ -43,7 +43,7 @@ process MAPPING {
     script:
     sam="${sample_id}_mapped.sam"
     """
-    bwa mem -t `nproc` "${bwa_ref_db_dir}/${prefix}" <(zcat -f -- < "$read1") <(zcat -f -- < "$read2") > "$sam"
+    bwa mem -t "`nproc`" "${bwa_ref_db_dir}/${prefix}" <(zcat -f -- < "$read1") <(zcat -f -- < "$read2") > "$sam"
     """
 }
 
@@ -60,22 +60,18 @@ process SAM_TO_SORTED_BAM {
     val lite
 
     output:
-    tuple val(sample_id), path(bam), emit: bam
+    tuple val(sample_id), path(sorted_bam), emit: sorted_bam
     tuple val(sample_id), env(COVERAGE), emit: ref_coverage
 
     script:
-    bam="${sample_id}_mapped_sorted.bam"
+    sorted_bam="${sample_id}_mapped_sorted.bam"
     """
-    samtools view -@ `nproc` -b "$sam" > mapped.bam
+    SAM="$sam"
+    BAM="mapped.bam"
+    SORTED_BAM="$sorted_bam"
+    LITE="$lite"
 
-    samtools sort -@ `nproc` -o "$bam" mapped.bam
-    rm mapped.bam
-
-    if [ $lite = true ]; then
-        rm `readlink -f "$sam"`
-    fi
-
-    BAM="$bam"
+    source convert_sam_to_sorted_bam.sh
     source get_ref_coverage.sh
     """
 }
@@ -89,7 +85,7 @@ process SNP_CALL {
 
     input:
     path reference
-    tuple val(sample_id), path(bam)
+    tuple val(sample_id), path(sorted_bam)
     val lite
 
     output:
@@ -98,11 +94,12 @@ process SNP_CALL {
     script:
     vcf="${sample_id}.vcf"
     """
-    bcftools mpileup --threads `nproc` -f "$reference" "$bam" | bcftools call --threads `nproc` -mv -O v -o "$vcf"
+    REFERENCE="$reference"
+    SORTED_BAM="$sorted_bam"
+    VCF="$vcf"
+    LITE="$lite"
 
-    if [ $lite = true ]; then
-        rm `readlink -f "$bam"`
-    fi
+    source call_snp.sh
     """
 }
 
