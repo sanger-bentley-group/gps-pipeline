@@ -20,7 +20,7 @@ process ASSEMBLY_UNICYCLER {
     script:
     fasta="${sample_id}.contigs.fasta"
     """
-    unicycler -1 "$read1" -2 "$read2" -s "$unpaired" -o results -t `nproc` --min_fasta_length "$min_contig_length"
+    unicycler -1 "$read1" -2 "$read2" -s "$unpaired" -o results -t "`nproc`" --min_fasta_length "$min_contig_length"
     mv results/assembly.fasta "${fasta}"
     """
 }
@@ -47,7 +47,7 @@ process ASSEMBLY_SHOVILL {
     script:
     fasta="${sample_id}.contigs.fasta"
     """
-    shovill --R1 "$read1" --R2 "$read2" --outdir results --cpus `nproc` --minlen "$min_contig_length" --force
+    shovill --R1 "$read1" --R2 "$read2" --outdir results --cpus "`nproc`" --minlen "$min_contig_length" --force
     mv results/contigs.fa "${fasta}"
     """
 }
