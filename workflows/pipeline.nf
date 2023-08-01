@@ -20,12 +20,12 @@ workflow PIPELINE {
     GET_KRAKEN2_DB(params.kraken2_db_remote, params.kraken2_db_local)
 
     // Get path to SeroBA Databases, clone and rebuild if necessary
-    CHECK_SEROBA_DB(params.seroba_remote, params.seroba_local, params.seroba_kmer)
-    GET_SEROBA_DB(params.seroba_remote, params.seroba_local, CHECK_SEROBA_DB.out.create_db, params.seroba_kmer)
+    CHECK_SEROBA_DB(params.seroba_db_remote, params.seroba_db_local, params.seroba_kmer)
+    GET_SEROBA_DB(params.seroba_db_remote, params.seroba_db_local, CHECK_SEROBA_DB.out.create_db, params.seroba_kmer)
 
     // Get paths to PopPUNK Database and External Clusters, download if necessary
-    GET_POPPUNK_DB(params.poppunk_db_remote, params.poppunk_local)
-    GET_POPPUNK_EXT_CLUSTERS(params.poppunk_ext_remote, params.poppunk_local)
+    GET_POPPUNK_DB(params.poppunk_db_remote, params.poppunk_db_local)
+    GET_POPPUNK_EXT_CLUSTERS(params.poppunk_ext_remote, params.poppunk_db_local)
 
     // Get path to ARIBA database, generate from reference sequences and metadata if ncessary
     GET_ARIBA_DB(params.ariba_ref, params.ariba_metadata, params.ariba_db_local)

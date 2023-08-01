@@ -10,8 +10,8 @@ workflow PRINT_VERSION {
             params.ref_genome_bwa_db_local,
             params.ariba_db_local,
             params.kraken2_db_local,
-            params.seroba_local,
-            params.poppunk_local,
+            params.seroba_db_local,
+            params.poppunk_db_local,
             pipeline_version
         ) \
         | PARSE \
