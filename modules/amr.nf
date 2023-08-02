@@ -19,7 +19,7 @@ process PBP_RESISTANCE {
 }
 
 // Extract the results from the output file of the PBP AMR predictor
-process GET_PBP_RESISTANCE {
+process PARSE_PBP_RESISTANCE {
     label 'bash_container'
     label 'farm_low'
 
@@ -29,18 +29,20 @@ process GET_PBP_RESISTANCE {
     tuple val(sample_id), path(json)
 
     output:
-    tuple val(sample_id), env(pbp1a), env(pbp2b), env(pbp2x), env(AMO_MIC), env(AMO), env(CFT_MIC), env(CFT_MENINGITIS), env(CFT_NONMENINGITIS), env(TAX_MIC), env(TAX_MENINGITIS), env(TAX_NONMENINGITIS), env(CFX_MIC), env(CFX), env(MER_MIC), env(MER), env(PEN_MIC), env(PEN_MENINGITIS), env(PEN_NONMENINGITIS), emit: result
+    tuple val(sample_id), path(pbp_amr_report), emit: report
 
     script:
+    pbp_amr_report='pbp_amr_report.csv'
     """
     JSON_FILE="$json"
+    PBP_AMR_REPORT="$pbp_amr_report"
 
-    source get_pbp_resistance.sh
+    source parse_pbp_resistance.sh
     """
 }
 
-// Create ARIBA database and return database path
-process CREATE_ARIBA_DB {
+// Return database path, create if necessary
+process GET_ARIBA_DB {
     label 'ariba_container'
     label 'farm_low'
 
@@ -63,7 +65,7 @@ process CREATE_ARIBA_DB {
     OUTPUT="$output"
     JSON_FILE="$json"
 
-    source create_ariba_db.sh
+    source check-create_ariba_db.sh
     """
 }
 
@@ -86,12 +88,12 @@ process OTHER_RESISTANCE {
     report='result/report.tsv'
     report_debug='result/debug.report.tsv'
     """
-    ariba run --nucmer_min_id 80 --assembled_threshold 0.80 $ariba_database/$database $read1 $read2 result
+    ariba run --nucmer_min_id 80 --assembled_threshold 0.80 "$ariba_database/$database" "$read1" "$read2" result
     """
 }
 
 // Extracting resistance information from ARIBA report
-process GET_OTHER_RESISTANCE {
+process PARSE_OTHER_RESISTANCE {
     label 'python_container'
     label 'farm_low'
 
@@ -102,14 +104,11 @@ process GET_OTHER_RESISTANCE {
     path metadata
 
     output:
-    tuple val(sample_id), env(CHL_Res), env(CHL_Determinant), env(ERY_Res), env(ERY_Determinant), env(CLI_Res), env(CLI_Determinant), env(ERY_CLI_Res), env(ERY_CLI_Determinant), env(FQ_Res), env(FQ_Determinant), env(LFX_Res), env(LFX_Determinant), env(KAN_Res), env(KAN_Determinant), env(TET_Res), env(TET_Determinant), env(DOX_Res), env(DOX_Determinant), env(TMP_Res), env(TMP_Determinant), env(SMX_Res), env(SMX_Determinant), env(COT_Res), env(COT_Determinant), env(RIF_Res), env(RIF_Determinant), env(VAN_Res), env(VAN_Determinant), env(PILI1), env(PILI1_Determinant), env(PILI2), env(PILI2_Determinant), emit: result
+    tuple val(sample_id), path(output_file), emit: report
 
     script:
+    output_file="other_amr_report.csv"
     """
-    REPORT="$report"
-    REPORT_DEBUG="$report_debug"
-    METADATA="$metadata"
-    
-    source get_other_resistance.sh
+    parse_other_resistance.py "$report" "$report_debug" "$metadata" "$output_file"
     """
 }

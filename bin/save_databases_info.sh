@@ -1,11 +1,11 @@
 # Save received databases information into a JSON file
 
 add_bwa_db () {
-    BWA_DB_JSON=${BWA_DB_PATH}/${BWA_JSON}
+    BWA_DB_JSON="${BWA_DB_PATH}/${BWA_JSON}"
     if [ -f "$BWA_DB_JSON" ]; then
-        REFERENCE=$(jq -r .reference $BWA_DB_JSON)
-        REFERENCE_MD5=$(jq -r .reference_md5 $BWA_DB_JSON)
-        CREATE_TIME=$(jq -r .create_time $BWA_DB_JSON)
+        REFERENCE=$(jq -r .reference "$BWA_DB_JSON")
+        REFERENCE_MD5=$(jq -r .reference_md5 "$BWA_DB_JSON")
+        CREATE_TIME=$(jq -r .create_time "$BWA_DB_JSON")
     else
         REFERENCE="Not yet created"
         REFERENCE_MD5="Not yet created"
@@ -15,13 +15,13 @@ add_bwa_db () {
 }
 
 add_ariba_db () {
-    ARIBA_DB_JSON=${ARIBA_DB_PATH}/${ARIBA_JSON}
+    ARIBA_DB_JSON="${ARIBA_DB_PATH}/${ARIBA_JSON}"
     if [ -f "$ARIBA_DB_JSON" ]; then
-        REFERENCE=$(jq -r .reference $ARIBA_DB_JSON)
-        REFERENCE_MD5=$(jq -r .reference_md5 $ARIBA_DB_JSON)
-        METADATA=$(jq -r .metadata $ARIBA_DB_JSON)
-        METADATA_MD5=$(jq -r .metadata_md5 $ARIBA_DB_JSON)
-        CREATE_TIME=$(jq -r .create_time $ARIBA_DB_JSON)
+        REFERENCE=$(jq -r .reference "$ARIBA_DB_JSON")
+        REFERENCE_MD5=$(jq -r .reference_md5 "$ARIBA_DB_JSON")
+        METADATA=$(jq -r .metadata "$ARIBA_DB_JSON")
+        METADATA_MD5=$(jq -r .metadata_md5 "$ARIBA_DB_JSON")
+        CREATE_TIME=$(jq -r .create_time "$ARIBA_DB_JSON")
     else
         REFERENCE="Not yet created"
         REFERENCE_MD5="Not yet created"
@@ -33,11 +33,11 @@ add_ariba_db () {
 }
 
 add_seroba_db () {
-    SEROBA_DB_JSON=${SEROBA_DB_PATH}/${SEROBA_JSON}
+    SEROBA_DB_JSON="${SEROBA_DB_PATH}/${SEROBA_JSON}"
     if [ -f "$SEROBA_DB_JSON" ]; then
-        GIT=$(jq -r .git $SEROBA_DB_JSON)
-        KMER=$(jq -r .kmer $SEROBA_DB_JSON)
-        CREATE_TIME=$(jq -r .create_time $SEROBA_DB_JSON)
+        GIT=$(jq -r .git "$SEROBA_DB_JSON")
+        KMER=$(jq -r .kmer "$SEROBA_DB_JSON")
+        CREATE_TIME=$(jq -r .create_time "$SEROBA_DB_JSON")
     else
         GIT="Not yet created"
         KMER="Not yet created"
@@ -47,10 +47,10 @@ add_seroba_db () {
 }
 
 add_url_db () {
-    DB_JSON=$1
+    DB_JSON="$1"
     if [ -f "$DB_JSON" ]; then
-        URL=$(jq -r .url $DB_JSON)
-        SAVE_TIME=$(jq -r .save_time $DB_JSON)
+        URL=$(jq -r .url "$DB_JSON")
+        SAVE_TIME=$(jq -r .save_time "$DB_JSON")
     else
         URL="Not yet downloaded"
         SAVE_TIME="Not yet downloaded"
@@ -65,4 +65,4 @@ jq -n \
     --argjson kraken2_db "$(add_url_db "${KRAKEN2_DB_PATH}/${KRAKEN2_JSON}")" \
     --argjson poppunnk_db "$(add_url_db "${POPPUNK_DB_PATH}/${POPPUNK_JSON}")" \
     --argjson poppunk_ext "$(add_url_db "${POPPUNK_DB_PATH}/${POPPUNK_EXT_JSON}")" \
-    '$ARGS.named' > $JSON_FILE
+    '$ARGS.named' > "$JSON_FILE"
