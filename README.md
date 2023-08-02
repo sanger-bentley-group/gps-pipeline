@@ -1,12 +1,12 @@
 # GPS Unified Pipeline <!-- omit in toc -->
 
-[![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-23.04.1-23aa62.svg)](https://www.nextflow.io/)
+[![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-23.04.2-23aa62.svg)](https://www.nextflow.io/)
 [![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)
 [![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/singularity/)
 
 The GPS Unified Pipeline is a Nextflow pipeline designed for processing raw reads (FASTQ files) of *Streptococcus pneumoniae* samples. After preprocessing, the pipeline performs initial assessment based on the total bases in reads. Passed samples will be further assess based on assembly, mapping, and taxonomy. If the sample passes all quality controls (QC), the pipeline also provides the sample's serotype, multi-locus sequence typing (MLST), lineage (based on the [Global Pneumococcal Sequence Cluster (GPSC)](https://www.pneumogen.net/gps/GPSC_lineages.html)), and antimicrobial resistance (AMR) against multiple antimicrobials.
 
-The pipeline is designed to be easy to set up and use, and is suitable for use on local machines. It is also offline-capable, making it an ideal option for cases where the FASTQ files being analysed should not leave the local machine. Additionally, the pipeline only downloads essential files to enable the analysis, and no data is uploaded from the local machine. After initialisation or the first successful complete run, the pipeline can be used offline unless you have changed the selection of any database or container image.
+The pipeline is designed to be easy to set up and use, and is suitable for use on local machines and high-performance computing (HPC) clusters alike. Additionally, the pipeline only downloads essential files to enable the analysis, and no data is uploaded from the local environment, making it an ideal option for cases where the FASTQ files being analysed is confidential. After initialisation or the first successful complete run, the pipeline can be used offline unless you have changed the selection of any database or container image.
 
 The development of this pipeline is part of the GPS Project ([Global Pneumococcal Sequencing Project](https://www.pneumogen.net/gps/)). 
 
@@ -57,7 +57,7 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   > - The pipeline generates ~1.8GB intermediate files for each sample on average<br>(These files can be removed when the pipeline run is completed, please refer to [Clean Up](#clean-up))<br>
   (To further reduce storage requirement by sacrificing the ability to resume the pipeline, please refer to [Experimental](#experimental))
 ## Accepted Inputs
-- Currently, only Illumina paired-end short reads are supported
+- Only Illumina paired-end short reads are supported
 - Each sample is expected to be a pair of raw reads following this file name pattern: 
   - `*_{,R}{1,2}{,_001}.{fq,fastq}{,.gz}` 
     - example 1: `SampleName_R1_001.fastq.gz`, `SampleName_R2_001.fastq.gz`
@@ -70,18 +70,18 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
     ```
     or 
     
-    Download and unzip the [repository](https://github.com/HarryHung/gps-unified-pipeline/archive/refs/heads/master.zip)
-2. Go into the local copy of the repository
+    Download and unzip the [latest release](https://github.com/HarryHung/gps-unified-pipeline/releases)
+2. Go into the local copy of the repository and the pipeline is ready to use without installation
     ```
     cd gps-unified-pipeline
     ```
 3. (Optional) You could perform an initialisation to download all required additional files and container images, so the pipeline can be used at any time with or without the Internet afterwards.
     > ⚠️ Docker or Singularity must be running, and an Internet connection is required.
-    - For those using Docker as the container engine
+    - Using Docker as the container engine
       ```
       ./run_pipeline --init
       ```
-    - For those using Singularity as the container engine
+    - Using Singularity as the container engine
       ```
       ./run_pipeline --init -profile singularity
       ```
@@ -91,8 +91,8 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 <!-- -->
 > ⚠️ If this is the first run and initialisation was not performed, an Internet connection is required.
 <!-- -->
-> ℹ️ By default, Docker is used as the container engine and all the processes are executed by the local machine. See [Profile](#profile) for details on running the pipeline with Singularity or on a server farm.
-- You can run the pipeline without options. It will attempt to get the raw reads from the default location (`input` directory inside the `gps-unified-pipeline` local repository)
+> ℹ️ By default, Docker is used as the container engine and all the processes are executed by the local machine. See [Profile](#profile) for details on running the pipeline with Singularity or on a HPC cluster.
+- You can run the pipeline without options. It will attempt to get the raw reads from the default location (i.e. `input` directory inside the `gps-unified-pipeline` local repository)
   ```
   ./run_pipeline
   ```
@@ -113,29 +113,30 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   ```
   ./run_pipeline -profile [profile name]
   ```
-- Currently, the following profiles are available
+- Available profiles: 
   | Profile Name | Details |
   | --- | --- |
   | `standard`<br> (Default) | Docker is used as the container engine. <br> Processes are executed locally. |
   | `singularity` |  Singularity is used as the container engine. <br> Processes are executed locally. |
-  | `lsf` | **The pipeline should be launched from a LSF cluster head node with this profile.** <br>Singularity is used as the container engine. <br> Processes are submitted to your LSF cluster via `bsub`. <br> (Tested on Sanger farm5) |
+  | `lsf` | **The pipeline should be launched from a LSF cluster head node with this profile.** <br>Singularity is used as the container engine. <br> Processes are submitted to your LSF cluster via `bsub` by the pipeline. <br> (Tested on Sanger farm5 cluster only) |
 
 ## Resume
 - If the pipeline is interrupted mid-run, Nextflow's built-in `-resume` option can be used to resume the pipeline execution instead of starting from scratch again
 - You should use the same command of the original run, only add `-resume` at the end (i.e. all pipeline options should be identical) 
   > ℹ️ `-resume` is a built-in Nextflow option, it only has one leading `-`
-  ```
-  # original command
-  ./run_pipeline --reads /path/to/raw-reads-directory
-
-  # command to resume the pipeline execution
-  ./run_pipeline --reads /path/to/raw-reads-directory -resume
-  ```
+  - If the original command is
+    ```
+    ./run_pipeline --reads /path/to/raw-reads-directory
+    ```
+  - The command to resume the pipeline execution should be
+    ```
+    ./run_pipeline --reads /path/to/raw-reads-directory -resume
+    ```
 
 ## Clean Up
 - During the run of the pipeline, Nextflow generates a considerable amount of intermediate files
-- If the run has been completed and you do not intend to use the `-resume` option, you can remove the intermediate files using one of the following ways:
-  - Run `clean_pipeline` script
+- If the run has been completed and you do not intend to use the `-resume` option or those intermediate files, you can remove the intermediate files using one of the following ways:
+  - Run the included `clean_pipeline` script
     - It runs the commands in manual removal for you
     - It removes the `work` directory and log files within the `gps-unified-pipeline` local repository
     ```
@@ -167,13 +168,13 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 <!-- -->
 > ℹ️ `$projectDir` is a [Nextflow built-in implicit variables](https://www.nextflow.io/docs/latest/script.html?highlight=projectdir#implicit-variables), it is defined as the directory where the `gps-unified-pipeline` local repository is stored.
 <!-- -->
-> ℹ️ They are not built-in Nextflow options, hence lead with `--` instead of `-`
+> ℹ️ Pipeline options are not built-in Nextflow options, they are lead with `--` instead of `-`
 
 ## Alternative Workflows
   | Option | Values | Description |
   | --- | ---| --- |
-  | `--init` | `true` or `false`<br />(Default: `false`) | Use alternative workflow for initialisation, which means downloading all required additional files and container images.<br />Can be enabled by including `--init` without value. |
-  | `--version` | `true` or `false`<br />(Default: `false`)| Use alternative workflow for getting versions of pipeline, tools and databases.<br />Can be enabled by including `--version` without value.<br /> (This workflow pulls the required container images if they are not yet available locally) |
+  | `--init` | `true` or `false`<br />(Default: `false`) | Use alternative workflow for initialisation, which means downloading all required additional files and container images, and creating databases.<br />Can be enabled by including `--init` without value. |
+  | `--version` | `true` or `false`<br />(Default: `false`)| Use alternative workflow for showing versions of pipeline, container images, tools and databases.<br />Can be enabled by including `--version` without value.<br /> (This workflow pulls the required container images if they are not yet available locally) |
   | `--help` | `true` or `false`<br />(Default: `false`)| Show help message.<br />Can be enabled by including `--help` without value. |
 
 ## Input and Output
@@ -184,7 +185,7 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | `--assembly_publish` | `"link"` or `"symlink"` or `"copy"`<br />(Default: `"link"`)| Method used by Nextflow to publish the generated assemblies.<br>(The default setting `"link"` means hard link, therefore will fail if the output directory is set to outside of the working file system) |
 
 ## QC Parameters
-> ℹ️ Read QC does not have directly accessible parameters. The minimum base count in reads of Read QC is based on the multiplication of `--length_low` and `--depth` of Assembly QC.
+> ℹ️ Read QC does not have directly accessible parameters. The minimum base count in reads of Read QC is based on the multiplication of `--length_low` and `--depth` of Assembly QC (i.e. default value is `38000000`).
 <!-- -->
   | Option | Values | Description |
   | --- | ---| --- |
@@ -199,7 +200,7 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 ## Assembly
   | Option | Values | Description |
   | --- | ---| --- |
-  | `--assembler` | `"shovill"` or `"unicycler"`<br />(Default: `"shovill"`)| SPAdes Assembler to assemble the reads. |
+  | `--assembler` | `"shovill"` or `"unicycler"`<br />(Default: `"shovill"`)| Using which SPAdes-based assembler to assemble the reads. |
   | `--min_contig_length` | Any integer value<br />(Default: `500`) | Minimum legnth of contig to be included in the assembly |
 
 ## Mapping
@@ -220,22 +221,22 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | `--kraken2_memory_mapping` | `true` or `false`<br />(Default: `true`) | Using the memory mapping option of Kraken2 or not.<br />`true` means not loading the database into RAM, suitable for memory-limited or fast storage environments. |
 
 ## Serotype
-  > ⚠️ `--seroba_local` does not accept user provided local database, directory content will be overwritten 
+  > ⚠️ `--seroba_db_local` does not accept user provided local database, directory content will be overwritten 
   <!-- -->
   | Option | Values | Description |
   | --- | ---| --- |
-  | `--seroba_remote` | Any valid URL to a Git remote repository<br />(Default: [SeroBA GitHub Repo](https://github.com/sanger-pathogens/seroba.git))| URL to a SeroBA Git remote repository. |
-  | `--seroba_local` | Any valid path<br />(Default: `"$projectDir/databases/seroba"`) | Path to the directory where SeroBA local repository should be saved to. |
+  | `--seroba_db_remote` | Any valid URL to a Git remote repository<br />(Default: [SeroBA GitHub Repo](https://github.com/sanger-pathogens/seroba.git))| URL to a SeroBA Git remote repository. |
+  | `--seroba_db_local` | Any valid path<br />(Default: `"$projectDir/databases/seroba"`) | Path to the directory where SeroBA local repository should be saved to. |
   | `--seroba_kmer` | Any integer value<br />(Default: `71`) | Kmer size for creating the KMC database of SeroBA. |
 
 ## Lineage
-  > ⚠️ `--poppunk_local` does not accept user provided local database, directory content will be overwritten
+  > ⚠️ `--poppunk_db_local` does not accept user provided local database, directory content will be overwritten
   <!-- -->
   | Option | Values | Description |
   | --- | ---| --- |
   | `--poppunk_db_remote` | Any valid URL to a PopPUNK database in `.tar.gz` or `.tgz` format<br />(Default: [GPS v6](https://gps-project.cog.sanger.ac.uk/GPS_v6.tar.gz)) | URL to a PopPUNK database. |
   | `--poppunk_ext_remote` | Any valid URL to a PopPUNK external clusters file in `.csv` format<br />(Default: [GPS v6 GPSC Designation](https://www.pneumogen.net/gps/GPS_v6_external_clusters.csv)) | URL to a PopPUNK external clusters file. |
-  | `--poppunk_local` | Any valid path<br />(Default: `"$projectDir/databases/poppunk"`) | Path to the directory where the remote PopPUNK database and external clusters file should be saved to. |
+  | `--poppunk_db_local` | Any valid path<br />(Default: `"$projectDir/databases/poppunk"`) | Path to the directory where the remote PopPUNK database and external clusters file should be saved to. |
 
 ## Other AMR
   > ⚠️ `--ariba_db_local` does not accept user provided local database, directory content will be overwritten 
@@ -276,9 +277,11 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 - The following fields can be found in the output `results.csv`
   > ℹ️ For resistance phenotypes: S = Sensitive/Susceptible; I = Intermediate; R = Resistant
   <!-- -->
+  > ℹ️ * The exact output fields of Other AMR depends on the provided ARIBA database, the below table is based on the default ARIBA database
+  <!-- -->
   > ⚠️ If the result of `Overall_QC` of a sample is `ASSEMBLER FAILURE`, the assembler has crashed when trying to assembly the reads. You might want to re-run the sample with [another assembler](#assembly), or discard the sample if it is a low quality one.
   <!-- -->
-  > ⚠️ If the result of `Serotype` of a sample is `SEROBA FAILURE`, SeroBA has crashed when trying to serotype the sample. Please report the issue.
+  > ⚠️ If the result of `Serotype` of a sample is `SEROBA FAILURE`, SeroBA has crashed when trying to serotype the sample.
   <!-- -->
   | Field | Type | Description |
   | --- | --- | --- |
@@ -323,38 +326,38 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | `PEN_MIC` | PBP AMR | Estimated MIC of penicillin (PEN) |
   | `PEN_Res(Meningital)` | PBP AMR | Resistance phenotype against PEN in meningital form |
   | `PEN_Res(Non-meningital)` | PBP AMR | Resistance phenotype against PEN in non-meningital form |
-  | `CHL_Res` | Other AMR | Resistance phenotype against Chloramphenicol (CHL) |
-  | `CHL_Determinant` | Other AMR | Known determinants that inferred the CHL resistance |
-  | `ERY_Res` | Other AMR | Resistance phenotype against Erythromycin (ERY) |
-  | `ERY_Determinant` | Other AMR | Known determinants that inferred the ERY resistance |
-  | `CLI_Res` | Other AMR | Resistance phenotype against Clindamycin (CLI) |
-  | `CLI_Determinant` | Other AMR | Known determinants that inferred the CLI resistance |
-  | `ERY_CLI_Res` | Other AMR | Resistance phenotype against Erythromycin (ERY) and Clindamycin (CLI) |
-  | `ERY_CLI_Determinant` | Other AMR | Known determinants that inferred the ERY and CLI resistance |
-  | `FQ_Res` | Other AMR | Resistance phenotype against Fluoroquinolones (FQ) |
-  | `FQ_Determinant` | Other AMR | Known determinants that inferred the FQ resistance |
-  | `LFX_Res` | Other AMR | Resistance phenotype against Levofloxacin (LFX) |
-  | `LFX_Determinant` | Other AMR | Known determinants that inferred the LFX resistance |
-  | `KAN_Res` | Other AMR | Resistance phenotype against Kanamycin (KAN) |
-  | `KAN_Determinant` | Other AMR | Known determinants that inferred the KAN resistance |
-  | `TET_Res` | Other AMR | Resistance phenotype against Tetracycline (TET) |
-  | `TET_Determinant` | Other AMR | Known determinants that inferred the TET resistance |
-  | `DOX_Res` | Other AMR | Resistance phenotype against Doxycycline (DOX) |
-  | `DOX_Determinant` | Other AMR | Known determinants that inferred the DOX resistance |
-  | `TMP_Res` | Other AMR | Resistance phenotype against Trimethoprim (TMP) |
-  | `TMP_Determinant` | Other AMR | Known determinants that inferred the TMP resistance |
-  | `SMX_Res` | Other AMR | Resistance phenotype against Sulfamethoxazole (SMX) |
-  | `SMX_Determinant` | Other AMR | Known determinants that inferred the SMX resistance |
-  | `COT_Res` | Other AMR | Resistance phenotype against Co-Trimoxazole (COT) |
-  | `COT_Determinant` | Other AMR | Known determinants that inferred the COT resistance |
-  | `RIF_Res` | Other AMR | Resistance phenotype against Rifampin (RIF) |
-  | `RIF_Determinant` | Other AMR | Known determinants that inferred the RIF resistance |
-  | `VAN_Res` | Other AMR | Resistance phenotype against Vancomycin (VAN) |
-  | `VAN_Determinant` | Other AMR | Known determinants that inferred the VAN resistance |
-  | `PILI-1` | Other AMR | Expression of PILI-1 |
-  | `PILI-1_Determinant` | Other AMR | Known determinants that inferred the PILI-1 expression |
-  | `PILI-2` | Other AMR | Expression of PILI-2 |
-  | `PILI-2_Determinant` | Other AMR | Known determinants that inferred the PILI-2 expression |
+  | `CHL_Res` | Other AMR* | Resistance phenotype against Chloramphenicol (CHL) |
+  | `CHL_Determinant` | Other AMR* | Known determinants that inferred the CHL resistance |
+  | `CLI_Res` | Other AMR* | Resistance phenotype against Clindamycin (CLI) |
+  | `CLI_Determinant` | Other AMR* | Known determinants that inferred the CLI resistance |
+  | `COT_Res` | Other AMR* | Resistance phenotype against Co-Trimoxazole (COT) |
+  | `COT_Determinant` | Other AMR* | Known determinants that inferred the COT resistance |
+  | `DOX_Res` | Other AMR* | Resistance phenotype against Doxycycline (DOX) |
+  | `DOX_Determinant` | Other AMR* | Known determinants that inferred the DOX resistance |
+  | `ERY_Res` | Other AMR* | Resistance phenotype against Erythromycin (ERY) |
+  | `ERY_Determinant` | Other AMR* | Known determinants that inferred the ERY resistance |
+  | `ERY_CLI_Res` | Other AMR* | Resistance phenotype against Erythromycin (ERY) and Clindamycin (CLI) |
+  | `ERY_CLI_Determinant` | Other AMR* | Known determinants that inferred the ERY and CLI resistance |
+  | `FQ_Res` | Other AMR* | Resistance phenotype against Fluoroquinolones (FQ) |
+  | `FQ_Determinant` | Other AMR* | Known determinants that inferred the FQ resistance |
+  | `KAN_Res` | Other AMR* | Resistance phenotype against Kanamycin (KAN) |
+  | `KAN_Determinant` | Other AMR* | Known determinants that inferred the KAN resistance |
+  | `LFX_Res` | Other AMR* | Resistance phenotype against Levofloxacin (LFX) |
+  | `LFX_Determinant` | Other AMR* | Known determinants that inferred the LFX resistance |
+  | `RIF_Res` | Other AMR* | Resistance phenotype against Rifampin (RIF) |
+  | `RIF_Determinant` | Other AMR* | Known determinants that inferred the RIF resistance |
+  | `SMX_Res` | Other AMR* | Resistance phenotype against Sulfamethoxazole (SMX) |
+  | `SMX_Determinant` | Other AMR* | Known determinants that inferred the SMX resistance |
+  | `TET_Res` | Other AMR* | Resistance phenotype against Tetracycline (TET) |
+  | `TET_Determinant` | Other AMR* | Known determinants that inferred the TET resistance |
+  | `TMP_Res` | Other AMR* | Resistance phenotype against Trimethoprim (TMP) |
+  | `TMP_Determinant` | Other AMR* | Known determinants that inferred the TMP resistance |
+  | `VAN_Res` | Other AMR* | Resistance phenotype against Vancomycin (VAN) |
+  | `VAN_Determinant` | Other AMR* | Known determinants that inferred the VAN resistance |
+  | `PILI1` | Other AMR* | Expression of PILI-1 |
+  | `PILI1_Determinant` | Other AMR* | Known determinants that inferred the PILI-1 expression |
+  | `PILI2` | Other AMR* | Expression of PILI-2 |
+  | `PILI2_Determinant` | Other AMR* | Known determinants that inferred the PILI-2 expression |
 
 &nbsp;
 # Credits
@@ -363,39 +366,39 @@ This project uses open-source components. You can find the homepage or source co
 [ARIBA](https://sanger-pathogens.github.io/ariba/)
 - ARIBA: rapid antimicrobial resistance genotyping directly from sequencing reads Hunt M, Mather AE, Sánchez-Busó L, Page AJ, Parkhill J , Keane JA, Harris SR. Microbial Genomics 2017. doi: [110.1099/mgen.0.000131](http://mgen.microbiologyresearch.org/content/journal/mgen/10.1099/mgen.0.000131)
 - License (GPL-3.0): https://github.com/sanger-pathogens/ariba/blob/master/LICENSE
-- This tool is used in `CREATE_ARIBA_DB` and `OTHER_RESISTANCE` processes of the `amr.nf` module
+- This tool is used in `GET_ARIBA_DB` and `OTHER_RESISTANCE` processes of the `amr.nf` module
 
 [BCFtools](https://samtools.github.io/bcftools/) and [SAMtools](https://www.htslib.org/)
 - Twelve years of SAMtools and BCFtools. Petr Danecek, James K Bonfield, Jennifer Liddle, John Marshall, Valeriu Ohan, Martin O Pollard, Andrew Whitwham, Thomas Keane, Shane A McCarthy, Robert M Davies, Heng Li. **GigaScience**, Volume 10, Issue 2, February 2021, giab008, https://doi.org/10.1093/gigascience/giab008
 - Licenses
   - BCFtools (MIT/Expat or GPL-3.0): https://github.com/samtools/bcftools/blob/develop/LICENSE
   - SAMtools (MIT/Expat): https://github.com/samtools/samtools/blob/develop/LICENSE
-- These tools are used in `SAM_TO_SORTED_BAM`, `REF_COVERAGE` and `SNP_CALL` processes of the `mapping.nf` module
+- These tools are used in `SAM_TO_SORTED_BAM` and `SNP_CALL` processes of the `mapping.nf` module
 
 [BWA](https://github.com/lh3/bwa)
 - Li H. (2013) Aligning sequence reads, clone sequences and assembly contigs with BWA-MEM. [arXiv:1303.3997v2](http://arxiv.org/abs/1303.3997) [q-bio.GN]
 - License (GPL-3.0): https://github.com/lh3/bwa/blob/master/COPYING
-- This tool is used in `GET_REF_GENOME_BWA_DB_PREFIX` and `MAPPING` processes of the `mapping.nf` module
+- This tool is used in `GET_REF_GENOME_BWA_DB` and `MAPPING` processes of the `mapping.nf` module
 
-[Docker Images](https://hub.docker.com/u/staphb) of [BCFtools](https://hub.docker.com/r/staphb/bcftools), [BWA](https://hub.docker.com/r/staphb/bwa), [fastp](https://hub.docker.com/r/staphb/fastp), [Kraken 2](https://hub.docker.com/r/staphb/kraken2), [mlst](https://hub.docker.com/r/staphb/mlst), [PopPUNK](https://hub.docker.com/r/staphb/poppunk), [QUAST](https://hub.docker.com/r/staphb/quast), [SAMtools](https://hub.docker.com/r/staphb/samtools), [Shovill](https://hub.docker.com/r/staphb/shovill), [Unicycler](https://hub.docker.com/r/staphb/unicycler) 
+[Docker Images](https://hub.docker.com/u/staphb) of [ARIBA](https://hub.docker.com/r/staphb/ariba), [BCFtools](https://hub.docker.com/r/staphb/bcftools), [BWA](https://hub.docker.com/r/staphb/bwa), [fastp](https://hub.docker.com/r/staphb/fastp), [Kraken 2](https://hub.docker.com/r/staphb/kraken2), [mlst](https://hub.docker.com/r/staphb/mlst), [PopPUNK](https://hub.docker.com/r/staphb/poppunk), [QUAST](https://hub.docker.com/r/staphb/quast), [SAMtools](https://hub.docker.com/r/staphb/samtools), [Shovill](https://hub.docker.com/r/staphb/shovill), [Unicycler](https://hub.docker.com/r/staphb/unicycler) 
 - [State Public Health Bioinformatics Workgroup](https://staphb.org/) ([@StaPH-B](https://github.com/StaPH-B))
 - License (GPL-3.0): https://github.com/StaPH-B/docker-builds/blob/master/LICENSE
-- These Docker images provide containerised environments for processes of multiple modules 
+- These Docker images provide containerised environments with different bioinformatics tools for processes of multiple modules 
 
 [Docker Image of Git](https://hub.docker.com/r/bitnami/git)
 - [Bitnami](https://bitnami.com/) ([@Bitnami](https://github.com/bitnami))
 - License (Apache 2.0): https://github.com/bitnami/containers/blob/main/LICENSE.md
-- This Docker image provides the containerised environment for `GET_SEROBA_DB` process of the `serotype.nf` module
+- This Docker image provides the containerised environment with Git for `CHECK_SEROBA_DB` process of the `serotype.nf` module
 
 [Docker Image of network-multitool](https://hub.docker.com/r/wbitt/network-multitool)
 - [Wbitt - We Bring In Tomorrow's Technolgies](https://wbitt.com/) ([@WBITT](https://github.com/wbitt))
 - License (MIT): https://github.com/wbitt/Network-MultiTool/blob/master/LICENSE
-- This Docker image provides the containerised environment for processes of multiple modules 
+- This Docker image provides the containerised environment with Bash tools for processes of multiple modules 
 
-[Docker Image of Python](https://hub.docker.com/_/python)
-- The Docker Community ([@docker-library](https://github.com/docker-library))
-- License (MIT): https://github.com/docker-library/python/blob/master/LICENSE
-- This Docker image provides the containerised environment for `HET_SNP_COUNT` process of the `mapping.nf` module and `GET_OTHER_RESISTANCE` process of the `amr.nf` module
+[Docker Image of Pandas](https://hub.docker.com/r/amancevice/pandas)
+- Alexander Mancevice ([@amancevice](https://github.com/amancevice))
+- License (MIT): https://github.com/amancevice/docker-pandas/blob/main/LICENSE
+- This Docker image provides the containerised environment with Python and Pandas for `GENERATE_OVERALL_REPORT` process of the `output.nf` module, `HET_SNP_COUNT` process of the `mapping.nf` module and `PARSE_OTHER_RESISTANCE` process of the `amr.nf` module
 
 [fastp](https://github.com/OpenGene/fastp)
 - Shifu Chen, Yanqing Zhou, Yaru Chen, Jia Gu; fastp: an ultra-fast all-in-one FASTQ preprocessor, Bioinformatics, Volume 34, Issue 17, 1 September 2018, Pages i884–i890, https://doi.org/10.1093/bioinformatics/bty560
@@ -403,9 +406,9 @@ This project uses open-source components. You can find the homepage or source co
 - This tool is used in `PREPROCESS` process of the `preprocess.nf` module
 
 [GPSC_pipeline_nf](https://github.com/sanger-bentley-group/GPSC_pipeline_nf)
-- Victoria Carr ([@blue-moon22](https://github.com/blue-moon22))
+- Victoria Dyster ([@blue-moon22](https://github.com/blue-moon22))
 - License (GPL-3.0): https://github.com/sanger-bentley-group/GPSC_pipeline_nf/blob/master/LICENSE
-- Code adapted into `LINEAGE` process of the `lineage.nf` module
+- Code adapted into the `get_lineage.sh` script
 
 [Kraken 2](https://ccb.jhu.edu/software/kraken2/)
 - Wood, D.E., Lu, J. & Langmead, B. Improved metagenomic analysis with Kraken 2. Genome Biol 20, 257 (2019). https://doi.org/10.1186/s13059-019-1891-0
@@ -415,7 +418,7 @@ This project uses open-source components. You can find the homepage or source co
 [mecA-HetSites-calculator](https://github.com/kumarnaren/mecA-HetSites-calculator) 
 - Narender Kumar ([@kumarnaren](https://github.com/kumarnaren))
 - License (GPL-3.0): https://github.com/kumarnaren/mecA-HetSites-calculator/blob/master/LICENSE
-- Code was rewritten into the `het_snp_count.py` script used by `HET_SNP_COUNT` process of the `mapping.nf` module
+- Code was rewritten into the `het_snp_count.py` script
 
 [mlst](https://github.com/tseemann/mlst)
 - Torsten Seemann ([@tseemann](https://github.com/tseemann))
@@ -443,14 +446,14 @@ This project uses open-source components. You can find the homepage or source co
 - License (GPL-3.0): https://github.com/sanger-pathogens/seroba/blob/master/LICENSE
 - This project uses a Docker image built from a [custom fork](https://github.com/HarryHung/seroba)
   - The fork includes critical bug fixes for SeroBA as the original repository is no longer maintained
-  - The Docker image provides the containerised environment for `CREATE_SEROBA_DB` and `SEROTYPE` processes of the `serotype.nf` module
+  - The Docker image provides the containerised environment with SeroBA for `GET_SEROBA_DB` and `SEROTYPE` processes of the `serotype.nf` module
 
 [resistanceDatabase](https://github.com/kumarnaren/resistanceDatabase)
 - Narender Kumar ([@kumarnaren](https://github.com/kumarnaren))
 - License (GPL-3.0): https://github.com/kumarnaren/resistanceDatabase/blob/main/LICENSE
 - `sequences.fasta` is renamed to `ariba_ref_sequences-*.fasta` and used as-is
 - `metadata.tsv` is renamed to `ariba_metadata-*.tsv` and modified
-- The files are used as the default inputs of `CREATE_ARIBA_DB` process of the `amr.nf` module
+- The files are used as the default inputs of `GET_ARIBA_DB` process of the `amr.nf` module
 
 [Shovill](https://github.com/tseemann/shovill)
 - Torsten Seemann ([@tseemann](https://github.com/tseemann))
@@ -463,7 +466,7 @@ This project uses open-source components. You can find the homepage or source co
 - This is a modified version of [AMR predictor](https://github.com/BenJamesMetcalf/Spn_Scripts_Reference) by Ben Metcalf ([@BenJamesMetcalf](https://github.com/BenJamesMetcalf)) at the Centre for Disease Control (CDC)
 - This project uses a Docker image built from a [custom fork](https://github.com/HarryHung/spn-resistance-pbp)
   - The fork changes the Docker image from a Docker executable image to a Docker environment for Nextflow integration
-  - The Docker image provides the containerised environment for `PBP_RESISTANCE` process of the `amr.nf` module 
+  - The Docker image provides the containerised environment with SPN-PBP-MAR for `PBP_RESISTANCE` process of the `amr.nf` module 
 
 [Unicycler](https://github.com/rrwick/Unicycler)
 - **Wick RR, Judd LM, Gorrie CL, Holt KE**. Unicycler: resolving bacterial genome assemblies from short and long sequencing reads. *PLoS Comput Biol* 2017.

@@ -1,5 +1,5 @@
 // Return database path and prefix, construct if necessary
-process CREATE_REF_GENOME_BWA_DB {
+process GET_REF_GENOME_BWA_DB {
     label 'bwa_container'
     label 'farm_mid'
 
@@ -20,7 +20,7 @@ process CREATE_REF_GENOME_BWA_DB {
     PREFIX="$prefix"
     JSON_FILE="$json"
 
-    source create_ref_genome_bwa_db.sh
+    source check-create_ref_genome_bwa_db.sh
     """
 }
 
@@ -43,7 +43,7 @@ process MAPPING {
     script:
     sam="${sample_id}_mapped.sam"
     """
-    bwa mem -t `nproc` "${bwa_ref_db_dir}/${prefix}" <(zcat -f -- < "$read1") <(zcat -f -- < "$read2") > "$sam"
+    bwa mem -t "`nproc`" "${bwa_ref_db_dir}/${prefix}" <(zcat -f -- < "$read1") <(zcat -f -- < "$read2") > "$sam"
     """
 }
 
@@ -60,22 +60,18 @@ process SAM_TO_SORTED_BAM {
     val lite
 
     output:
-    tuple val(sample_id), path(bam), emit: bam
+    tuple val(sample_id), path(sorted_bam), emit: sorted_bam
     tuple val(sample_id), env(COVERAGE), emit: ref_coverage
 
     script:
-    bam="${sample_id}_mapped_sorted.bam"
+    sorted_bam="${sample_id}_mapped_sorted.bam"
     """
-    samtools view -@ `nproc` -b "$sam" > mapped.bam
+    SAM="$sam"
+    BAM="mapped.bam"
+    SORTED_BAM="$sorted_bam"
+    LITE="$lite"
 
-    samtools sort -@ `nproc` -o "$bam" mapped.bam
-    rm mapped.bam
-
-    if [ $lite = true ]; then
-        rm `readlink -f "$sam"`
-    fi
-
-    BAM="$bam"
+    source convert_sam_to_sorted_bam.sh
     source get_ref_coverage.sh
     """
 }
@@ -89,7 +85,7 @@ process SNP_CALL {
 
     input:
     path reference
-    tuple val(sample_id), path(bam)
+    tuple val(sample_id), path(sorted_bam)
     val lite
 
     output:
@@ -98,11 +94,12 @@ process SNP_CALL {
     script:
     vcf="${sample_id}.vcf"
     """
-    bcftools mpileup --threads `nproc` -f "$reference" "$bam" | bcftools call --threads `nproc` -mv -O v -o "$vcf"
+    REFERENCE="$reference"
+    SORTED_BAM="$sorted_bam"
+    VCF="$vcf"
+    LITE="$lite"
 
-    if [ $lite = true ]; then
-        rm `readlink -f "$bam"`
-    fi
+    source call_snp.sh
     """
 }
 
@@ -120,8 +117,10 @@ process HET_SNP_COUNT {
     tuple val(sample_id), env(OUTPUT), emit: result
 
     script:
+    het_snp_count_output='output.txt'
     """
-    OUTPUT=`het_snp_count.py "$vcf" 50`
+    het_snp_count.py "$vcf" 50 "$het_snp_count_output"
+    OUTPUT=`cat $het_snp_count_output`
     """
 }
 
@@ -138,16 +137,18 @@ process MAPPING_QC {
     val(qc_het_snp_site)
 
     output:
-    tuple val(sample_id), env(COVERAGE), env(HET_SNP), emit: info
     tuple val(sample_id), env(MAPPING_QC), emit: result
+    tuple val(sample_id), path(mapping_qc_report), emit: report
 
     script:
+    mapping_qc_report='mapping_qc_report.csv'
     """
     COVERAGE="$ref_coverage"
     HET_SNP="$het_snp_count"
     QC_REF_COVERAGE="$qc_ref_coverage"
     QC_HET_SNP_SITE="$qc_het_snp_site"
+    MAPPING_QC_REPORT="$mapping_qc_report"
 
-    source mapping_qc.sh
+    source get_mapping_qc.sh
     """
 }
