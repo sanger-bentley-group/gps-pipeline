@@ -366,39 +366,39 @@ This project uses open-source components. You can find the homepage or source co
 [ARIBA](https://sanger-pathogens.github.io/ariba/)
 - ARIBA: rapid antimicrobial resistance genotyping directly from sequencing reads Hunt M, Mather AE, Sánchez-Busó L, Page AJ, Parkhill J , Keane JA, Harris SR. Microbial Genomics 2017. doi: [110.1099/mgen.0.000131](http://mgen.microbiologyresearch.org/content/journal/mgen/10.1099/mgen.0.000131)
 - License (GPL-3.0): https://github.com/sanger-pathogens/ariba/blob/master/LICENSE
-- This tool is used in `CREATE_ARIBA_DB` and `OTHER_RESISTANCE` processes of the `amr.nf` module
+- This tool is used in `GET_ARIBA_DB` and `OTHER_RESISTANCE` processes of the `amr.nf` module
 
 [BCFtools](https://samtools.github.io/bcftools/) and [SAMtools](https://www.htslib.org/)
 - Twelve years of SAMtools and BCFtools. Petr Danecek, James K Bonfield, Jennifer Liddle, John Marshall, Valeriu Ohan, Martin O Pollard, Andrew Whitwham, Thomas Keane, Shane A McCarthy, Robert M Davies, Heng Li. **GigaScience**, Volume 10, Issue 2, February 2021, giab008, https://doi.org/10.1093/gigascience/giab008
 - Licenses
   - BCFtools (MIT/Expat or GPL-3.0): https://github.com/samtools/bcftools/blob/develop/LICENSE
   - SAMtools (MIT/Expat): https://github.com/samtools/samtools/blob/develop/LICENSE
-- These tools are used in `SAM_TO_SORTED_BAM`, `REF_COVERAGE` and `SNP_CALL` processes of the `mapping.nf` module
+- These tools are used in `SAM_TO_SORTED_BAM` and `SNP_CALL` processes of the `mapping.nf` module
 
 [BWA](https://github.com/lh3/bwa)
 - Li H. (2013) Aligning sequence reads, clone sequences and assembly contigs with BWA-MEM. [arXiv:1303.3997v2](http://arxiv.org/abs/1303.3997) [q-bio.GN]
 - License (GPL-3.0): https://github.com/lh3/bwa/blob/master/COPYING
-- This tool is used in `GET_REF_GENOME_BWA_DB_PREFIX` and `MAPPING` processes of the `mapping.nf` module
+- This tool is used in `GET_REF_GENOME_BWA_DB` and `MAPPING` processes of the `mapping.nf` module
 
-[Docker Images](https://hub.docker.com/u/staphb) of [BCFtools](https://hub.docker.com/r/staphb/bcftools), [BWA](https://hub.docker.com/r/staphb/bwa), [fastp](https://hub.docker.com/r/staphb/fastp), [Kraken 2](https://hub.docker.com/r/staphb/kraken2), [mlst](https://hub.docker.com/r/staphb/mlst), [PopPUNK](https://hub.docker.com/r/staphb/poppunk), [QUAST](https://hub.docker.com/r/staphb/quast), [SAMtools](https://hub.docker.com/r/staphb/samtools), [Shovill](https://hub.docker.com/r/staphb/shovill), [Unicycler](https://hub.docker.com/r/staphb/unicycler) 
+[Docker Images](https://hub.docker.com/u/staphb) of [ARIBA](https://hub.docker.com/r/staphb/ariba), [BCFtools](https://hub.docker.com/r/staphb/bcftools), [BWA](https://hub.docker.com/r/staphb/bwa), [fastp](https://hub.docker.com/r/staphb/fastp), [Kraken 2](https://hub.docker.com/r/staphb/kraken2), [mlst](https://hub.docker.com/r/staphb/mlst), [PopPUNK](https://hub.docker.com/r/staphb/poppunk), [QUAST](https://hub.docker.com/r/staphb/quast), [SAMtools](https://hub.docker.com/r/staphb/samtools), [Shovill](https://hub.docker.com/r/staphb/shovill), [Unicycler](https://hub.docker.com/r/staphb/unicycler) 
 - [State Public Health Bioinformatics Workgroup](https://staphb.org/) ([@StaPH-B](https://github.com/StaPH-B))
 - License (GPL-3.0): https://github.com/StaPH-B/docker-builds/blob/master/LICENSE
-- These Docker images provide containerised environments for processes of multiple modules 
+- These Docker images provide containerised environments with different bioinformatics tools for processes of multiple modules 
 
 [Docker Image of Git](https://hub.docker.com/r/bitnami/git)
 - [Bitnami](https://bitnami.com/) ([@Bitnami](https://github.com/bitnami))
 - License (Apache 2.0): https://github.com/bitnami/containers/blob/main/LICENSE.md
-- This Docker image provides the containerised environment for `GET_SEROBA_DB` process of the `serotype.nf` module
+- This Docker image provides the containerised environment with Git for `CHECK_SEROBA_DB` process of the `serotype.nf` module
 
 [Docker Image of network-multitool](https://hub.docker.com/r/wbitt/network-multitool)
 - [Wbitt - We Bring In Tomorrow's Technolgies](https://wbitt.com/) ([@WBITT](https://github.com/wbitt))
 - License (MIT): https://github.com/wbitt/Network-MultiTool/blob/master/LICENSE
-- This Docker image provides the containerised environment for processes of multiple modules 
+- This Docker image provides the containerised environment with Bash tools for processes of multiple modules 
 
-[Docker Image of Python](https://hub.docker.com/_/python)
-- The Docker Community ([@docker-library](https://github.com/docker-library))
-- License (MIT): https://github.com/docker-library/python/blob/master/LICENSE
-- This Docker image provides the containerised environment for `HET_SNP_COUNT` process of the `mapping.nf` module and `GET_OTHER_RESISTANCE` process of the `amr.nf` module
+[Docker Image of Pandas](https://hub.docker.com/r/amancevice/pandas)
+- Alexander Mancevice ([@amancevice](https://github.com/amancevice))
+- License (MIT): https://github.com/amancevice/docker-pandas/blob/main/LICENSE
+- This Docker image provides the containerised environment with Python and Pandas for `GENERATE_OVERALL_REPORT` process of the `output.nf` module, `HET_SNP_COUNT` process of the `mapping.nf` module and `PARSE_OTHER_RESISTANCE` process of the `amr.nf` module
 
 [fastp](https://github.com/OpenGene/fastp)
 - Shifu Chen, Yanqing Zhou, Yaru Chen, Jia Gu; fastp: an ultra-fast all-in-one FASTQ preprocessor, Bioinformatics, Volume 34, Issue 17, 1 September 2018, Pages i884–i890, https://doi.org/10.1093/bioinformatics/bty560
@@ -406,9 +406,9 @@ This project uses open-source components. You can find the homepage or source co
 - This tool is used in `PREPROCESS` process of the `preprocess.nf` module
 
 [GPSC_pipeline_nf](https://github.com/sanger-bentley-group/GPSC_pipeline_nf)
-- Victoria Carr ([@blue-moon22](https://github.com/blue-moon22))
+- Victoria Dyster ([@blue-moon22](https://github.com/blue-moon22))
 - License (GPL-3.0): https://github.com/sanger-bentley-group/GPSC_pipeline_nf/blob/master/LICENSE
-- Code adapted into `LINEAGE` process of the `lineage.nf` module
+- Code adapted into the `get_lineage.sh` script
 
 [Kraken 2](https://ccb.jhu.edu/software/kraken2/)
 - Wood, D.E., Lu, J. & Langmead, B. Improved metagenomic analysis with Kraken 2. Genome Biol 20, 257 (2019). https://doi.org/10.1186/s13059-019-1891-0
@@ -418,7 +418,7 @@ This project uses open-source components. You can find the homepage or source co
 [mecA-HetSites-calculator](https://github.com/kumarnaren/mecA-HetSites-calculator) 
 - Narender Kumar ([@kumarnaren](https://github.com/kumarnaren))
 - License (GPL-3.0): https://github.com/kumarnaren/mecA-HetSites-calculator/blob/master/LICENSE
-- Code was rewritten into the `het_snp_count.py` script used by `HET_SNP_COUNT` process of the `mapping.nf` module
+- Code was rewritten into the `het_snp_count.py` script
 
 [mlst](https://github.com/tseemann/mlst)
 - Torsten Seemann ([@tseemann](https://github.com/tseemann))
@@ -446,14 +446,14 @@ This project uses open-source components. You can find the homepage or source co
 - License (GPL-3.0): https://github.com/sanger-pathogens/seroba/blob/master/LICENSE
 - This project uses a Docker image built from a [custom fork](https://github.com/HarryHung/seroba)
   - The fork includes critical bug fixes for SeroBA as the original repository is no longer maintained
-  - The Docker image provides the containerised environment for `CREATE_SEROBA_DB` and `SEROTYPE` processes of the `serotype.nf` module
+  - The Docker image provides the containerised environment with SeroBA for `GET_SEROBA_DB` and `SEROTYPE` processes of the `serotype.nf` module
 
 [resistanceDatabase](https://github.com/kumarnaren/resistanceDatabase)
 - Narender Kumar ([@kumarnaren](https://github.com/kumarnaren))
 - License (GPL-3.0): https://github.com/kumarnaren/resistanceDatabase/blob/main/LICENSE
 - `sequences.fasta` is renamed to `ariba_ref_sequences-*.fasta` and used as-is
 - `metadata.tsv` is renamed to `ariba_metadata-*.tsv` and modified
-- The files are used as the default inputs of `CREATE_ARIBA_DB` process of the `amr.nf` module
+- The files are used as the default inputs of `GET_ARIBA_DB` process of the `amr.nf` module
 
 [Shovill](https://github.com/tseemann/shovill)
 - Torsten Seemann ([@tseemann](https://github.com/tseemann))
@@ -466,7 +466,7 @@ This project uses open-source components. You can find the homepage or source co
 - This is a modified version of [AMR predictor](https://github.com/BenJamesMetcalf/Spn_Scripts_Reference) by Ben Metcalf ([@BenJamesMetcalf](https://github.com/BenJamesMetcalf)) at the Centre for Disease Control (CDC)
 - This project uses a Docker image built from a [custom fork](https://github.com/HarryHung/spn-resistance-pbp)
   - The fork changes the Docker image from a Docker executable image to a Docker environment for Nextflow integration
-  - The Docker image provides the containerised environment for `PBP_RESISTANCE` process of the `amr.nf` module 
+  - The Docker image provides the containerised environment with SPN-PBP-MAR for `PBP_RESISTANCE` process of the `amr.nf` module 
 
 [Unicycler](https://github.com/rrwick/Unicycler)
 - **Wick RR, Judd LM, Gorrie CL, Holt KE**. Unicycler: resolving bacterial genome assemblies from short and long sequencing reads. *PLoS Comput Biol* 2017.
