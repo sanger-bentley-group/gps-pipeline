@@ -2,6 +2,7 @@
 process GET_REF_GENOME_BWA_DB {
     label 'bwa_container'
     label 'farm_mid'
+    label 'farm_scratchless'
 
     input:
     path reference
