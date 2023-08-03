@@ -2,6 +2,8 @@
 process GET_POPPUNK_DB {
     label 'bash_container'
     label 'farm_low'
+    label 'farm_scratchless'
+    label 'farm_slow'
 
     input:
     val db_remote
@@ -26,6 +28,8 @@ process GET_POPPUNK_DB {
 process GET_POPPUNK_EXT_CLUSTERS {
     label 'bash_container'
     label 'farm_low'
+    label 'farm_scratchless'
+    label 'farm_slow'
 
     input:
     val ext_clusters_remote
@@ -51,7 +55,6 @@ process LINEAGE {
     label 'poppunk_container'
     label 'farm_high'
     label 'farm_slow'
-    label 'farm_scratchless'
 
     tag 'All samples'
 
