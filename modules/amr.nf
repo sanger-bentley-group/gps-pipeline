@@ -45,6 +45,8 @@ process PARSE_PBP_RESISTANCE {
 process GET_ARIBA_DB {
     label 'ariba_container'
     label 'farm_low'
+    label 'farm_scratchless'
+    label 'farm_slow'
 
     input:
     path ref_sequences
