@@ -118,7 +118,7 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | --- | --- |
   | `standard`<br> (Default) | Docker is used as the container engine. <br> Processes are executed locally. |
   | `singularity` |  Singularity is used as the container engine. <br> Processes are executed locally. |
-  | `lsf` | **The pipeline should be launched from a LSF cluster head node with this profile.** <br>Singularity is used as the container engine. <br> Processes are submitted to your LSF cluster via `bsub` by the pipeline. <br> (Tested on Sanger farm5 cluster only) |
+  | `lsf` | **The pipeline should be launched from a LSF cluster head node with this profile.** <br>Singularity is used as the container engine. <br> Processes are submitted to your LSF cluster via `bsub` by the pipeline. <br> (Tested on Wellcome Sanger Institute farm5 LSF cluster only) <br> (Option `--kraken2_memory_mapping` default change to `false`.) |
 
 ## Resume
 - If the pipeline is interrupted mid-run, Nextflow's built-in `-resume` option can be used to resume the pipeline execution instead of starting from scratch again

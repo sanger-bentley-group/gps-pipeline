@@ -2,6 +2,8 @@
 process CHECK_SEROBA_DB {
     label 'git_container'
     label 'farm_low'
+    label 'farm_scratchless'
+    label 'farm_slow'
 
     input:
     val remote
@@ -27,6 +29,7 @@ process CHECK_SEROBA_DB {
 process GET_SEROBA_DB {
     label 'seroba_container'
     label 'farm_low'
+    label 'farm_scratchless'
 
     input:
     val remote
