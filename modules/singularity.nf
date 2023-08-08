@@ -33,7 +33,17 @@ void singularityPreflight(Path configPath, String singularityCacheDir) {
         process.waitFor()
 
         if (process.exitValue()) {
-            log.info("${container} cannot be pulled successfully. Check your Internet connection and re-run the pipeline.\n")
+            def errorMessage = new BufferedReader(new InputStreamReader(process.getErrorStream())).getText()
+
+            log.info(
+                """
+                |Singularity Error Messages:
+                |${errorMessage}
+                | 
+                |${container} cannot be pulled successfully. Resolve the above error and re-run the pipeline.
+                |
+                """.stripMargin()
+            )
             System.exit(1)
         }
 
