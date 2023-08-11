@@ -53,8 +53,8 @@ void validate(Map params) {
         validParams.put("singularity_cachedir", "path")
     }
 
-    // Add params.maxretries when workflow.profile == 'lsf' 
-    if (workflow.profile == 'lsf' ) {
+    // Add params.maxretries when workflow.profile contains 'lsf' 
+    if (workflow.profile.split(',').contains('lsf')) {
         validParams.put("maxretries", "int")
     }
 
