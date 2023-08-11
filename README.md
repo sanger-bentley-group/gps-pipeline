@@ -201,7 +201,7 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | Option | Values | Description |
   | --- | ---| --- |
   | `--assembler` | `"shovill"` or `"unicycler"`<br />(Default: `"shovill"`)| Using which SPAdes-based assembler to assemble the reads. |
-  | `--min_contig_length` | Any integer value<br />(Default: `500`) | Minimum legnth of contig to be included in the assembly |
+  | `--min_contig_length` | Any integer value<br />(Default: `500`) | Minimum legnth of contig to be included in the assembly. |
 
 ## Mapping
   > ⚠️ `--ref_genome_bwa_db_local` does not accept user provided local database, directory content will be overwritten 

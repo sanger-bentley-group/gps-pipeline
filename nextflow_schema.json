@@ -1,0 +1,288 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://raw.githubusercontent.com/./master/nextflow_schema.json",
+    "title": "GPS Unified Pipeline Parameters",
+    "description": "",
+    "type": "object",
+    "definitions": {
+        "input_output": {
+            "title": "Input / Output",
+            "type": "object",
+            "description": "",
+            "default": "",
+            "properties": {
+                "reads": {
+                    "type": "string",
+                    "description": "Path to the input directory that contains the reads to be processed."
+                },
+                "output": {
+                    "type": "string",
+                    "description": "Path to the output directory that save the results."
+                },
+                "assembly_publish": {
+                    "type": "string",
+                    "description": "Method used by Nextflow to publish the generated assemblies.",
+                    "hidden": true
+                }
+            },
+            "required": [
+                "reads",
+                "output",
+                "assembly_publish"
+            ]
+        },
+        "qc_parameters": {
+            "title": "QC Parameters",
+            "type": "object",
+            "description": "",
+            "default": "",
+            "properties": {
+                "spneumo_percentage": {
+                    "type": "number",
+                    "description": "Minimum S. pneumoniae percentage in reads to pass Taxonomy QC.",
+                    "hidden": true
+                },
+                "ref_coverage": {
+                    "type": "number",
+                    "description": "Minimum reference coverage percentage by the reads to pass Mapping QC.",
+                    "hidden": true
+                },
+                "het_snp_site": {
+                    "type": "integer",
+                    "description": "Maximum non-cluster heterozygous SNP (Het-SNP) site count to pass Mapping QC.",
+                    "hidden": true
+                },
+                "contigs": {
+                    "type": "integer",
+                    "hidden": true,
+                    "description": "Maximum contig count in assembly to pass Assembly QC."
+                },
+                "length_low": {
+                    "type": "integer",
+                    "hidden": true,
+                    "description": "Minimum assembly length to pass Assembly QC."
+                },
+                "length_high": {
+                    "type": "integer",
+                    "hidden": true,
+                    "description": "Maximum assembly length to pass Assembly QC."
+                },
+                "depth": {
+                    "type": "number",
+                    "hidden": true,
+                    "description": "Minimum sequencing depth to pass Assembly QC."
+                }
+            },
+            "required": [
+                "spneumo_percentage",
+                "ref_coverage",
+                "het_snp_site",
+                "contigs",
+                "length_low",
+                "length_high",
+                "depth"
+            ]
+        },
+        "assembly": {
+            "title": "Assembly",
+            "type": "object",
+            "description": "",
+            "default": "",
+            "properties": {
+                "assembler": {
+                    "type": "string",
+                    "hidden": true,
+                    "description": "Using which SPAdes-based assembler to assemble the reads."
+                },
+                "min_contig_length": {
+                    "type": "integer",
+                    "description": "Minimum legnth of contig to be included in the assembly.",
+                    "hidden": true
+                }
+            },
+            "required": [
+                "assembler",
+                "min_contig_length"
+            ]
+        },
+        "mapping": {
+            "title": "Mapping",
+            "type": "object",
+            "description": "",
+            "default": "",
+            "properties": {
+                "ref_genome": {
+                    "type": "string",
+                    "hidden": true,
+                    "description": "Path to the reference genome for mapping."
+                },
+                "ref_genome_bwa_db_local": {
+                    "type": "string",
+                    "description": "Path to the directory where the reference genome FM-index database for BWA should be saved to.",
+                    "hidden": true
+                }
+            },
+            "required": [
+                "ref_genome",
+                "ref_genome_bwa_db_local"
+            ]
+        },
+        "taxonomy": {
+            "title": "Taxonomy",
+            "type": "object",
+            "description": "",
+            "default": "",
+            "properties": {
+                "kraken2_db_remote": {
+                    "type": "string",
+                    "hidden": true,
+                    "description": "URL to a Kraken2 database."
+                },
+                "kraken2_db_local": {
+                    "type": "string",
+                    "hidden": true,
+                    "description": "Path to the directory where the remote Kraken2 database should be saved to."
+                },
+                "kraken2_memory_mapping": {
+                    "type": "boolean",
+                    "hidden": true,
+                    "description": "Using the memory mapping option of Kraken2 or not."
+                }
+            },
+            "required": [
+                "kraken2_db_remote",
+                "kraken2_db_local",
+                "kraken2_memory_mapping"
+            ]
+        },
+        "serotype": {
+            "title": "Serotype",
+            "type": "object",
+            "description": "",
+            "default": "",
+            "properties": {
+                "seroba_db_remote": {
+                    "type": "string",
+                    "hidden": true,
+                    "description": "URL to a SeroBA Git remote repository."
+                },
+                "seroba_db_local": {
+                    "type": "string",
+                    "hidden": true,
+                    "description": "Path to the directory where SeroBA local repository should be saved to."
+                },
+                "seroba_kmer": {
+                    "type": "integer",
+                    "hidden": true,
+                    "description": "Kmer size for creating the KMC database of SeroBA."
+                }
+            },
+            "required": [
+                "seroba_db_remote",
+                "seroba_db_local",
+                "seroba_kmer"
+            ]
+        },
+        "lineage": {
+            "title": "Lineage",
+            "type": "object",
+            "description": "",
+            "default": "",
+            "properties": {
+                "poppunk_db_remote": {
+                    "type": "string",
+                    "hidden": true,
+                    "description": "URL to a PopPUNK database."
+                },
+                "poppunk_ext_remote": {
+                    "type": "string",
+                    "hidden": true,
+                    "description": "URL to a PopPUNK external clusters file."
+                },
+                "poppunk_db_local": {
+                    "type": "string",
+                    "hidden": true,
+                    "description": "Path to the directory where the remote PopPUNK database and external clusters file should be saved to."
+                }
+            },
+            "required": [
+                "poppunk_db_remote",
+                "poppunk_ext_remote",
+                "poppunk_db_local"
+            ]
+        },
+        "other_amr": {
+            "title": "Other AMR",
+            "type": "object",
+            "description": "",
+            "default": "",
+            "properties": {
+                "ariba_ref": {
+                    "type": "string",
+                    "hidden": true,
+                    "description": "Path to the reference sequences for ARIBA."
+                },
+                "ariba_metadata": {
+                    "type": "string",
+                    "hidden": true,
+                    "description": "Path to the metadata file for ARIBA."
+                },
+                "ariba_db_local": {
+                    "type": "string",
+                    "hidden": true,
+                    "description": "Path to the directory where ARIBA reference database should be saved to."
+                }
+            },
+            "required": [
+                "ariba_ref",
+                "ariba_metadata",
+                "ariba_db_local"
+            ]
+        },
+        "singularity": {
+            "title": "Singularity",
+            "type": "object",
+            "description": "",
+            "default": "",
+            "properties": {
+                "singularity_cachedir": {
+                    "type": "string",
+                    "description": "Path to the directory where Singularity images should be saved to.",
+                    "hidden": true
+                }
+            },
+            "required": [
+                "singularity_cachedir"
+            ]
+        }
+    },
+    "allOf": [
+        {
+            "$ref": "#/definitions/input_output"
+        },
+        {
+            "$ref": "#/definitions/qc_parameters"
+        },
+        {
+            "$ref": "#/definitions/assembly"
+        },
+        {
+            "$ref": "#/definitions/mapping"
+        },
+        {
+            "$ref": "#/definitions/taxonomy"
+        },
+        {
+            "$ref": "#/definitions/serotype"
+        },
+        {
+            "$ref": "#/definitions/lineage"
+        },
+        {
+            "$ref": "#/definitions/other_amr"
+        },
+        {
+            "$ref": "#/definitions/singularity"
+        }
+    ]
+}
