@@ -33,6 +33,7 @@ process DATABASES {
     val kraken2_db_path
     val seroba_db_path
     val poppunk_db_path
+    val poppunk_ext_path
 
     output:
     path(json), emit: json
@@ -56,6 +57,7 @@ process DATABASES {
     SEROBA_JSON="$seroba_json"
     POPPUNK_DB_PATH="$poppunk_db_path"
     POPPUNK_JSON="$poppunk_json"
+    POPPUNK_EXT_PATH="$poppunk_ext_path"
     POPPUNK_EXT_JSON="$poppunk_ext_json"
     JSON_FILE="$json"
 

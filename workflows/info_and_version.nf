@@ -7,11 +7,12 @@ workflow PRINT_VERSION {
 
     main:
         GET_VERSION(
-            params.ref_genome_bwa_db_local,
-            params.ariba_db_local,
-            params.kraken2_db_local,
-            params.seroba_db_local,
-            params.poppunk_db_local,
+            "${params.db}/bwa",
+            "${params.db}/ariba",
+            "${params.db}/kraken2",
+            "${params.db}/seroba",
+            "${params.db}/poppunk",
+            "${params.db}/poppunk_ext",
             pipeline_version
         ) \
         | PARSE \
@@ -31,6 +32,7 @@ workflow SAVE_INFO {
             databases_info.kraken2_db_path,
             databases_info.seroba_db_path,
             databases_info.poppunk_db_path,
+            databases_info.poppunk_ext_path,
             pipeline_version
         ) \
        | PARSE \
@@ -45,6 +47,7 @@ workflow GET_VERSION {
         kraken2_db_path
         seroba_db_path
         poppunk_db_path
+        poppunk_ext_path
         pipeline_version
 
     main:
@@ -55,7 +58,8 @@ workflow GET_VERSION {
             ariba_db_path,
             kraken2_db_path,
             seroba_db_path,
-            poppunk_db_path
+            poppunk_db_path,
+            poppunk_ext_path
         )
 
         nextflow_version = "$nextflow.version"

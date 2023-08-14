@@ -173,7 +173,7 @@ workflow PIPELINE {
                         .merge(GET_KRAKEN2_DB.out.path.map { [["kraken2_db_path", it]] })
                         .merge(GET_SEROBA_DB.out.path.map { [["seroba_db_path", it]] })
                         .merge(GET_POPPUNK_DB.out.path.map { [["poppunk_db_path", it]] })
-                        .merge(GET_POPPUNK_EXT_CLUSTERS.out.file.map { [["poppunk_ext_file", it]] })
+                        .merge(GET_POPPUNK_EXT_CLUSTERS.out.file.map { [["poppunk_ext_path", it]] })
                         // Save key-value tuples into a map
                         .map { it.collectEntries() }
 
