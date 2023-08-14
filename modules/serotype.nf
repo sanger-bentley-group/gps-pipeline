@@ -7,17 +7,18 @@ process CHECK_SEROBA_DB {
 
     input:
     val remote
-    path local
+    path db
     val kmer
 
     output:
     env CREATE_DB, emit: create_db
 
     script:
+    seroba_db="${db}/seroba"
     json='done_seroba.json'
     """
     DB_REMOTE="$remote"
-    DB_LOCAL="$local"
+    DB_LOCAL="$seroba_db"
     KMER="$kmer"
     JSON_FILE="$json"
 
@@ -33,21 +34,22 @@ process GET_SEROBA_DB {
 
     input:
     val remote
-    path local
+    path db
     val create_db
     val kmer
 
     output:
-    path local, emit: path
+    path seroba_db, emit: path
     val database, emit: database
 
     script:
+    seroba_db="${db}/seroba"
     database='database'
     json='done_seroba.json'
     """
     DATABASE="$database"
     DB_REMOTE="$remote"
-    DB_LOCAL="$local"
+    DB_LOCAL="$seroba_db"
     KMER="$kmer"
     CREATE_DB="$create_db"
     JSON_FILE="$json"
