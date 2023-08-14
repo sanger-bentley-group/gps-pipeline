@@ -11,7 +11,7 @@ process GET_KRAKEN2_DB {
     path kraken2_db, emit: path
 
     script:
-    kraken2_db="${db}/kraken2_db"
+    kraken2_db="${db}/kraken2"
     json='done_kraken.json'
     """
     DB_REMOTE="$remote"
