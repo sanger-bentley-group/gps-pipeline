@@ -1,3 +1,5 @@
 reports:
     results.csv:
         display: "Overall Results"
+    info.txt:
+        display: "Run Information"
