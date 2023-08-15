@@ -246,7 +246,7 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | Option | Values | Description |
   | --- | ---| --- |
   | `--lite` | `true` or `false`<br>(Default: `false`) | ⚠️ Enable this option breaks Nextflow resume function.<br>Reduce storage requirement by removing intermediate `.sam` and `.bam` files once they are no longer needed while the pipeline is still running.<br>The quantity of reduction of storage requirement cannot be guaranteed.<br> Can be enabled by including `--lite` without value. |
-&nbsp;
+
 # Output
 - By default, the pipeline outputs the results into the `output` directory inside the `gps-unified-pipeline` local repository
 - It can be changed by adding the option `--output`
