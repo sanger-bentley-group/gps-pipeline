@@ -28,12 +28,12 @@ process DATABASES {
     label 'farm_low'
 
     input:
-    val bwa_db_path
-    val ariba_db_path
-    val kraken2_db_path
-    val seroba_db_path
-    val poppunk_db_path
-    val poppunk_ext_path
+    path bwa_db_path
+    path ariba_db_path
+    path kraken2_db_path
+    path seroba_db_path
+    path poppunk_db_path
+    path poppunk_ext_path
 
     output:
     path(json), emit: json
