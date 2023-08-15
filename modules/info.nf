@@ -322,16 +322,20 @@ process PRINT {
 process SAVE {
     label 'farm_local'
     
+    publishDir "${params.output}", mode: "copy"
+
     input:
     val coreText
     val dbText
     val toolText
     val imageText
 
+    output:
+    path "info.txt", emit: info
+
     exec:
     File readsDir = new File(params.reads)
     File outputDir = new File(params.output)
-    outputDir.mkdirs()
 
     def textRow = { leftSpace, rightSpace, leftContent, rightContent ->
         String.format("║ %-${leftSpace}s │ %-${rightSpace}s ║", leftContent, rightContent)
@@ -407,7 +411,7 @@ process SAVE {
     |╚═══════════════════════════╧═══════════════════════════════════════════════════════════════╝
     |""".stripMargin()
 
-    File output = new File("${params.output}/info.txt")
+    File output = new File("${task.workDir}/info.txt")
     output.write(
         """\
         |${coreText}
