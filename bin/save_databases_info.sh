@@ -64,5 +64,5 @@ jq -n \
     --argjson seroba_db "$(add_seroba_db)" \
     --argjson kraken2_db "$(add_url_db "${KRAKEN2_DB_PATH}/${KRAKEN2_JSON}")" \
     --argjson poppunnk_db "$(add_url_db "${POPPUNK_DB_PATH}/${POPPUNK_JSON}")" \
-    --argjson poppunk_ext "$(add_url_db "${POPPUNK_DB_PATH}/${POPPUNK_EXT_JSON}")" \
+    --argjson poppunk_ext "$(add_url_db "${POPPUNK_EXT_PATH}/${POPPUNK_EXT_JSON}")" \
     '$ARGS.named' > "$JSON_FILE"

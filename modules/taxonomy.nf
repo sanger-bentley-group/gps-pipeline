@@ -5,16 +5,17 @@ process GET_KRAKEN2_DB {
 
     input:
     val remote
-    path local
+    path db
 
     output:
-    path local, emit: path
+    path kraken2_db, emit: path
 
     script:
+    kraken2_db="${db}/kraken2"
     json='done_kraken.json'
     """
     DB_REMOTE="$remote"
-    DB_LOCAL="$local"
+    DB_LOCAL="$kraken2_db"
     JSON_FILE="$json"
 
     source check-download_kraken2_db.sh

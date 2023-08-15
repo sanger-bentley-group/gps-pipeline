@@ -17,10 +17,10 @@ if  [ ! -f "${DB_LOCAL}/${JSON_FILE}" ] || \
     [ ! -f "${DB_PATH}/${DB_NAME}_clusters.csv" ] || \
     [ ! -f "${DB_PATH}/${DB_NAME}.refs" ]; then
 
-    rm -rf "${DB_LOCAL:?}/${JSON_FILE}"
-    rm -rf "${DB_LOCAL:?}"/*/
+    rm -rf "${DB_LOCAL}"
 
     wget "$DB_REMOTE" -O poppunk_db.tar.gz
+    mkdir -p "${DB_LOCAL}"
     tar -xzf poppunk_db.tar.gz -C "$DB_LOCAL"
     rm poppunk_db.tar.gz
 

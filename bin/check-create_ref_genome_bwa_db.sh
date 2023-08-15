@@ -12,11 +12,12 @@ if  [ ! -f "${DB_LOCAL}/${JSON_FILE}" ] || \
     [ ! -f "${DB_LOCAL}/${PREFIX}.pac" ] || \
     [ ! -f "${DB_LOCAL}/${PREFIX}.sa" ] ; then
 
-    rm -rf "${DB_LOCAL:?}"/{,.[!.],..?}*
+    rm -rf "${DB_LOCAL}"
 
     bwa index -p "$PREFIX" "$REFERENCE"
 
-    mv "${PREFIX}.amb" "${PREFIX}.ann" "${PREFIX}.bwt" "${PREFIX}.pac" "${PREFIX}.sa" -t "$DB_LOCAL"
+    mkdir -p "${DB_LOCAL}"
+    mv "${PREFIX}.amb" "${PREFIX}.ann" "${PREFIX}.bwt" "${PREFIX}.pac" "${PREFIX}.sa" -t "${DB_LOCAL}"
 
     echo -e "{\n  \"reference\": \"$REFERENCE\",\n  \"reference_md5\": \"$REFERENCE_MD5\",\n  \"create_time\": \"$(date +"%Y-%m-%d %H:%M:%S %Z")\"\n}" > "${DB_LOCAL}/${JSON_FILE}"
 

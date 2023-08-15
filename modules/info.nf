@@ -28,11 +28,12 @@ process DATABASES {
     label 'farm_low'
 
     input:
-    val bwa_db_path
-    val ariba_db_path
-    val kraken2_db_path
-    val seroba_db_path
-    val poppunk_db_path
+    path bwa_db_path
+    path ariba_db_path
+    path kraken2_db_path
+    path seroba_db_path
+    path poppunk_db_path
+    path poppunk_ext_path
 
     output:
     path(json), emit: json
@@ -56,6 +57,7 @@ process DATABASES {
     SEROBA_JSON="$seroba_json"
     POPPUNK_DB_PATH="$poppunk_db_path"
     POPPUNK_JSON="$poppunk_json"
+    POPPUNK_EXT_PATH="$poppunk_ext_path"
     POPPUNK_EXT_JSON="$poppunk_ext_json"
     JSON_FILE="$json"
 
@@ -320,16 +322,20 @@ process PRINT {
 process SAVE {
     label 'farm_local'
     
+    publishDir "${params.output}", mode: "copy"
+
     input:
     val coreText
     val dbText
     val toolText
     val imageText
 
+    output:
+    path "info.txt", emit: info
+
     exec:
     File readsDir = new File(params.reads)
     File outputDir = new File(params.output)
-    outputDir.mkdirs()
 
     def textRow = { leftSpace, rightSpace, leftContent, rightContent ->
         String.format("║ %-${leftSpace}s │ %-${rightSpace}s ║", leftContent, rightContent)
@@ -405,7 +411,7 @@ process SAVE {
     |╚═══════════════════════════╧═══════════════════════════════════════════════════════════════╝
     |""".stripMargin()
 
-    File output = new File("${params.output}/info.txt")
+    File output = new File("${task.workDir}/info.txt")
     output.write(
         """\
         |${coreText}
