@@ -9,13 +9,14 @@ if  [ ! -f "${DB_LOCAL}/${JSON_FILE}" ] || \
     [ ! -f "${DB_LOCAL}/opts.k2d" ] || \
     [ ! -f "${DB_LOCAL}/taxo.k2d" ]; then
 
-    rm -rf "${DB_LOCAL:?}"/{,.[!.],..?}*
+    rm -rf "${DB_LOCAL}"
 
     wget "${DB_REMOTE}" -O $ZIPPED_DB
 
     # Use tmp dir and find to ensure files are saved directly at $DB_LOCAL regardless of archive directory structure
     mkdir tmp
     tar -xzf $ZIPPED_DB -C tmp
+    mkdir -p "${DB_LOCAL}"
     find tmp -type f -exec mv {} "$DB_LOCAL" \;
 
     rm -f $ZIPPED_DB

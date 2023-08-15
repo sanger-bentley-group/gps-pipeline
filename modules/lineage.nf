@@ -7,17 +7,18 @@ process GET_POPPUNK_DB {
 
     input:
     val db_remote
-    path local
+    path db
 
     output:
-    path local, emit: path
+    path poppunk_db, emit: path
     env DB_NAME, emit: database
 
     script:
+    poppunk_db="${db}/poppunk"
     json='done_poppunk.json'
     """
     DB_REMOTE="$db_remote"
-    DB_LOCAL="$local"
+    DB_LOCAL="$poppunk_db"
     JSON_FILE="$json"
 
     source check-download_poppunk_db.sh
@@ -33,16 +34,18 @@ process GET_POPPUNK_EXT_CLUSTERS {
 
     input:
     val ext_clusters_remote
-    path local
+    path db
 
     output:
+    path poppunk_ext, emit: path
     env EXT_CLUSTERS_CSV, emit: file
 
     script:
+    poppunk_ext="${db}/poppunk_ext"
     json='done_poppunk_ext.json'
     """
     EXT_CLUSTERS_REMOTE="$ext_clusters_remote"
-    EXT_CLUSTERS_LOCAL="$local"
+    EXT_CLUSTERS_LOCAL="$poppunk_ext"
     JSON_FILE="$json"
 
     source check-download_poppunk_ext_clusters.sh    
@@ -61,6 +64,7 @@ process LINEAGE {
     input:
     path poppunk_dir
     val db_name
+    path ext_clusters_dir
     val ext_clusters_file
     path qfile
 
@@ -72,6 +76,7 @@ process LINEAGE {
     QFILE="$qfile"
     POPPUNK_DIR="$poppunk_dir"
     DB_NAME="$db_name"
+    EXT_CLUSTERS_DIR="$ext_clusters_dir"
     EXT_CLUSTERS_FILE="$ext_clusters_file"
 
     source get_lineage.sh

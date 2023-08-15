@@ -8,7 +8,7 @@ if  [ ! -f "${DB_LOCAL}"/"${JSON_FILE}" ] || \
     [ ! "$(grep 'kmer' "${DB_LOCAL}"/"${JSON_FILE}" | sed -r 's/.+: "(.*)",?/\1/')" == "${KMER}" ] || \
     ! ( (git -C "${DB_LOCAL}" pull || echo 'Already up-to-date') | grep -q 'Already up[- ]to[- ]date' ); then
 
-    rm -rf "${DB_LOCAL:?}"/{,.[!.],..?}*
+    rm -rf "${DB_LOCAL}"
     git clone "${DB_REMOTE}" "${DB_LOCAL}"
 
     CREATE_DB=true

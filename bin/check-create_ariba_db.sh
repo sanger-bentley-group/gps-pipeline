@@ -23,8 +23,9 @@ if  [ ! -f "${DB_LOCAL}/${JSON_FILE}" ] || \
     [ ! -f "${DB_LOCAL}/${OUTPUT}/02.cdhit.noncoding.fa" ] || \
     [ ! -f "${DB_LOCAL}/${OUTPUT}/02.cdhit.noncoding.varonly.fa" ] ; then
 
-    rm -rf "${DB_LOCAL:?}/${OUTPUT}"
+    rm -rf "${DB_LOCAL}"
     
+    mkdir -p "${DB_LOCAL}"
     ariba prepareref -f "$REF_SEQUENCES" -m "$METADATA" "${DB_LOCAL}/${OUTPUT}"
 
     echo -e "{\n  \"reference\": \"$REF_SEQUENCES\",\n  \"reference_md5\": \"$REF_SEQUENCES_MD5\",\n  \"metadata\": \"$METADATA\",\n  \"metadata_md5\": \"$METADATA_MD5\",\n  \"create_time\": \"$(date +"%Y-%m-%d %H:%M:%S %Z")\"\n}" > "${DB_LOCAL}/${JSON_FILE}"

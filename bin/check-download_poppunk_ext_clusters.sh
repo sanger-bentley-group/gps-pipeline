@@ -9,9 +9,9 @@ if  [ ! -f "${EXT_CLUSTERS_LOCAL}/${JSON_FILE}" ] || \
     [ ! "$EXT_CLUSTERS_REMOTE" == "$(jq -r .url "${EXT_CLUSTERS_LOCAL}/${JSON_FILE}")"  ] || \
     [ ! -f "${EXT_CLUSTERS_LOCAL}/${EXT_CLUSTERS_CSV}" ]; then
 
-    rm -f "${EXT_CLUSTERS_LOCAL}"/*.csv
-    rm -f "${EXT_CLUSTERS_LOCAL}/${JSON_FILE}"
+    rm -rf "${EXT_CLUSTERS_LOCAL}"
 
+    mkdir -p "${EXT_CLUSTERS_LOCAL}"
     wget "$EXT_CLUSTERS_REMOTE" -O "${EXT_CLUSTERS_LOCAL}/${EXT_CLUSTERS_CSV}"
 
     jq -n \

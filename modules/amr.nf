@@ -51,19 +51,20 @@ process GET_ARIBA_DB {
     input:
     path ref_sequences
     path metadata
-    path local
+    path db
 
     output:
-    path local, emit: path
+    path ariba_db, emit: path
     val output, emit: database
 
     script:
+    ariba_db="${db}/ariba"
     output='database'
     json='done_ariba_db.json'
     """
     REF_SEQUENCES="$ref_sequences"
     METADATA="$metadata"
-    DB_LOCAL="$local"
+    DB_LOCAL="$ariba_db"
     OUTPUT="$output"
     JSON_FILE="$json"
 

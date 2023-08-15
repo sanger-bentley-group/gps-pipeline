@@ -6,7 +6,7 @@
 # Save results of individual sample into .csv with its name as filename 
 
 sed 's/^/prefix_/' "$QFILE" > safe_qfile.txt
-poppunk_assign --db "${POPPUNK_DIR}/${DB_NAME}" --external-clustering "${POPPUNK_DIR}/${EXT_CLUSTERS_FILE}" --query safe_qfile.txt --output output --threads "$(nproc)"
+poppunk_assign --db "${POPPUNK_DIR}/${DB_NAME}" --external-clustering "${EXT_CLUSTERS_DIR}/${EXT_CLUSTERS_FILE}" --query safe_qfile.txt --output output --threads "$(nproc)"
 sed 's/^prefix_//' output/output_external_clusters.csv > result.txt
 
 

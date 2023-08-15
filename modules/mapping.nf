@@ -6,18 +6,19 @@ process GET_REF_GENOME_BWA_DB {
 
     input:
     path reference
-    path local
+    path db
 
     output:
-    path(local), emit: path
-    val(prefix), emit: prefix
+    path bwa_db, emit: path
+    val prefix, emit: prefix
 
     script:
+    bwa_db="${db}/bwa"
     prefix='reference'
     json='done_bwa_db.json'
     """
     REFERENCE="$reference"
-    DB_LOCAL="$local"
+    DB_LOCAL="$bwa_db"
     PREFIX="$prefix"
     JSON_FILE="$json"
 

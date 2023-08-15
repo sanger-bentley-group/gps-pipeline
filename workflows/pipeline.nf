@@ -14,21 +14,21 @@ include { GENERATE_SAMPLE_REPORT; GENERATE_OVERALL_REPORT } from "$projectDir/mo
 workflow PIPELINE {
     main:
     // Get path and prefix of Reference Genome BWA Database, generate from assembly if necessary
-    GET_REF_GENOME_BWA_DB(params.ref_genome, params.ref_genome_bwa_db_local)
+    GET_REF_GENOME_BWA_DB(params.ref_genome, params.db)
 
     // Get path to Kraken2 Database, download if necessary
-    GET_KRAKEN2_DB(params.kraken2_db_remote, params.kraken2_db_local)
+    GET_KRAKEN2_DB(params.kraken2_db_remote, params.db)
 
     // Get path to SeroBA Databases, clone and rebuild if necessary
-    CHECK_SEROBA_DB(params.seroba_db_remote, params.seroba_db_local, params.seroba_kmer)
-    GET_SEROBA_DB(params.seroba_db_remote, params.seroba_db_local, CHECK_SEROBA_DB.out.create_db, params.seroba_kmer)
+    CHECK_SEROBA_DB(params.seroba_db_remote, params.db, params.seroba_kmer)
+    GET_SEROBA_DB(params.seroba_db_remote, params.db, CHECK_SEROBA_DB.out.create_db, params.seroba_kmer)
 
     // Get paths to PopPUNK Database and External Clusters, download if necessary
-    GET_POPPUNK_DB(params.poppunk_db_remote, params.poppunk_db_local)
-    GET_POPPUNK_EXT_CLUSTERS(params.poppunk_ext_remote, params.poppunk_db_local)
+    GET_POPPUNK_DB(params.poppunk_db_remote, params.db)
+    GET_POPPUNK_EXT_CLUSTERS(params.poppunk_ext_remote, params.db)
 
     // Get path to ARIBA database, generate from reference sequences and metadata if ncessary
-    GET_ARIBA_DB(params.ariba_ref, params.ariba_metadata, params.ariba_db_local)
+    GET_ARIBA_DB(params.ariba_ref, params.ariba_metadata, params.db)
 
     // Get read pairs into Channel raw_read_pairs_ch
     raw_read_pairs_ch = Channel.fromFilePairs("$params.reads/*_{,R}{1,2}{,_001}.{fq,fastq}{,.gz}", checkIfExists: true)
@@ -129,7 +129,7 @@ workflow PIPELINE {
 
     // From generated POPPUNK_QFILE, assign GPSC to samples passed overall QC
     // Output into Channel LINEAGE.out.reports (multiple reports from a single process)
-    LINEAGE(GET_POPPUNK_DB.out.path, GET_POPPUNK_DB.out.database, GET_POPPUNK_EXT_CLUSTERS.out.file, POPPUNK_QFILE)
+    LINEAGE(GET_POPPUNK_DB.out.path, GET_POPPUNK_DB.out.database, GET_POPPUNK_EXT_CLUSTERS.out.path, GET_POPPUNK_EXT_CLUSTERS.out.file, POPPUNK_QFILE)
 
     // From Channel OVERALL_QC_PASSED_READS_ch, serotype the preprocess reads of samples passed overall QC
     // Output into Channel SEROTYPE.out.report
@@ -173,7 +173,7 @@ workflow PIPELINE {
                         .merge(GET_KRAKEN2_DB.out.path.map { [["kraken2_db_path", it]] })
                         .merge(GET_SEROBA_DB.out.path.map { [["seroba_db_path", it]] })
                         .merge(GET_POPPUNK_DB.out.path.map { [["poppunk_db_path", it]] })
-                        .merge(GET_POPPUNK_EXT_CLUSTERS.out.file.map { [["poppunk_ext_file", it]] })
+                        .merge(GET_POPPUNK_EXT_CLUSTERS.out.path.map { [["poppunk_ext_path", it]] })
                         // Save key-value tuples into a map
                         .map { it.collectEntries() }
 
