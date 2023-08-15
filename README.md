@@ -178,10 +178,13 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | `--help` | `true` or `false`<br />(Default: `false`)| Show help message.<br />Can be enabled by including `--help` without value. |
 
 ## Input and Output
+  > ⚠️ `--db` does not accept user provided local databases, directory content will be overwritten
+  <!-- -->
   | Option | Values | Description |
   | --- | ---| --- |
   | `--reads` | Any valid path<br />(Default: `"$projectDir/input"`) | Path to the input directory that contains the reads to be processed. |
   | `--output` | Any valid path<br />(Default: `"$projectDir/output"`)| Path to the output directory that save the results. |
+  | `--db` | Any valid path<br />(Default: `"$projectDir/databases"`)| Path to the directory saving databases used by the pipeline. |
   | `--assembly_publish` | `"link"` or `"symlink"` or `"copy"`<br />(Default: `"link"`)| Method used by Nextflow to publish the generated assemblies.<br>(The default setting `"link"` means hard link, therefore will fail if the output directory is set to outside of the working file system) |
 
 ## QC Parameters
@@ -204,48 +207,33 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   | `--min_contig_length` | Any integer value<br />(Default: `500`) | Minimum legnth of contig to be included in the assembly. |
 
 ## Mapping
-  > ⚠️ `--ref_genome_bwa_db_local` does not accept user provided local database, directory content will be overwritten 
-  <!-- -->
   | Option | Values | Description |
   | --- | ---| --- |
   | `--ref_genome` | Any valid path to a `.fa` or `.fasta` file<br />(Default: `"$projectDir/data/ATCC_700669_v1.fa"`) | Path to the reference genome for mapping. |
-  | `--ref_genome_bwa_db_local` | Any valid path<br />(Default: `"$projectDir/databases/bwa_ref_db"`) | Path to the directory where the reference genome FM-index database for BWA should be saved to. |
 
 ## Taxonomy 
-  > ⚠️ `--kraken2_db_local` does not accept user provided local database, directory content will be overwritten 
-  <!-- -->
   | Option | Values | Description |
   | --- | ---| --- |
   | `--kraken2_db_remote` | Any valid URL to a Kraken2 database in `.tar.gz` or `.tgz` format<br />(Default: [Minikraken v1](https://genome-idx.s3.amazonaws.com/kraken/minikraken2_v1_8GB_201904.tgz)) | URL to a Kraken2 database. |
-  | `--kraken2_db_local` | Any valid path<br />(Default: `"$projectDir/databases/kraken"`) | Path to the directory where the remote Kraken2 database should be saved to. |
   | `--kraken2_memory_mapping` | `true` or `false`<br />(Default: `true`) | Using the memory mapping option of Kraken2 or not.<br />`true` means not loading the database into RAM, suitable for memory-limited or fast storage environments. |
 
 ## Serotype
-  > ⚠️ `--seroba_db_local` does not accept user provided local database, directory content will be overwritten 
-  <!-- -->
   | Option | Values | Description |
   | --- | ---| --- |
   | `--seroba_db_remote` | Any valid URL to a Git remote repository<br />(Default: [SeroBA GitHub Repo](https://github.com/sanger-pathogens/seroba.git))| URL to a SeroBA Git remote repository. |
-  | `--seroba_db_local` | Any valid path<br />(Default: `"$projectDir/databases/seroba"`) | Path to the directory where SeroBA local repository should be saved to. |
   | `--seroba_kmer` | Any integer value<br />(Default: `71`) | Kmer size for creating the KMC database of SeroBA. |
 
 ## Lineage
-  > ⚠️ `--poppunk_db_local` does not accept user provided local database, directory content will be overwritten
-  <!-- -->
   | Option | Values | Description |
   | --- | ---| --- |
   | `--poppunk_db_remote` | Any valid URL to a PopPUNK database in `.tar.gz` or `.tgz` format<br />(Default: [GPS v6](https://gps-project.cog.sanger.ac.uk/GPS_v6.tar.gz)) | URL to a PopPUNK database. |
   | `--poppunk_ext_remote` | Any valid URL to a PopPUNK external clusters file in `.csv` format<br />(Default: [GPS v6 GPSC Designation](https://www.pneumogen.net/gps/GPS_v6_external_clusters.csv)) | URL to a PopPUNK external clusters file. |
-  | `--poppunk_db_local` | Any valid path<br />(Default: `"$projectDir/databases/poppunk"`) | Path to the directory where the remote PopPUNK database and external clusters file should be saved to. |
 
 ## Other AMR
-  > ⚠️ `--ariba_db_local` does not accept user provided local database, directory content will be overwritten 
-  <!-- -->
   | Option | Values | Description |
   | --- | ---| --- |
   | `--ariba_ref` | Any valid path to a `.fa` or `.fasta` file<br />(Default: `"$projectDir/data/ariba_ref_sequences-20230712.fasta"`) | Path to the reference sequences for ARIBA. |
   | `--ariba_metadata` | Any valid path to a `tsv` file<br />(Default: `"$projectDir/data/ariba_metadata-20230712.tsv"`) | Path to the metadata file for ARIBA. |
-  | `--ariba_db_local` | Any valid path<br />(Default: `"$projectDir/databases/ariba"`) | Path to the directory where ARIBA reference database should be saved to. |
 
 ## Singularity
   > ℹ️ This section is only valid when Singularity is used as the container engine
