@@ -21,6 +21,7 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   - [Profile](#profile)
   - [Resume](#resume)
   - [Clean Up](#clean-up)
+  - [Nextflow Tower (Optional)](#nextflow-tower-optional)
 - [Pipeline Options](#pipeline-options)
   - [Alternative Workflows](#alternative-workflows)
   - [Input and Output](#input-and-output)
@@ -155,8 +156,10 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
     ```
     ./nextflow clean
     ```
-    
-    
+
+## Nextflow Tower (Optional)
+The pipeline is compatible with [Launchpad](https://help.tower.nf/23.2/launch/launchpad/) of [Nextflow tower](https://tower.nf/) and [Nextflow `-with-tower` option](https://help.tower.nf/23.2/getting-started/deployment-options/#nextflow-with-tower). For more information, please refer to the [Nextflow Tower documentation](https://help.tower.nf/).
+
 &nbsp;
 # Pipeline Options
 - The tables below contain the available options that can be used when you run the pipeline
