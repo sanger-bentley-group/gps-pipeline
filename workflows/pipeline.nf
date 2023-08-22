@@ -145,9 +145,9 @@ workflow PIPELINE {
     PARSE_PBP_RESISTANCE(PBP_RESISTANCE.out.json)
 
     // From Channel OVERALL_QC_PASSED_ASSEMBLIES_ch, infer resistance and determinants of other antimicrobials
-    // Output into Channel PARSE_OTHER_RESISTANCE.out.result
+    // Output into Channel PARSE_OTHER_RESISTANCE.out.report
     OTHER_RESISTANCE(GET_ARIBA_DB.out.path, GET_ARIBA_DB.out.database, OVERALL_QC_PASSED_READS_ch)
-    PARSE_OTHER_RESISTANCE(OTHER_RESISTANCE.out.reports, params.ariba_metadata)
+    PARSE_OTHER_RESISTANCE(OTHER_RESISTANCE.out.report, params.ariba_metadata)
 
     // Generate sample reports by merging outputs from all result-generating modules
     GENERATE_SAMPLE_REPORT(
