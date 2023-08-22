@@ -235,8 +235,8 @@ The pipeline is compatible with [Launchpad](https://help.tower.nf/23.2/launch/la
 ## Other AMR
   | Option | Values | Description |
   | --- | ---| --- |
-  | `--ariba_ref` | Any valid path to a `.fa` or `.fasta` file<br />(Default: `"$projectDir/data/ariba_ref_sequences-20230712.fasta"`) | Path to the reference sequences for ARIBA. |
-  | `--ariba_metadata` | Any valid path to a `tsv` file<br />(Default: `"$projectDir/data/ariba_metadata-20230712.tsv"`) | Path to the metadata file for ARIBA. |
+  | `--ariba_ref` | Any valid path to a `.fa` or `.fasta` file<br />(Default: `"$projectDir/data/ariba_ref_sequences.fasta"`) | Path to the reference sequences for ARIBA. |
+  | `--ariba_metadata` | Any valid path to a `tsv` file<br />(Default: `"$projectDir/data/ariba_metadata.tsv"`) | Path to the metadata file for ARIBA. |
 
 ## Singularity
   > ℹ️ This section is only valid when Singularity is used as the container engine
@@ -444,8 +444,8 @@ This project uses open-source components. You can find the homepage or source co
 [resistanceDatabase](https://github.com/kumarnaren/resistanceDatabase)
 - Narender Kumar ([@kumarnaren](https://github.com/kumarnaren))
 - License (GPL-3.0): https://github.com/kumarnaren/resistanceDatabase/blob/main/LICENSE
-- `sequences.fasta` is renamed to `ariba_ref_sequences-*.fasta` and used as-is
-- `metadata.tsv` is renamed to `ariba_metadata-*.tsv` and modified
+- `sequences.fasta` is renamed to `ariba_ref_sequences.fasta` and used as-is
+- `metadata.tsv` is renamed to `ariba_metadata.tsv` and modified
 - The files are used as the default inputs of `GET_ARIBA_DB` process of the `amr.nf` module
 
 [Shovill](https://github.com/tseemann/shovill)
