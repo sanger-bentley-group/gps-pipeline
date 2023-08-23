@@ -3,20 +3,18 @@
 # Output AMR of a sample based on its ARIBA report and ARIBA metadata
 
 import sys
-from itertools import chain
 from collections import defaultdict
 import pandas as pd
 import csv
 
 
 # Check argv and save to global variables
-if len(sys.argv) != 5:
-    sys.exit('Usage: get_other_resistance.py REPORT_PATH DEBUG_REPORT_PATH METADATA_PATH OUTPUT_FILE')
+if len(sys.argv) != 4:
+    sys.exit('Usage: get_other_resistance.py DEBUG_REPORT_PATH METADATA_PATH OUTPUT_FILE')
 
-REPORT_PATH = sys.argv[1]
-DEBUG_REPORT_PATH = sys.argv[2]
-METADATA_PATH = sys.argv[3]
-OUTPUT_FILE = sys.argv[4]
+DEBUG_REPORT_PATH = sys.argv[1]
+METADATA_PATH = sys.argv[2]
+OUTPUT_FILE = sys.argv[3]
 
 
 def main():
@@ -57,35 +55,34 @@ def prepare_dicts():
 
 # Finding hits in ARIBA results based on targets_dict and save hits to hits_dict
 def find_hits(targets_dict, hits_dict):
-    with open(REPORT_PATH) as report, open(DEBUG_REPORT_PATH) as debug_report:
-        # Skip the header in report and debug report
-        next(report)
+    with open(DEBUG_REPORT_PATH) as debug_report:
+        # Skip the header in debug report
         next(debug_report)
 
-        # Go through lines in both report and debug report to detect targets
-        for line in (line.strip() for line in chain(report, debug_report)):
+        # Go through lines in the debug report to detect targets
+        for line in (line.strip() for line in debug_report):
             # Extract useful fields
             fields = [str(field) for field in line.split("\t")]
             ref_name, gene, var_only, ref_len, ref_base_assembled, known_var_change, has_known_var, ref_ctg_effect, ref_start, ref_end = fields[1], fields[2], fields[3], fields[7], fields[8], fields[16], fields[17], fields[19], fields[20], fields[21]
 
-            # If coverage (ref_base_assembled / ref_len) < 0.9 or either variable contains non-numeric value, skip the line
-            if not ref_base_assembled.isdigit() or not ref_len.isdigit() or int(ref_base_assembled)/int(ref_len) < 0.9:
-                continue
-            
             # If the known_var_change (. for genes, specific change for variants) is not found in the metadata of the (ref_name, gene, var_only) combination, skip the line
             try:
                 target = targets_dict[(ref_name, gene, var_only)][known_var_change]
             except KeyError: 
                 continue
 
-            # Logic for gene detection. Found means hit.
-            if var_only == "0":
+            # If ref_base_assembled or ref_len variable contains non-numeric value, skip the line
+            if not ref_base_assembled.isdigit() or not ref_len.isdigit():
+                continue
+
+            # Logic for gene detection, check coverage.
+            if var_only == "0" and int(ref_base_assembled)/int(ref_len) >= 0.8:
                 hits_dict[target].add(f'{ref_name}')
-            
-            # Logic for variant detection, further criteria required
+
+            # Logic for variant detection, coverage check is not needed, but check for other criteria
             if var_only == "1":
                 # folP-specific criteria: ref_ctg_effect (effect of change between reference and contig) is one of the keywords and the change occurs within nt 168-201
-                if ref_name.lower().startswith("folp") and ref_ctg_effect.lower() in ('fshift', 'trunc', 'indel', 'ins', 'multiple') and (168 <= int(ref_start) <= 201 or 168 <= int(ref_end) <= 201):
+                if ref_name.lower().startswith("folp") and ref_ctg_effect.lower() in ('fshift', 'trunc', 'indel', 'indels', 'ins', 'multiple') and (168 <= int(ref_start) <= 201 or 168 <= int(ref_end) <= 201):
                     pos = ref_start if ref_start == ref_end else f'{ref_start}-{ref_end}'
                     hits_dict[target].add(f'{ref_name} {ref_ctg_effect} at {pos}')
                 # Common criteria: the assembly has that variant

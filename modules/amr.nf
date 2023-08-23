@@ -85,13 +85,12 @@ process OTHER_RESISTANCE {
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
 
     output:
-    tuple val(sample_id), path(report), path(report_debug), emit: reports
+    tuple val(sample_id), path(report_debug), emit: report
 
     script:
-    report='result/report.tsv'
     report_debug='result/debug.report.tsv'
     """
-    ariba run --nucmer_min_id 80 --assembled_threshold 0.80 "$ariba_database/$database" "$read1" "$read2" result
+    ariba run --nucmer_min_id 80 "$ariba_database/$database" "$read1" "$read2" result
     """
 }
 
@@ -103,7 +102,7 @@ process PARSE_OTHER_RESISTANCE {
     tag "$sample_id"
 
     input:
-    tuple val(sample_id), path(report), path(report_debug)
+    tuple val(sample_id), path(report_debug)
     path metadata
 
     output:
@@ -112,6 +111,6 @@ process PARSE_OTHER_RESISTANCE {
     script:
     output_file="other_amr_report.csv"
     """
-    parse_other_resistance.py "$report" "$report_debug" "$metadata" "$output_file"
+    parse_other_resistance.py "$report_debug" "$metadata" "$output_file"
     """
 }
