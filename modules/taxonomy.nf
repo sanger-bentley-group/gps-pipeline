@@ -2,6 +2,8 @@
 process GET_KRAKEN2_DB {
     label 'bash_container'
     label 'farm_low'
+    label 'farm_scratchless'
+    label 'farm_slow'
 
     input:
     val remote
