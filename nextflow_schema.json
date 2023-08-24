@@ -26,6 +26,11 @@
                     "description": "Path to the directory saving databases used by the pipeline",
                     "format": "directory-path"
                 },
+                "singularity_cachedir": {
+                    "type": "string",
+                    "description": "Path to the directory where Singularity images should be saved to.",
+                    "format": "directory-path"
+                },
                 "assembly_publish": {
                     "type": "string",
                     "description": "Method used by Nextflow to publish the generated assemblies.",
@@ -41,6 +46,7 @@
                 "reads",
                 "output",
                 "db",
+                "singularity_cachedir",
                 "assembly_publish"
             ]
         },
@@ -171,7 +177,6 @@
             },
             "required": [
                 "kraken2_db_remote",
-                "kraken2_db_local",
                 "kraken2_memory_mapping"
             ]
         },
@@ -196,7 +201,6 @@
             },
             "required": [
                 "seroba_db_remote",
-                "seroba_db_local",
                 "seroba_kmer"
             ]
         },
@@ -221,8 +225,7 @@
             },
             "required": [
                 "poppunk_db_remote",
-                "poppunk_ext_remote",
-                "poppunk_db_local"
+                "poppunk_ext_remote"
             ]
         },
         "other_amr": {
@@ -250,25 +253,7 @@
             },
             "required": [
                 "ariba_ref",
-                "ariba_metadata",
-                "ariba_db_local"
-            ]
-        },
-        "singularity": {
-            "title": "Singularity",
-            "type": "object",
-            "description": "",
-            "default": "",
-            "properties": {
-                "singularity_cachedir": {
-                    "type": "string",
-                    "description": "Path to the directory where Singularity images should be saved to.",
-                    "hidden": true,
-                    "format": "directory-path"
-                }
-            },
-            "required": [
-                "singularity_cachedir"
+                "ariba_metadata"
             ]
         }
     },
@@ -296,9 +281,6 @@
         },
         {
             "$ref": "#/definitions/other_amr"
-        },
-        {
-            "$ref": "#/definitions/singularity"
         }
     ]
 }
