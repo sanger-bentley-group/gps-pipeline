@@ -81,8 +81,8 @@ def find_hits(targets_dict, hits_dict):
 
             # Logic for variant detection, coverage check is not needed, but check for other criteria
             if var_only == "1":
-                # folP-specific criteria: ref_ctg_effect (effect of change between reference and contig) is one of the keywords and the change occurs within nt 168-201
-                if ref_name.lower().startswith("folp") and ref_ctg_effect.lower() in ('fshift', 'trunc', 'indel', 'indels', 'ins', 'multiple') and (168 <= int(ref_start) <= 201 or 168 <= int(ref_end) <= 201):
+                # folP-specific criteria: ref_ctg_effect (effect of change between reference and contig) is one of the keywords and the change occurs within nt 166-201 (covering changes affecting aa 56 - 67)
+                if ref_name.lower().startswith("folp") and ref_ctg_effect.lower() in ('fshift', 'trunc', 'indel', 'indels', 'ins', 'multiple') and (166 <= int(ref_start) <= 201 or 166 <= int(ref_end) <= 201):
                     pos = ref_start if ref_start == ref_end else f'{ref_start}-{ref_end}'
                     hits_dict[target].add(f'{ref_name} {ref_ctg_effect} at {pos}')
                 # Common criteria: the assembly has that variant
