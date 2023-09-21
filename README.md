@@ -196,6 +196,7 @@ The pipeline is compatible with [Launchpad](https://help.tower.nf/23.2/launch/la
   | Option | Values | Description |
   | --- | ---| --- |
   | `--spneumo_percentage` | Any integer or float value<br />(Default: `60.00`) | Minimum *S. pneumoniae* percentage in reads to pass Taxonomy QC. |
+  | `--second_sp_percentage` | Any integer or float value<br />(Default: `5.00`) | The threshold of second most abundant species percentage in reads to trigger `WARNING` in Taxonomy QC. |
   | `--ref_coverage` | Any integer or float value<br />(Default: `60.00`) | Minimum reference coverage percentage by the reads to pass Mapping QC. |
   | `--het_snp_site` | Any integer value<br />(Default: `220`) | Maximum non-cluster heterozygous SNP (Het-SNP) site count to pass Mapping QC. |
   | `--contigs` | Any integer value<br />(Default: `500`) | Maximum contig count in assembly to pass Assembly QC. |
@@ -274,6 +275,8 @@ The pipeline is compatible with [Launchpad](https://help.tower.nf/23.2/launch/la
   <!-- -->
   > ⚠️ If the result of `Overall_QC` of a sample is `ASSEMBLER FAILURE`, the assembler has crashed when trying to assembly the reads. You might want to re-run the sample with [another assembler](#assembly), or discard the sample if it is a low quality one.
   <!-- -->
+  > ⚠️ If the results of `Taxonomy_QC` and `Overall_QC` of a sample are both `WARNING`, the sample contains non-pneumococcal species in reads that exceeds the percentage set in `--second_sp_percentage`, but the sample is otherwise QC passed and all the *in silico* data should be available. You should exercise due diligence to determine the trustworthiness of the results from this sample. 
+  <!-- -->
   > ⚠️ If the result of `Serotype` of a sample is `SEROBA FAILURE`, SeroBA has crashed when trying to serotype the sample.
   <!-- -->
   | Field | Type | Description |
@@ -291,6 +294,8 @@ The pipeline is compatible with [Launchpad](https://help.tower.nf/23.2/launch/la
   | `Ref_Cov_%` | Mapping | Percentage of reference covered by reads<br>(Default: > 60% to pass Mapping QC) |
   | `Het-SNP#` | Mapping | Non-cluster heterozygous SNP (Het-SNP) site count<br>(Default: < 220 to pass Mapping QC) |
   | `S.Pneumo_%` | Taxonomy | Percentage of reads assigned to *Streptococcus pneumoniae*<br>(Default: > 60% to pass Taxonomy QC) |
+  | `Second_Species` | Taxonomy | The second most abundant species in reads<br>(Only available if `S.Pneumo_%` passed QC) |
+  | `Second_Species_%` | Taxonomy | Percentage of reads assigned to the second most abundant species<br>(Only available if `S.Pneumo_%` passed QC)<br>(Default: > 5.00% will trigger `WARNING` in Taxonomy QC) |
   | `GPSC` | Lineage | GPSC Lineage |
   | `Serotype` | Serotype | Serotype |
   | `ST` | MLST | Sequence Type (ST) |
