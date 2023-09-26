@@ -63,7 +63,7 @@ def find_hits(targets_dict, hits_dict):
         for line in (line.strip() for line in debug_report):
             # Extract useful fields
             fields = [str(field) for field in line.split("\t")]
-            ref_name, gene, var_only, ref_len, ref_base_assembled, known_var_change, has_known_var, ref_ctg_effect, ref_start, ref_end = fields[1], fields[2], fields[3], fields[7], fields[8], fields[16], fields[17], fields[19], fields[20], fields[21]
+            ref_name, gene, var_only, ref_len, ref_base_assembled, ctg_cov, known_var_change, has_known_var, ref_ctg_effect, ref_start, ref_end = fields[1], fields[2], fields[3], fields[7], fields[8], fields[12], fields[16], fields[17], fields[19], fields[20], fields[21]
 
             # If the known_var_change (. for genes, specific change for variants) is not found in the metadata of the (ref_name, gene, var_only) combination, skip the line
             try:
@@ -71,12 +71,12 @@ def find_hits(targets_dict, hits_dict):
             except KeyError: 
                 continue
 
-            # If ref_base_assembled or ref_len variable contains non-numeric value, skip the line
-            if not ref_base_assembled.isdigit() or not ref_len.isdigit():
+            # If ref_base_assembled or ref_len or ctg_cov variables contain non-numeric value, skip the line
+            if not ref_base_assembled.isdigit() or not ref_len.isdigit() or not ctg_cov.replace('.', '', 1).isdigit():
                 continue
 
-            # Logic for gene detection, check coverage.
-            if var_only == "0" and int(ref_base_assembled)/int(ref_len) >= 0.8:
+            # Logic for gene detection, check coverage and mapped read depth.
+            if var_only == "0" and int(ref_base_assembled)/int(ref_len) >= 0.8 and float(ctg_cov) >= 20:
                 hits_dict[target].add(f'{ref_name}')
 
             # Logic for variant detection, coverage check is not needed, but check for other criteria
