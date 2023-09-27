@@ -5,7 +5,7 @@ process GENERATE_SAMPLE_REPORT {
     tag "$sample_id"
 
     input:
-    tuple val(sample_id), path ('report*.csv')
+    tuple val(sample_id), path("${sample_id}_process_report_?.csv")
 
     output:
     path sample_report, emit: report
