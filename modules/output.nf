@@ -13,8 +13,8 @@ process GENERATE_SAMPLE_REPORT {
     script:
     sample_report="${sample_id}_report.csv"
     """
-    SAMPLE_ID=$sample_id
-    SAMPLE_REPORT=$sample_report
+    SAMPLE_ID="$sample_id"
+    SAMPLE_REPORT="$sample_report"
 
     source generate_sample_report.sh
     """
