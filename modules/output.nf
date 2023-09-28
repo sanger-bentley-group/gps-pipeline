@@ -27,15 +27,16 @@ process GENERATE_OVERALL_REPORT {
     publishDir "${params.output}", mode: "copy"
 
     input:
-    path 'report*.csv'
-    path 'ariba_metadata'
+    path '*'
+    path ariba_metadata
 
     output:
     path "$overall_report", emit: report
 
     script:
+    input_pattern='*_report.csv'
     overall_report='results.csv'
     """
-    generate_overall_report.py `pwd` $ariba_metadata $overall_report
+    generate_overall_report.py '$input_pattern' $ariba_metadata $overall_report
     """
 }
