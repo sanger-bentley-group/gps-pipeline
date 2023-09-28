@@ -5,7 +5,7 @@ process GENERATE_SAMPLE_REPORT {
     tag "$sample_id"
 
     input:
-    tuple val(sample_id), path ('report*.csv')
+    tuple val(sample_id), path("${sample_id}_process_report_?.csv")
 
     output:
     path sample_report, emit: report
@@ -13,8 +13,8 @@ process GENERATE_SAMPLE_REPORT {
     script:
     sample_report="${sample_id}_report.csv"
     """
-    SAMPLE_ID=$sample_id
-    SAMPLE_REPORT=$sample_report
+    SAMPLE_ID="$sample_id"
+    SAMPLE_REPORT="$sample_report"
 
     source generate_sample_report.sh
     """
@@ -27,15 +27,16 @@ process GENERATE_OVERALL_REPORT {
     publishDir "${params.output}", mode: "copy"
 
     input:
-    path 'report*.csv'
-    path 'ariba_metadata'
+    path '*'
+    path ariba_metadata
 
     output:
     path "$overall_report", emit: report
 
     script:
+    input_pattern='*_report.csv'
     overall_report='results.csv'
     """
-    generate_overall_report.py `pwd` $ariba_metadata $overall_report
+    generate_overall_report.py '$input_pattern' $ariba_metadata $overall_report
     """
 }

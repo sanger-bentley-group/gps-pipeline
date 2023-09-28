@@ -25,8 +25,8 @@ COLUMNS_BY_CATEGORY = {
 
 # Check argv and save to global variables
 if len(sys.argv) != 4:
-    sys.exit('Usage: generate_overall_report.py WORKDIR_PATH ARIBA_METADATA OUTPUT_FILE')
-WORKDIR_PATH = sys.argv[1]
+    sys.exit('Usage: generate_overall_report.py INPUT_PATTERN ARIBA_METADATA OUTPUT_FILE')
+INPUT_PATTERN = sys.argv[1]
 ARIBA_METADATA = sys.argv[2]
 OUTPUT_FILE = sys.argv[3]
 
@@ -79,7 +79,7 @@ def get_df_output(output_columns):
 
     # Generate a dataframe for each sample report and then concat df_manifest and all dataframes into df_output 
     dfs = [df_manifest]
-    reports = glob.glob(WORKDIR_PATH +'/*.csv')
+    reports = glob.glob(INPUT_PATTERN)
     for report in reports:
         df = pd.read_csv(report, dtype=str)
         dfs.append(df)
