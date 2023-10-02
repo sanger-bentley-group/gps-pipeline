@@ -223,7 +223,7 @@ The pipeline is compatible with [Launchpad](https://help.tower.nf/23.2/launch/la
 ## Serotype
   | Option | Values | Description |
   | --- | ---| --- |
-  | `--seroba_db_remote` | Any valid URL to a Git remote repository<br />(Default: [SeroBA GitHub Repo](https://github.com/sanger-pathogens/seroba.git))| URL to a SeroBA Git remote repository. |
+  | `--seroba_db_remote` | Any valid URL to a Git remote repository<br />(Default: [SeroBA Fork GitHub Repo](https://github.com/sanger-bentley-group/seroba.git))| URL to a SeroBA Git remote repository. |
   | `--seroba_kmer` | Any integer value<br />(Default: `71`) | Kmer size for creating the KMC database of SeroBA. |
 
 ## Lineage
