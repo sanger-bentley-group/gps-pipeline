@@ -100,7 +100,7 @@ workflow PIPELINE {
 
     // From Channel TAXONOMY.out.report, provide taxonomy QC status
     // Output into Channels TAXONOMY_QC.out.result & TAXONOMY_QC.out.report
-    TAXONOMY_QC(TAXONOMY.out.report, params.spneumo_percentage, params.second_sp_percentage)
+    TAXONOMY_QC(TAXONOMY.out.report, params.spneumo_percentage, params.non_strep_percentage)
 
     // Merge Channels AREAD_QC.out.result & SSEMBLY_QC.out.result & MAPPING_QC.out.result & TAXONOMY_QC.out.result to provide Overall QC Status
     // Output into Channel OVERALL_QC.out.result & OVERALL_QC.out.report
@@ -113,12 +113,12 @@ workflow PIPELINE {
 
     // From Channel READ_QC_PASSED_READS_ch, only output reads of samples passed overall QC based on Channel OVERALL_QC.out.result
     OVERALL_QC_PASSED_READS_ch = OVERALL_QC.out.result.join(READ_QC_PASSED_READS_ch, failOnDuplicate: true)
-                        .filter { it[1] == 'PASS' || it[1] == 'WARNING' }
+                        .filter { it[1] == 'PASS' }
                         .map { it[0, 2..-1] }
 
     // From Channel ASSEMBLY_ch, only output assemblies of samples passed overall QC based on Channel OVERALL_QC.out.result
     OVERALL_QC_PASSED_ASSEMBLIES_ch = OVERALL_QC.out.result.join(ASSEMBLY_ch, failOnDuplicate: true)
-                            .filter { it[1] == 'PASS' || it[1] == 'WARNING'}
+                            .filter { it[1] == 'PASS' }
                             .map { it[0, 2..-1] }
 
     // From Channel OVERALL_QC_PASSED_ASSEMBLIES_ch, generate PopPUNK query file containing assemblies of samples passed overall QC

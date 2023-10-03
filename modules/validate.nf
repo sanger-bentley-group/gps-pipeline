@@ -17,7 +17,7 @@ validParams = [
     poppunk_db_remote: 'url_targz',
     poppunk_ext_remote: 'url_csv',
     spneumo_percentage: 'int_float',
-    second_sp_percentage: 'int_float',
+    non_strep_percentage: 'int_float',
     ref_coverage: 'int_float',
     het_snp_site: 'int',
     contigs: 'int',
