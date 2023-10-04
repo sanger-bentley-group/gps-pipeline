@@ -5,7 +5,7 @@ include { GET_REF_GENOME_BWA_DB; MAPPING; SAM_TO_SORTED_BAM; SNP_CALL; HET_SNP_C
 include { GET_KRAKEN2_DB; TAXONOMY; TAXONOMY_QC } from "$projectDir/modules/taxonomy"
 include { OVERALL_QC } from "$projectDir/modules/overall_qc"
 include { GET_POPPUNK_DB; GET_POPPUNK_EXT_CLUSTERS; LINEAGE } from "$projectDir/modules/lineage"
-include { CHECK_SEROBA_DB; GET_SEROBA_DB; SEROTYPE } from "$projectDir/modules/serotype"
+include { GET_SEROBA_DB; SEROTYPE } from "$projectDir/modules/serotype"
 include { MLST } from "$projectDir/modules/mlst"
 include { PBP_RESISTANCE; PARSE_PBP_RESISTANCE; GET_ARIBA_DB; OTHER_RESISTANCE; PARSE_OTHER_RESISTANCE } from "$projectDir/modules/amr"
 include { GENERATE_SAMPLE_REPORT; GENERATE_OVERALL_REPORT } from "$projectDir/modules/output"
@@ -19,9 +19,8 @@ workflow PIPELINE {
     // Get path to Kraken2 Database, download if necessary
     GET_KRAKEN2_DB(params.kraken2_db_remote, params.db)
 
-    // Get path to SeroBA Databases, clone and rebuild if necessary
-    CHECK_SEROBA_DB(params.seroba_db_remote, params.db, params.seroba_kmer)
-    GET_SEROBA_DB(params.seroba_db_remote, params.db, CHECK_SEROBA_DB.out.create_db, params.seroba_kmer)
+    // Get path SeroBA Databases, download and rebuild if necessary
+    GET_SEROBA_DB(params.seroba_db_remote, params.db, params.seroba_kmer)
 
     // Get paths to PopPUNK Database and External Clusters, download if necessary
     GET_POPPUNK_DB(params.poppunk_db_remote, params.db)
@@ -133,7 +132,7 @@ workflow PIPELINE {
 
     // From Channel OVERALL_QC_PASSED_READS_ch, serotype the preprocess reads of samples passed overall QC
     // Output into Channel SEROTYPE.out.report
-    SEROTYPE(GET_SEROBA_DB.out.path, GET_SEROBA_DB.out.database, OVERALL_QC_PASSED_READS_ch)
+    SEROTYPE(GET_SEROBA_DB.out.path, OVERALL_QC_PASSED_READS_ch)
 
     // From Channel OVERALL_QC_PASSED_ASSEMBLIES_ch, PubMLST typing the assemblies of samples passed overall QC
     // Output into Channel MLST.out.report

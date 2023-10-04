@@ -223,7 +223,7 @@ The pipeline is compatible with [Launchpad](https://help.tower.nf/23.2/launch/la
 ## Serotype
   | Option | Values | Description |
   | --- | ---| --- |
-  | `--seroba_db_remote` | Any valid URL to a Git remote repository<br />(Default: [SeroBA Fork GitHub Repo](https://github.com/sanger-bentley-group/seroba.git))| URL to a SeroBA Git remote repository. |
+  | `--seroba_db_remote` | Any valid URL to a SeroBA release in `.tar.gz` or `.tgz` format<br />(Default: [SeroBA v1.0.4](https://github.com/sanger-bentley-group/seroba/archive/refs/tags/v1.0.4.tar.gz))| URL to a SeroBA release. |
   | `--seroba_kmer` | Any integer value<br />(Default: `71`) | Kmer size for creating the KMC database of SeroBA. |
 
 ## Lineage
@@ -377,11 +377,6 @@ This project uses open-source components. You can find the homepage or source co
 - [State Public Health Bioinformatics Workgroup](https://staphb.org/) ([@StaPH-B](https://github.com/StaPH-B))
 - License (GPL-3.0): https://github.com/StaPH-B/docker-builds/blob/master/LICENSE
 - These Docker images provide containerised environments with different bioinformatics tools for processes of multiple modules 
-
-[Docker Image of Git](https://hub.docker.com/r/bitnami/git)
-- [Bitnami](https://bitnami.com/) ([@Bitnami](https://github.com/bitnami))
-- License (Apache 2.0): https://github.com/bitnami/containers/blob/main/LICENSE.md
-- This Docker image provides the containerised environment with Git for `CHECK_SEROBA_DB` process of the `serotype.nf` module
 
 [Docker Image of network-multitool](https://hub.docker.com/r/wbitt/network-multitool)
 - [Wbitt - We Bring In Tomorrow's Technolgies](https://wbitt.com/) ([@WBITT](https://github.com/wbitt))

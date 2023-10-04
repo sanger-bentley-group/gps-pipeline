@@ -2,7 +2,7 @@
 include { GET_REF_GENOME_BWA_DB } from "$projectDir/modules/mapping"
 include { GET_KRAKEN2_DB } from "$projectDir/modules/taxonomy"
 include { GET_POPPUNK_DB; GET_POPPUNK_EXT_CLUSTERS } from "$projectDir/modules/lineage"
-include { CHECK_SEROBA_DB; GET_SEROBA_DB } from "$projectDir/modules/serotype"
+include { GET_SEROBA_DB } from "$projectDir/modules/serotype"
 include { GET_DOCKER_COMPOSE; PULL_IMAGES } from "$projectDir/modules/docker"
 include { GET_ARIBA_DB } from "$projectDir/modules/amr"
 
@@ -17,9 +17,8 @@ workflow INIT {
     // Check Kraken2 Database, download if necessary
     GET_KRAKEN2_DB(params.kraken2_db_remote, params.db)
 
-    // Check SeroBA Databases, clone and rebuild if necessary
-    CHECK_SEROBA_DB(params.seroba_db_remote, params.db, params.seroba_kmer)
-    GET_SEROBA_DB(params.seroba_db_remote, params.db, CHECK_SEROBA_DB.out.create_db, params.seroba_kmer)
+    // Check SeroBA Databases, download and rebuild if necessary
+    GET_SEROBA_DB(params.seroba_db_remote, params.db, params.seroba_kmer)
 
     // Check to PopPUNK Database and External Clusters, download if necessary
     GET_POPPUNK_DB(params.poppunk_db_remote, params.db)

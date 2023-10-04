@@ -9,7 +9,7 @@ validParams = [
     assembler: 'assembler',
     min_contig_length: 'int',
     assembly_publish: 'publish_mode',
-    seroba_db_remote: 'url_git',
+    seroba_db_remote: 'url_targz',
     seroba_kmer: 'int',
     kraken2_db_remote: 'url_targz',
     kraken2_memory_mapping: 'boolean',
@@ -147,12 +147,6 @@ void validate(Map params) {
                     invalidValues[key] = [value, 'path to a TSV file (file does not exist)']
                 } else if (!(value ==~ /.+\.tsv$/)) {
                     invalidValues[key] = [value, 'path to a TSV file (file does not have an filename extension of .tsv)']
-                }
-                break
-
-            case 'url_git':
-                if (!(value ==~ /^(https?:\/\/)?(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)\.git$/)) {
-                    invalidValues[key] = [value, 'URL that points a Git remote repository (valid URL ending with .git)']
                 }
                 break
 
