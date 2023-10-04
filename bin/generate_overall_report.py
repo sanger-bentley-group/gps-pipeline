@@ -15,7 +15,7 @@ COLUMNS_BY_CATEGORY = {
     'READ': ['Bases'], 
     'ASSEMBLY': ['Contigs#' , 'Assembly_Length' , 'Seq_Depth'],
     'MAPPING': ['Ref_Cov_%' , 'Het-SNP#'],
-    'TAXONOMY': ['S.Pneumo_%'],
+    'TAXONOMY': ['S.Pneumo_%', 'Top_Non-Strep_Genus', 'Top_Non-Strep_Genus_%'],
     'LINEAGE': ['GPSC'],
     'SEROTYPE': ['Serotype'],
     'MLST': ['ST' , 'aroE' , 'gdh' , 'gki' , 'recP' , 'spi' , 'xpt' , 'ddl'],

@@ -379,6 +379,7 @@ process SAVE {
     |║ Taxonomy QC                                                                                     ║
     |╟──────────────────────────────────────────────────────────────┬──────────────────────────────────╢
     |${qcTextRow('Minimum S. pneumoniae percentage in reads', params.spneumo_percentage)}
+    |${qcTextRow('Maximum non-Streptococcus genus percentage in reads', params.non_strep_percentage)}
     |╠══════════════════════════════════════════════════════════════╧══════════════════════════════════╣
     |║ Mapping QC                                                                                      ║
     |╟──────────────────────────────────────────────────────────────┬──────────────────────────────────╢
