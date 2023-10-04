@@ -5,7 +5,6 @@ find_image () {
 }
 
 BASH=$(find_image bash)
-GIT=$(find_image git)
 PYTHON=$(find_image python)
 FASTP=$(find_image fastp)
 UNICYCLER=$(find_image unicycler)
@@ -27,7 +26,6 @@ add_container () {
 
 jq -n \
     --argjson bash "$(add_container "$BASH")" \
-    --argjson git "$(add_container "$GIT")" \
     --argjson python "$(add_container "$PYTHON")" \
     --argjson fastp "$(add_container "$FASTP")" \
     --argjson unicycler "$(add_container "$UNICYCLER")" \
