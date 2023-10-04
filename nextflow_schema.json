@@ -189,8 +189,8 @@
                 "seroba_db_remote": {
                     "type": "string",
                     "hidden": true,
-                    "description": "URL to a SeroBA Git remote repository.",
-                    "pattern": "^(https?:\\/\\/)?(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9()@:%_\\+.~#?&\\/=]*)\\.git$"
+                    "description": "URL to a SeroBA release.",
+                    "pattern": "^(https?:\\/\\/)?(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9()@:%_\\+.~#?&\\/=]*)\\.(tar\\.gz|tgz)$"
                 },
                 "seroba_kmer": {
                     "type": "integer",

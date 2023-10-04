@@ -5,7 +5,6 @@ add_version () {
 }
 
 jq -n \
-    --argjson git "$(add_version "$GIT_VERSION")" \
     --argjson python "$(add_version "$PYTHON_VERSION")" \
     --argjson fastp "$(add_version "$FASTP_VERSION")" \
     --argjson unicycler "$(add_version "$UNICYCLER_VERSION")" \
