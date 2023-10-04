@@ -196,6 +196,7 @@ The pipeline is compatible with [Launchpad](https://help.tower.nf/23.2/launch/la
   | Option | Values | Description |
   | --- | ---| --- |
   | `--spneumo_percentage` | Any integer or float value<br />(Default: `60.00`) | Minimum *S. pneumoniae* percentage in reads to pass Taxonomy QC. |
+  | `--non_strep_percentage` | Any integer or float value<br />(Default: `2.00`) | Maximum non-*Streptococcus* genus percentage in reads to pass Taxonomy QC. |
   | `--ref_coverage` | Any integer or float value<br />(Default: `60.00`) | Minimum reference coverage percentage by the reads to pass Mapping QC. |
   | `--het_snp_site` | Any integer value<br />(Default: `220`) | Maximum non-cluster heterozygous SNP (Het-SNP) site count to pass Mapping QC. |
   | `--contigs` | Any integer value<br />(Default: `500`) | Maximum contig count in assembly to pass Assembly QC. |
@@ -291,6 +292,8 @@ The pipeline is compatible with [Launchpad](https://help.tower.nf/23.2/launch/la
   | `Ref_Cov_%` | Mapping | Percentage of reference covered by reads<br>(Default: > 60% to pass Mapping QC) |
   | `Het-SNP#` | Mapping | Non-cluster heterozygous SNP (Het-SNP) site count<br>(Default: < 220 to pass Mapping QC) |
   | `S.Pneumo_%` | Taxonomy | Percentage of reads assigned to *Streptococcus pneumoniae*<br>(Default: > 60% to pass Taxonomy QC) |
+  | `Top_Non-Strep_Genus` | Taxonomy | The most abundant non-*Streptococcus* genus in reads |
+  | `Top_Non-Strep_Genus_%` | Taxonomy | Percentage of reads assigned to the most abundant non-*Streptococcus* genus<br>(Default: ≤ 2% to pass Taxonomy QC) |
   | `GPSC` | Lineage | GPSC Lineage |
   | `Serotype` | Serotype | Serotype |
   | `ST` | MLST | Sequence Type (ST) |

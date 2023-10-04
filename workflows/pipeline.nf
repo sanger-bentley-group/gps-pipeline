@@ -100,7 +100,7 @@ workflow PIPELINE {
 
     // From Channel TAXONOMY.out.report, provide taxonomy QC status
     // Output into Channels TAXONOMY_QC.out.result & TAXONOMY_QC.out.report
-    TAXONOMY_QC(TAXONOMY.out.report, params.spneumo_percentage)
+    TAXONOMY_QC(TAXONOMY.out.report, params.spneumo_percentage, params.non_strep_percentage)
 
     // Merge Channels AREAD_QC.out.result & SSEMBLY_QC.out.result & MAPPING_QC.out.result & TAXONOMY_QC.out.result to provide Overall QC Status
     // Output into Channel OVERALL_QC.out.result & OVERALL_QC.out.report
