@@ -35,15 +35,15 @@ add_ariba_db () {
 add_seroba_db () {
     SEROBA_DB_JSON="${SEROBA_DB_PATH}/${SEROBA_JSON}"
     if [ -f "$SEROBA_DB_JSON" ]; then
-        GIT=$(jq -r .git "$SEROBA_DB_JSON")
+        URL=$(jq -r .url "$SEROBA_DB_JSON")
         KMER=$(jq -r .kmer "$SEROBA_DB_JSON")
         CREATE_TIME=$(jq -r .create_time "$SEROBA_DB_JSON")
     else
-        GIT="Not yet created"
+        URL="Not yet created"
         KMER="Not yet created"
         CREATE_TIME="Not yet created"
     fi
-    jq -n --arg git "$GIT" --arg kmer "$KMER" --arg create_time "$CREATE_TIME" '. = {"git": $git, "kmer": $kmer, "create_time": $create_time}'
+    jq -n --arg url "$URL" --arg kmer "$KMER" --arg create_time "$CREATE_TIME" '. = {"url": $url, "kmer": $kmer, "create_time": $create_time}'
 }
 
 add_url_db () {
