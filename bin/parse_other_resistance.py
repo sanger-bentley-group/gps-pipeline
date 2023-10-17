@@ -10,7 +10,7 @@ import csv
 
 # Check argv and save to global variables
 if len(sys.argv) != 4:
-    sys.exit('Usage: get_other_resistance.py DEBUG_REPORT_PATH METADATA_PATH OUTPUT_FILE')
+    sys.exit('Usage: parse_other_resistance.py DEBUG_REPORT_PATH METADATA_PATH OUTPUT_FILE')
 
 DEBUG_REPORT_PATH = sys.argv[1]
 METADATA_PATH = sys.argv[2]
