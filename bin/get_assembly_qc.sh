@@ -4,7 +4,7 @@ CONTIGS=$(awk -F'\t' '$1 == "# contigs (>= 0 bp)" { print $2 }' "$REPORT")
 LENGTH=$(awk -F'\t' '$1 == "Total length" { print $2 }' "$REPORT")
 DEPTH=$(echo "scale=2; $BASES / $LENGTH" | bc -l)
 
-if [[ $CONTIGS -lt $QC_CONTIGS ]] && [[ $LENGTH -ge $QC_LENGTH_LOW ]] && [[ $LENGTH -le $QC_LENGTH_HIGH ]] && [[ "$(echo "$DEPTH >= $QC_DEPTH" | bc -l)" == 1 ]]; then
+if [[ $CONTIGS -le $QC_CONTIGS ]] && [[ $LENGTH -ge $QC_LENGTH_LOW ]] && [[ $LENGTH -le $QC_LENGTH_HIGH ]] && [[ "$(echo "$DEPTH >= $QC_DEPTH" | bc -l)" == 1 ]]; then
     ASSEMBLY_QC="PASS"
 else
     ASSEMBLY_QC="FAIL"

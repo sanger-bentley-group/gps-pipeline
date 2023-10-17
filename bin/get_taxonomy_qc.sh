@@ -14,7 +14,7 @@ if [ -z "$TOP_NON_STREP_GENUS_PERCENTAGE" ]; then
     TOP_NON_STREP_GENUS_PERCENTAGE="0.00"
 fi
 
-if [[ "$(echo "$PERCENTAGE > $QC_SPNEUMO_PERCENTAGE" | bc -l)" == 1 ]] && [[ "$(echo "$TOP_NON_STREP_GENUS_PERCENTAGE <= $QC_TOP_NON_STREP_GENUS_PERCENTAGE" | bc -l)" == 1 ]]; then
+if [[ "$(echo "$PERCENTAGE >= $QC_SPNEUMO_PERCENTAGE" | bc -l)" == 1 ]] && [[ "$(echo "$TOP_NON_STREP_GENUS_PERCENTAGE <= $QC_TOP_NON_STREP_GENUS_PERCENTAGE" | bc -l)" == 1 ]]; then
     TAXONOMY_QC="PASS"
 else
     TAXONOMY_QC="FAIL"
