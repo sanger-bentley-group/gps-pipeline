@@ -224,7 +224,7 @@ The pipeline is compatible with [Launchpad](https://help.tower.nf/23.2/launch/la
 ## Serotype
   | Option | Values | Description |
   | --- | ---| --- |
-  | `--seroba_db_remote` | Any valid URL to a SeroBA release in `.tar.gz` or `.tgz` format<br />(Default: [SeroBA v1.0.4](https://github.com/sanger-bentley-group/seroba/archive/refs/tags/v1.0.4.tar.gz))| URL to a SeroBA release. |
+  | `--seroba_db_remote` | Any valid URL to a SeroBA release in `.tar.gz` or `.tgz` format<br />(Default: [SeroBA v1.0.5](https://github.com/sanger-bentley-group/seroba/archive/refs/tags/v1.0.5.tar.gz))| URL to a SeroBA release. |
   | `--seroba_kmer` | Any integer value<br />(Default: `71`) | Kmer size for creating the KMC database of SeroBA. |
 
 ## Lineage
