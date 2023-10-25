@@ -4,123 +4,196 @@
 
 import sys
 from collections import defaultdict
-import pandas as pd
+import re
 import csv
+import pandas as pd
 
 
-# Check argv and save to global variables
+# Check argv
 if len(sys.argv) != 4:
     sys.exit('Usage: parse_other_resistance.py DEBUG_REPORT_PATH METADATA_PATH OUTPUT_FILE')
 
+# Global Constants
 DEBUG_REPORT_PATH = sys.argv[1]
 METADATA_PATH = sys.argv[2]
 OUTPUT_FILE = sys.argv[3]
+LOW_COVERAGE = "Low Coverage" # String for Low Coverage warning
 
 
 def main():
-    targets_dict, hits_dict = prepare_dicts()
-    find_hits(targets_dict, hits_dict)
-    output = get_output(hits_dict)
+    target_dict = get_target()
+    hit_dict = find_hit(target_dict)
+    output = get_output(hit_dict)
 
     # Save output to OUTPUT_FILE in csv format
     pd.DataFrame([output]).to_csv(OUTPUT_FILE, index=False, quoting=csv.QUOTE_ALL)
 
 
-# Prepare targets_dict for searching hits and hits_dict for saving hits
-def prepare_dicts():
-    # For saving (reference, gene, var_only) combinations as keys and their information found in metadata as values in dict format (i.e. {var_change: target})
-    # Used to search whether there is a hit in the ARIBA result
-    targets_dict = defaultdict(dict)
+# Saving all targets in metadata as key and their information as values
+def get_target():
+    df_metadata = pd.read_csv(METADATA_PATH, sep='\t')
+    target_dict = defaultdict(lambda: defaultdict(set))
 
-    # For saving targets found in metadata as key and their determinants (i.e. hits) found in ARIBA result as values in set format
-    hits_dict = {}
+    # Add ref_group based on ref_name to the Dataframe
+    df_metadata['ref_group'] = df_metadata['ref_name'].apply(lambda x: x.split('_')[0])
 
-    with open(METADATA_PATH) as metadata:
-        # Skip the header in metadata
-        next(metadata)
+    # Handle each AMR target one-by-one
+    for target, df_target in df_metadata.groupby('target'):
+        # Create Dataframe slices with presence and variant mechanism respectively
+        df_target_presence = df_target[df_target["var_only"] == 0]
+        df_target_var = df_target[df_target["var_only"] == 1]
+        
+        # Logic if presence of gene/non-gene is a mechanism of this target, add releveant ref_name to the existing set (create one by default if set does not exist)
+        if len(df_target_presence.index) != 0:
+            target_dict[target]['presence'].update(df_target_presence['ref_name'])
 
-        # Go through lines in metadata and save findings to targets_dict and hits_dict
-        for line in (line.strip() for line in metadata):
-            # Extract useful fields
-            fields = [str(field) for field in line.split("\t")] 
-            ref_name, gene, var_only, var_change, _, target = fields
+        # Logic if variant of gene/non-gene is a mechanism of this target
+        if len(df_target_var.index) != 0:
+            target_dict[target]['variant'] = defaultdict(lambda: defaultdict(lambda: defaultdict(set)))
 
-            # Populating targets_dict
-            targets_dict[(ref_name, gene, var_only)].update({var_change: target})
-            # Populating hits_dict
-            hits_dict.update({target: set()})
-    
-    return targets_dict, hits_dict
+            # Further handle each ref_group one-by-one
+            for ref_group, df_ref_group in df_target_var.groupby('ref_group'):
+                # Each gene/non-gene group can only be gene or non-gene, cannot be both
+                is_gene = df_ref_group['gene'].unique()
+                if len(is_gene) != 1:
+                    raise Exception(f"Error: Conflicting information. {ref_group} is considered as both gene and non-gene in the provided ARIBA metadata.")
+                is_gene = is_gene[0]
+                    
+                # Save whether this ref_group is a gene or not 
+                target_dict[target]['variant'][ref_group]['is_gene'] = bool(is_gene)
+
+                # Save variants of each individual gene/non-gene within the ref_group
+                for ref, df_ref in df_ref_group.groupby('ref_name'):
+                    target_dict[target]['variant'][ref_group]['ref'][ref].update(df_ref['var_change'])
+
+    return target_dict
 
 
 # Finding hits in ARIBA results based on targets_dict and save hits to hits_dict
-def find_hits(targets_dict, hits_dict):
-    with open(DEBUG_REPORT_PATH) as debug_report:
-        # Skip the header in debug report
-        next(debug_report)
+def find_hit(target_dict):
+    df_report = pd.read_csv(DEBUG_REPORT_PATH, sep="\t")
 
-        # Go through lines in the debug report to detect targets
-        for line in (line.strip() for line in debug_report):
-            # Extract useful fields
-            fields = [str(field) for field in line.split("\t")]
-            ref_name, gene, var_only, ref_len, ref_base_assembled, ctg_cov, known_var_change, has_known_var, ref_ctg_effect, ref_start, ref_end = fields[1], fields[2], fields[3], fields[7], fields[8], fields[12], fields[16], fields[17], fields[19], fields[20], fields[21]
+    # Remove rows with non-numeric value in ref_base_assembled, ref_len, or ctg_cov
+    df_report['ref_base_assembled'] = pd.to_numeric(df_report['ref_base_assembled'], errors='coerce')
+    df_report['ref_len'] = pd.to_numeric(df_report['ref_len'], errors='coerce')
+    df_report['ctg_cov'] = pd.to_numeric(df_report['ctg_cov'], errors='coerce')
+    df_report.dropna(subset=['ref_base_assembled', 'ref_len', 'ctg_cov'], inplace=True)
 
-            # If the known_var_change (. for genes, specific change for variants) is not found in the metadata of the (ref_name, gene, var_only) combination, skip the line
-            try:
-                target = targets_dict[(ref_name, gene, var_only)][known_var_change]
-            except KeyError: 
-                continue
+    # Calculate reference coverage
+    df_report['coverage'] = df_report['ref_base_assembled'] / df_report['ref_len']
 
-            # If ref_base_assembled or ref_len or ctg_cov variables contain non-numeric value, skip the line
-            if not ref_base_assembled.isdigit() or not ref_len.isdigit() or not ctg_cov.replace('.', '', 1).isdigit():
-                continue
+    # Saving all targets in metadata as key and their determinants (i.e. hits) found in ARIBA result as values in set format 
+    hit_dict = {target: set() for target in target_dict}
 
-            # Logic for gene detection, check coverage and mapped read depth.
-            if var_only == "0" and int(ref_base_assembled)/int(ref_len) >= 0.8 and float(ctg_cov) >= 20:
-                hits_dict[target].add(f'{ref_name}')
+    # Handle each AMR target one-by-one
+    for target, target_content in target_dict.items():
+        # Logic if presence of gene/non-gene is a mechanism of this target 
+        if 'presence' in target_content:
+            for ref in target_content['presence']:
+                # Add refs that pass coverage and mapped read depth checks
+                df_report_hit = df_report[
+                    (df_report['ref_name'] == ref) &
+                    (df_report['coverage'] >= 0.8) &
+                    (df_report['ctg_cov'] >= 20)
+                ]
+                hit_dict[target].update(df_report_hit['ref_name'])
 
-            # Logic for variant detection, coverage check is not needed, but check for other criteria
-            if var_only == "1":
-                # folP-specific criteria: ref_ctg_effect (effect of change between reference and contig) is one of the keywords and the change occurs within nt 166-201 (covering changes affecting aa 56 - 67)
-                if ref_name.lower().startswith("folp") and ref_ctg_effect.lower() in ('fshift', 'trunc', 'indel', 'indels', 'ins', 'multiple') and (166 <= int(ref_start) <= 201 or 166 <= int(ref_end) <= 201):
-                    pos = ref_start if ref_start == ref_end else f'{ref_start}-{ref_end}'
-                    hits_dict[target].add(f'{ref_name} {ref_ctg_effect} at {pos}')
-                # Common criteria: the assembly has that variant
-                elif has_known_var == "1":
-                    hits_dict[target].add(f'{ref_name} Variant {known_var_change}')
+        # Logic if variant of gene/non-gene is a mechanism of this target
+        if 'variant' in target_content:
+            # Further handle each ref_group one-by-one
+            for ref_group, ref_group_content in target_content['variant'].items():
+                # Create Dataframe slices of entries in ref_group only 
+                df_ref_group = df_report[df_report['ref_name'].str.startswith(f"{ref_group}_")]
+
+                # If ref_group is gene:
+                # - further slice Dataframe to include those with 10x mapped depth only
+                # - if no entry in ref_group has 10x+ depth, mark ref_group as Low Coverage and skip 
+                if ref_group_content['is_gene']:
+                    df_ref_group = df_ref_group[df_ref_group['ctg_cov'] >= 10]
+                    if len(df_ref_group.index) == 0:
+                        hit_dict[target].add(f'{ref_group} {LOW_COVERAGE}')
+                        continue
+
+                # folP ref_group specific criteria: ref_ctg_effect (effect of change between reference and contig) is one of the keywords and the change occurs within nt 166-201 (covering changes affecting aa 56 - 67)
+                if ref_group.lower() == "folp":
+                    df_ref_group_hit = df_ref_group[
+                        (df_ref_group["ref_ctg_effect"].str.lower().isin(['fshift', 'trunc', 'indel', 'indels', 'ins', 'multiple'])) &
+                        (df_ref_group["ref_start"].astype(int).between(166, 201) | df_ref_group["ref_end"].astype(int).between(166, 201))
+                    ]
+                    for ref_start, ref_end, ref_name, ref_ctg_effect in df_ref_group_hit[['ref_start', 'ref_end', 'ref_name', 'ref_ctg_effect']].itertuples(index=False, name=None):
+                        pos = ref_start if ref_start == ref_end else f'{ref_start}-{ref_end}'
+                        hit_dict[target].add(f"{ref_name} {ref_ctg_effect} at {pos}")
+
+                # Criteria for other ref_group: known_var_change is one of the known variants and has_known_var is 1
+                else:
+                    # Handle each ref_name within the ref_group one-by-one
+                    for ref, vars in ref_group_content['ref'].items():
+                        df_ref_group_hit = df_ref_group[
+                            (df_ref_group['ref_name'] == ref) & 
+                            (df_ref_group['known_var_change'].isin(vars)) & 
+                            (df_ref_group['has_known_var'].astype(str) == '1')
+                        ]
+                        if len(df_ref_group_hit.index) != 0:
+                            for var_hit in df_ref_group_hit['known_var_change'].unique():
+                                hit_dict[target].add(f'{ref} Variant {var_hit}')
+
+    return hit_dict
 
 
-# Generating final output dataframe based on hits_dict
-def get_output(hits_dict):
-    # For saving final output, where information is saved per-target
+# Generating final output dataframe based on hit_dict
+def get_output(hit_dict):
     output = {}
 
-    # Go through targets in hits_dict
-    for target in hits_dict:
-        # If the target has no hit, set output as S or NEG (only for PILI-1/2), and determinant as _
-        if len(hits_dict[target]) == 0:
+    # Go through targets in hit_dict
+    for target in hit_dict:
+        # If the target has no hit, set output as S or NEG (for PILI-1/2), and determinant as _
+        if len(hit_dict[target]) == 0:
             if target.lower().startswith('pili'):
                 output[target] = 'NEG'
             else:
                 output[f'{target}_Res'] = 'S'
 
             output[f'{target}_Determinant'] = '_'
-        # If the target has hit, set output as R or POS (only for PILI-1/2), and join all hits as determinant
         else:
-            if target.lower().startswith('pili'):
-                output[target] = 'POS'
+            # FQ specific-criteria
+            if target.lower() == 'fq':
+                # If gyrA or gyrB is mutated, FQ is R
+                if any(re.match(rf"^gyr[AB](?!.*{LOW_COVERAGE}$).*$", determinant) for determinant in hit_dict[target]):
+                    output[f'{target}_Res'] = 'R'
+                # else if gyrA or gyrB have low coverage, FQ is Indeterminable as it cannot be sure whether it will be a R or not
+                elif any(re.match(rf"^gyr[AB].*{LOW_COVERAGE}$", determinant) for determinant in hit_dict[target]):
+                    output[f'{target}_Res'] = 'Indeterminable'
+                # If parC or parE is mutated, FQ is I as gyrA or gyrB mutation already excluded
+                elif any(re.match(rf"^par[CE](?!.*{LOW_COVERAGE}$).*$", determinant) for determinant in hit_dict[target]):
+                    output[f'{target}_Res'] = 'I'
+                # else if parC or parE have low coverage, FQ is Indeterminable as it cannot be sure whether it will be a I or not
+                elif any(re.match(rf"^par[CE].*{LOW_COVERAGE}$", determinant) for determinant in hit_dict[target]):
+                    output[f'{target}_Res'] = 'Indeterminable'
+                # Should only reach this part if all of gyrA, gyrB, parC, parE have good coverage and not mutated, but other hit(s) exist 
+                else:
+                    raise Exception(f"Error: Unexpect determinant scenario of {target}: {'; '.join(hit_dict[target])}")
+
+            # Criteria for other targets
             else:
-                output[f'{target}_Res'] = 'R'
+                # If all determinants have Low Coverage warning, set output as Indeterminable
+                if hit_dict[target] and all(re.match(rf"^.*{LOW_COVERAGE}$", determinant) for determinant in hit_dict[target]):
+                    output[f'{target}_Res'] = 'Indeterminable'
+                # If the target has a hit without Low Coverage warning, set output as R or POS (for PILI-1/2), and join all hits as determinant
+                else:
+                    if target.lower().startswith('pili'):
+                        output[target] = 'POS'
+                    else:
+                        output[f'{target}_Res'] = 'R'
 
-            output[f'{target}_Determinant'] = '; '.join(sorted(hits_dict[target]))
+            output[f'{target}_Determinant'] = '; '.join(sorted(hit_dict[target]))
 
-    add_output_special_cases(output, hits_dict)
+    add_inferred_results(output, hit_dict)
 
     return output
 
 
-# Special cases to add to output
-def add_output_special_cases(output, hits_dict):
+# Inferred cases to add to output
+def add_inferred_results(output, hit_dict):
     # If TET exists and DOX does not: add DOX to output; directly copy output and determinant
     if 'TET_Res' in output and 'DOX_Res' not in output:
         output['DOX_Res'] = output['TET_Res']
@@ -132,23 +205,24 @@ def add_output_special_cases(output, hits_dict):
         output['LFX_Determinant'] = output['FQ_Determinant']
 
     # If both TMP and SMX exists, and COT does not: add COT to output.
-    # If R in both, COT is R; if R in one of them, COT is I; if S in both, COT is S
-    # Copy TMP_Determinant and SMX_Determinant to COT_Determinant
     if 'TMP_Res' in output and 'SMX_Res' in output and 'COT_Res' not in output:
-        if output['TMP_Res'] == 'R' and output['SMX_Res'] == 'R':
+        # If Indeterminable in either, COT is Indeterminable; If R in both, COT is R; if R in one of them, COT is I; if S in both, COT is S
+        if output['TMP_Res'] == 'Indeterminable' or output['SMX_Res'] == 'Indeterminable':
+            output['COT_Res'] = 'Indeterminable'
+        elif output['TMP_Res'] == 'R' and output['SMX_Res'] == 'R':
             output['COT_Res'] = 'R'
-            output['COT_Determinant'] = '; '.join(sorted(hits_dict['TMP'].union(hits_dict['SMX'])))
         elif (output['TMP_Res'] == 'R') ^ (output['SMX_Res'] == 'R'):
             output['COT_Res'] = 'I'
-            output['COT_Determinant'] = '; '.join(sorted(hits_dict['TMP'].union(hits_dict['SMX'])))
         elif output['TMP_Res'] == 'S' and output['SMX_Res'] == 'S':
             output['COT_Res'] = 'S'
-            output['COT_Determinant'] = '_'
+
+        # Copy TMP_Determinant and SMX_Determinant to COT_Determinant
+        output['COT_Determinant'] = res if (res := '; '.join(sorted(hit_dict['TMP'].union(hit_dict['SMX'])))) else '_'
 
     # If ERY_CLI exists: add ERY and CLI to output.
-    # If ERY_CLI is R, ERY and CLI are R, and add ERY_CLI determinant to their determinants
-    # If ERY_CLI is S, ERY and CLI are S if they do not already exist, otherwise leave them unchanged
     if 'ERY_CLI_Res' in output:
+        # If ERY_CLI is R, ERY and CLI are R, and add ERY_CLI determinant to their determinants
+        # If ERY_CLI is S, ERY and CLI are S if they do not already exist, otherwise leave them unchanged
         if output['ERY_CLI_Res'] == 'R':
             output['ERY_Res'] = 'R'
             output['CLI_Res'] = 'R'
@@ -156,8 +230,8 @@ def add_output_special_cases(output, hits_dict):
             output['ERY_Res'] = output['ERY_Res'] if 'ERY_Res' in output else 'S'
             output['CLI_Res'] = output['CLI_Res'] if 'CLI_Res' in output else 'S'
         
-        output['ERY_Determinant'] = '; '.join(sorted(hits_dict['ERY_CLI'].union(hits_dict['ERY']))) if 'ERY' in hits_dict and len(hits_dict['ERY']) != 0 else output['ERY_CLI_Determinant']
-        output['CLI_Determinant'] = '; '.join(sorted(hits_dict['ERY_CLI'].union(hits_dict['CLI']))) if 'CLI' in hits_dict and len(hits_dict['CLI']) != 0 else output['ERY_CLI_Determinant']
+        output['ERY_Determinant'] = '; '.join(sorted(hit_dict['ERY_CLI'].union(hit_dict['ERY']))) if 'ERY' in hit_dict and len(hit_dict['ERY']) != 0 else output['ERY_CLI_Determinant']
+        output['CLI_Determinant'] = '; '.join(sorted(hit_dict['ERY_CLI'].union(hit_dict['CLI']))) if 'CLI' in hit_dict and len(hit_dict['CLI']) != 0 else output['ERY_CLI_Determinant']
 
 
 if __name__ == "__main__":
