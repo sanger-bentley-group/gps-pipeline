@@ -1,7 +1,7 @@
 #!/usr/bin/env nextflow
 
 // Version of this release
-pipelineVersion = '0.8.2'
+pipelineVersion = '1.0.0-rc1'
 
 // Import workflow modules
 include { PIPELINE } from "$projectDir/workflows/pipeline"
