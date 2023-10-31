@@ -287,12 +287,12 @@ The pipeline is compatible with [Launchpad](https://help.tower.nf/23.2/launch/la
   | `Taxonomy_QC` | QC | Taxonomy quality control result |
   | `Overall_QC` | QC | Overall quality control result<br>(Based on `Assembly_QC`, `Mapping_QC` and `Taxonomy_QC`) |
   | `Bases` | Read | Number of bases in the reads<br>(Default: ≥ 38 Mb to pass Read QC) |
-  | `Contigs#` | Assembly | Number of contigs in the assembly<br>(Default: < 500 to pass Assembly QC) |
+  | `Contigs#` | Assembly | Number of contigs in the assembly<br>(Default: ≤ 500 to pass Assembly QC) |
   | `Assembly_Length` | Assembly | Total length of the assembly<br>(Default: 1.9 - 2.3 Mb to pass Assembly QC) |
   | `Seq_Depth` | Assembly | Sequencing depth of the assembly<br>(Default: ≥ 20x to pass Assembly QC) |
-  | `Ref_Cov_%` | Mapping | Percentage of reference covered by reads<br>(Default: > 60% to pass Mapping QC) |
-  | `Het-SNP#` | Mapping | Non-cluster heterozygous SNP (Het-SNP) site count<br>(Default: < 220 to pass Mapping QC) |
-  | `S.Pneumo_%` | Taxonomy | Percentage of reads assigned to *Streptococcus pneumoniae*<br>(Default: > 60% to pass Taxonomy QC) |
+  | `Ref_Cov_%` | Mapping | Percentage of reference covered by reads<br>(Default: ≥ 60% to pass Mapping QC) |
+  | `Het-SNP#` | Mapping | Non-cluster heterozygous SNP (Het-SNP) site count<br>(Default: ≤ 220 to pass Mapping QC) |
+  | `S.Pneumo_%` | Taxonomy | Percentage of reads assigned to *Streptococcus pneumoniae*<br>(Default: ≥ 60% to pass Taxonomy QC) |
   | `Top_Non-Strep_Genus` | Taxonomy | The most abundant non-*Streptococcus* genus in reads |
   | `Top_Non-Strep_Genus_%` | Taxonomy | Percentage of reads assigned to the most abundant non-*Streptococcus* genus<br>(Default: ≤ 2% to pass Taxonomy QC) |
   | `GPSC` | Lineage | GPSC Lineage |
