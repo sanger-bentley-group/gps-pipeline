@@ -182,6 +182,8 @@ The pipeline is compatible with [Launchpad](https://help.tower.nf/23.2/launch/la
   | `--help` | `true` or `false`<br />(Default: `false`)| Show help message.<br />Can be enabled by including `--help` without value. |
 
 ## Input and Output
+  > ⚠️ `--output` overwrites existing results in the target directory if there is any
+  <!-- -->
   > ⚠️ `--db` does not accept user provided local databases, directory content will be overwritten
   <!-- -->
   | Option | Values | Description |
