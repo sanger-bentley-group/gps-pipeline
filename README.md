@@ -50,7 +50,8 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 ## Requirement
 - A POSIX-compatible system (e.g. Linux, macOS, Windows with [WSL](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux)) with Bash 3.2 or later
 - Java 11 or later (up to 21) ([OpenJDK](https://openjdk.org/)/[Oracle Java](https://www.oracle.com/java/))
-- [Docker](https://www.docker.com/) or [Singularity](https://sylabs.io/singularity/)
+- [Docker](https://www.docker.com/) or [Singularity](https://sylabs.io/singularity/)/[Apptainer](https://apptainer.org/)
+  - For Linux, [Singularity](https://sylabs.io/singularity/)/[Apptainer](https://apptainer.org/) or [Docker Engine](https://docs.docker.com/engine/) is recommended over [Docker Desktop for Linux](https://docs.docker.com/desktop/). The latter is known to cause permission issues when running the pipeline on Linux. 
 - It is recommended to have at least 16GB of RAM and 100GB of free storage
   > ℹ️ Details on storage
   > - The pipeline core files use < 1GB
