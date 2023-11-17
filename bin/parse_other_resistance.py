@@ -118,7 +118,7 @@ def find_hit(target_dict):
                 if ref_group.lower() == "folp":
                     df_ref_group_hit = df_ref_group[
                         (df_ref_group["ref_ctg_effect"].str.lower().isin(['fshift', 'trunc', 'indel', 'indels', 'ins', 'multiple'])) &
-                        (df_ref_group["ref_start"].astype(int).between(166, 201) | df_ref_group["ref_end"].astype(int).between(166, 201))
+                        (df_ref_group["ref_start"].apply(pd.to_numeric, errors='coerce').between(166, 201) | df_ref_group["ref_end"].apply(pd.to_numeric, errors='coerce').between(166, 201))
                     ]
                     for ref_start, ref_end, ref_name, ref_ctg_effect in df_ref_group_hit[['ref_start', 'ref_end', 'ref_name', 'ref_ctg_effect']].itertuples(index=False, name=None):
                         pos = ref_start if ref_start == ref_end else f'{ref_start}-{ref_end}'
