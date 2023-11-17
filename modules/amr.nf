@@ -19,7 +19,7 @@ process PBP_RESISTANCE {
 }
 
 // Extract the results from the output file of the PBP AMR predictor
-process GET_PBP_RESISTANCE {
+process PARSE_PBP_RESISTANCE {
     label 'bash_container'
     label 'farm_low'
 
@@ -29,53 +29,88 @@ process GET_PBP_RESISTANCE {
     tuple val(sample_id), path(json)
 
     output:
-    tuple val(sample_id), env(pbp1a), env(pbp2b), env(pbp2x), env(AMO_MIC), env(AMO), env(CFT_MIC), env(CFT_MENINGITIS), env(CFT_NONMENINGITIS), env(TAX_MIC), env(TAX_MENINGITIS), env(TAX_NONMENINGITIS), env(CFX_MIC), env(CFX), env(MER_MIC), env(MER), env(PEN_MIC), env(PEN_MENINGITIS), env(PEN_NONMENINGITIS), emit: result
+    tuple val(sample_id), path(pbp_amr_report), emit: report
 
     script:
+    pbp_amr_report='pbp_amr_report.csv'
     """
     JSON_FILE="$json"
+    PBP_AMR_REPORT="$pbp_amr_report"
 
-    source get_pbp_resistance.sh
+    source parse_pbp_resistance.sh
     """
 }
 
-// Run AMRsearch to infer resistance (also determinants if any) of other antimicrobials
+// Return database path, create if necessary
+process GET_ARIBA_DB {
+    label 'ariba_container'
+    label 'farm_low'
+    label 'farm_scratchless'
+    label 'farm_slow'
+
+    input:
+    path ref_sequences
+    path metadata
+    path db
+
+    output:
+    path ariba_db, emit: path
+    val output, emit: database
+
+    script:
+    ariba_db="${db}/ariba"
+    output='database'
+    json='done_ariba_db.json'
+    """
+    REF_SEQUENCES="$ref_sequences"
+    METADATA="$metadata"
+    DB_LOCAL="$ariba_db"
+    OUTPUT="$output"
+    JSON_FILE="$json"
+
+    source check-create_ariba_db.sh
+    """
+}
+
+// Run ARIBA to identify AMR
 process OTHER_RESISTANCE {
-    label 'amrsearch_container'
+    label 'ariba_container'
     label 'farm_low'
 
     tag "$sample_id"
 
     input:
-    tuple val(sample_id), path(assembly)
+    path ariba_database
+    val database
+    tuple val(sample_id), path(read1), path(read2), path(unpaired)
 
     output:
-    tuple val(sample_id), path(json), emit: json
+    tuple val(sample_id), path(report_debug), emit: report
 
     script:
-    json='result.json'
+    report_debug='result/debug.report.tsv'
     """
-    java -jar /paarsnp/paarsnp.jar -i "$assembly" -s 1313 -o > $json
+    ariba run --nucmer_min_id 80 "$ariba_database/$database" "$read1" "$read2" result
     """
 }
 
-// Extract the results from the output file of the AMRsearch
-process GET_OTHER_RESISTANCE {
-    label 'bash_container'
+// Extracting resistance information from ARIBA report
+process PARSE_OTHER_RESISTANCE {
+    label 'python_container'
     label 'farm_low'
 
     tag "$sample_id"
 
     input:
-    tuple val(sample_id), path(json)
+    tuple val(sample_id), path(report_debug)
+    path metadata
 
     output:
-    tuple val(sample_id), env(CHL_RES), env(CHL_DETERMINANTS), env(CLI_RES), env(CLI_DETERMINANTS), env(ERY_RES), env(ERY_DETERMINANTS), env(FQ_RES), env(FQ_DETERMINANTS), env(KAN_RES), env(KAN_DETERMINANTS), env(LZO_RES), env(LZO_DETERMINANTS), env(TET_RES), env(TET_DETERMINANTS), env(TMP_RES), env(TMP_DETERMINANTS), env(SMX_RES), env(SMX_DETERMINANTS), env(COT_RES), env(COT_DETERMINANTS), emit: result
+    tuple val(sample_id), path(output_file), emit: report
 
     script:
+    output_file="other_amr_report.csv"
     """
-    JSON_FILE="$json"
-    
-    source get_other_resistance.sh
+    parse_other_resistance.py "$report_debug" "$metadata" "$output_file"
     """
 }

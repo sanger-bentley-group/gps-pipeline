@@ -1,4 +1,4 @@
-include { IMAGES; DATABASES; TOOLS; COMBINE_INFO; PARSE; PRINT; SAVE; GIT_VERSION; PYTHON_VERSION; FASTP_VERSION; UNICYCLER_VERSION; SHOVILL_VERSION; QUAST_VERSION; BWA_VERSION; SAMTOOLS_VERSION; BCFTOOLS_VERSION; POPPUNK_VERSION; MLST_VERSION; KRAKEN2_VERSION; SEROBA_VERSION } from "$projectDir/modules/info"
+include { IMAGES; DATABASES; TOOLS; COMBINE_INFO; PARSE; PRINT; SAVE; PYTHON_VERSION; FASTP_VERSION; UNICYCLER_VERSION; SHOVILL_VERSION; QUAST_VERSION; BWA_VERSION; SAMTOOLS_VERSION; BCFTOOLS_VERSION; POPPUNK_VERSION; MLST_VERSION; KRAKEN2_VERSION; SEROBA_VERSION; ARIBA_VERSION } from "$projectDir/modules/info"
 
 // Alternative workflow that prints versions of pipeline and tools
 workflow PRINT_VERSION {
@@ -7,10 +7,12 @@ workflow PRINT_VERSION {
 
     main:
         GET_VERSION(
-            params.ref_genome_bwa_db_local,
-            params.kraken2_db_local,
-            params.seroba_local,
-            params.poppunk_local,
+            "${params.db}/bwa",
+            "${params.db}/ariba",
+            "${params.db}/kraken2",
+            "${params.db}/seroba",
+            "${params.db}/poppunk",
+            "${params.db}/poppunk_ext",
             pipeline_version
         ) \
         | PARSE \
@@ -26,9 +28,11 @@ workflow SAVE_INFO {
     main:
         GET_VERSION(
             databases_info.bwa_db_path,
+            databases_info.ariba_db_path,
             databases_info.kraken2_db_path,
             databases_info.seroba_db_path,
             databases_info.poppunk_db_path,
+            databases_info.poppunk_ext_path,
             pipeline_version
         ) \
        | PARSE \
@@ -39,9 +43,11 @@ workflow SAVE_INFO {
 workflow GET_VERSION {
     take:
         bwa_db_path
+        ariba_db_path
         kraken2_db_path
         seroba_db_path
         poppunk_db_path
+        poppunk_ext_path
         pipeline_version
 
     main:
@@ -49,14 +55,15 @@ workflow GET_VERSION {
 
         DATABASES(
             bwa_db_path,
+            ariba_db_path,
             kraken2_db_path,
             seroba_db_path,
-            poppunk_db_path
+            poppunk_db_path,
+            poppunk_ext_path
         )
 
         nextflow_version = "$nextflow.version"
 
-        GIT_VERSION()
         PYTHON_VERSION()
         FASTP_VERSION()
         UNICYCLER_VERSION()
@@ -69,9 +76,9 @@ workflow GET_VERSION {
         MLST_VERSION()
         KRAKEN2_VERSION()
         SEROBA_VERSION()
+        ARIBA_VERSION()
 
         TOOLS(
-            GIT_VERSION.out,
             PYTHON_VERSION.out,
             FASTP_VERSION.out,
             UNICYCLER_VERSION.out,
@@ -83,7 +90,8 @@ workflow GET_VERSION {
             POPPUNK_VERSION.out,
             MLST_VERSION.out,
             KRAKEN2_VERSION.out,
-            SEROBA_VERSION.out
+            SEROBA_VERSION.out,
+            ARIBA_VERSION.out
         )
 
         COMBINE_INFO(

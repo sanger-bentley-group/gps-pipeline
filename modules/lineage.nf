@@ -2,20 +2,26 @@
 process GET_POPPUNK_DB {
     label 'bash_container'
     label 'farm_low'
+    label 'farm_scratchless'
+    label 'farm_slow'
 
     input:
     val db_remote
-    path local
+    path db
 
     output:
-    tuple path(local), env(DB_NAME)
+    path poppunk_db, emit: path
+    env DB_NAME, emit: database
 
     script:
+    poppunk_db="${db}/poppunk"
+    json='done_poppunk.json'
     """
     DB_REMOTE="$db_remote"
-    DB_LOCAL="$local"
+    DB_LOCAL="$poppunk_db"
+    JSON_FILE="$json"
 
-    source get_poppunk_db.sh
+    source check-download_poppunk_db.sh
     """
 }
 
@@ -23,47 +29,56 @@ process GET_POPPUNK_DB {
 process GET_POPPUNK_EXT_CLUSTERS {
     label 'bash_container'
     label 'farm_low'
+    label 'farm_scratchless'
+    label 'farm_slow'
 
     input:
     val ext_clusters_remote
-    path local
+    path db
 
     output:
-    env EXT_CLUSTERS_CSV
+    path poppunk_ext, emit: path
+    env EXT_CLUSTERS_CSV, emit: file
 
     script:
+    poppunk_ext="${db}/poppunk_ext"
+    json='done_poppunk_ext.json'
     """
     EXT_CLUSTERS_REMOTE="$ext_clusters_remote"
-    EXT_CLUSTERS_LOCAL="$local"
+    EXT_CLUSTERS_LOCAL="$poppunk_ext"
+    JSON_FILE="$json"
 
-    source get_poppunk_ext_clusters.sh    
+    source check-download_poppunk_ext_clusters.sh    
     """
 }
 
 // Run PopPUNK to assign GPSCs to samples
-// Add "prefix_" to all sample names in qfile to avoid poppunk_assign crashing due to sample name already exists in database
-// Remove "prefix_" from all sample names in the output
+// Save results of individual sample into .csv with its name as filename 
 process LINEAGE {
     label 'poppunk_container'
     label 'farm_high'
     label 'farm_slow'
-    label 'farm_scratchless'
 
     tag 'All samples'
 
     input:
-    tuple path(poppunk_dir), val(db_name)
+    path poppunk_dir
+    val db_name
+    path ext_clusters_dir
     val ext_clusters_file
     path qfile
 
     output:
-    path(result), emit: csv
+    path '*.csv', emit: reports
 
     script:
-    result='result.csv'
     """
-    sed 's/^/prefix_/' "$qfile" > safe_qfile.txt
-    poppunk_assign --db "${poppunk_dir}/${db_name}" --external-clustering "${poppunk_dir}/${ext_clusters_file}" --query safe_qfile.txt --output output --threads `nproc`
-    sed 's/^prefix_//' output/output_external_clusters.csv > "$result"
+    QFILE="$qfile"
+    POPPUNK_DIR="$poppunk_dir"
+    DB_NAME="$db_name"
+    EXT_CLUSTERS_DIR="$ext_clusters_dir"
+    EXT_CLUSTERS_FILE="$ext_clusters_file"
+
+    source get_lineage.sh
     """
 }

@@ -18,7 +18,7 @@ process IMAGES {
     NEXTFLOW_CONFIG="$nextflowConfig"
     JSON_FILE="$json"
 
-    source get_images_info.sh
+    source save_images_info.sh
     """
 }
 
@@ -28,24 +28,40 @@ process DATABASES {
     label 'farm_low'
 
     input:
-    val bwa_db_path
-    val kraken2_db_path
-    val seroba_db_path
-    val poppunk_db_path
+    path bwa_db_path
+    path ariba_db_path
+    path kraken2_db_path
+    path seroba_db_path
+    path poppunk_db_path
+    path poppunk_ext_path
 
     output:
     path(json), emit: json
 
     script:
     json='databases.json'
+    bwa_json='done_bwa_db.json'
+    ariba_json='done_ariba_db.json'
+    seroba_json='done_seroba.json'
+    kraken2_json='done_kraken.json'
+    poppunk_json='done_poppunk.json'
+    poppunk_ext_json='done_poppunk_ext.json'
     """
     BWA_DB_PATH="$bwa_db_path"
+    BWA_JSON="$bwa_json"
+    ARIBA_DB_PATH="$ariba_db_path"
+    ARIBA_JSON="$ariba_json"
     KRAKEN2_DB_PATH="$kraken2_db_path"
+    KRAKEN2_JSON="$kraken2_json"
     SEROBA_DB_PATH="$seroba_db_path"
+    SEROBA_JSON="$seroba_json"
     POPPUNK_DB_PATH="$poppunk_db_path"
+    POPPUNK_JSON="$poppunk_json"
+    POPPUNK_EXT_PATH="$poppunk_ext_path"
+    POPPUNK_EXT_JSON="$poppunk_ext_json"
     JSON_FILE="$json"
 
-    source get_databases_info.sh
+    source save_databases_info.sh
     """
 }
 
@@ -55,7 +71,6 @@ process TOOLS {
     label 'farm_low'
 
     input:
-    val git_version
     val python_version
     val fastp_version
     val unicycler_version
@@ -68,6 +83,7 @@ process TOOLS {
     val mlst_version
     val kraken2_version
     val seroba_version
+    val ariba_version
 
     output:
     path(json), emit: json
@@ -75,7 +91,6 @@ process TOOLS {
     script:
     json='tools.json'
     """
-    GIT_VERSION="$git_version"
     PYTHON_VERSION="$python_version"
     FASTP_VERSION="$fastp_version"
     UNICYCLER_VERSION="$unicycler_version"
@@ -88,9 +103,10 @@ process TOOLS {
     MLST_VERSION="$mlst_version"
     KRAKEN2_VERSION="$kraken2_version"
     SEROBA_VERSION="$seroba_version"
+    ARIBA_VERSION="$ariba_version"
     JSON_FILE="$json"
                 
-    source get_tools_info.sh
+    source save_tools_info.sh
     """
 }
 
@@ -119,7 +135,7 @@ process COMBINE_INFO {
     TOOLS="$tools"
     JSON_FILE="$json"
 
-    source combine_info.sh
+    source save_combined_info.sh
     """
 }
 
@@ -146,52 +162,61 @@ process PARSE {
     }
 
     def coreTextRow = { leftContent, rightContent ->
-        textRow(25, 61, leftContent, rightContent)
+        textRow(25, 67, leftContent, rightContent)
     }
 
     coreText = """\
-        |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Core Software Versions ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-        |╔═══════════════════════════╤═══════════════════════════════════════════════════════════════╗
+        |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Core Software Versions ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+        |╔═══════════════════════════╤═════════════════════════════════════════════════════════════════════╗
         |${coreTextRow('Software', 'Version')}
-        |╠═══════════════════════════╪═══════════════════════════════════════════════════════════════╣
+        |╠═══════════════════════════╪═════════════════════════════════════════════════════════════════════╣
         |${coreTextRow('GPS Unified Pipeline', json.pipeline.version)}
         |${coreTextRow('Nextflow', json.nextflow.version)}
-        |╚═══════════════════════════╧═══════════════════════════════════════════════════════════════╝
+        |╚═══════════════════════════╧═════════════════════════════════════════════════════════════════════╝
         |""".stripMargin()
 
     def dbTextRow = { leftContent, rightContent ->
-        textRow(9, 77, leftContent, rightContent)
+        textRow(13, 79, leftContent, rightContent)
     }
 
     dbText = """\
-        |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Databases Information ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-        |╔═══════════════════════════════════════════════════════════════════════════════════════════╗
-        |║ BWA reference genome FM-index database                                                    ║
-        |╟───────────┬───────────────────────────────────────────────────────────────────────────────╢
+        |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Databases Information ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+        |╔═════════════════════════════════════════════════════════════════════════════════════════════════╗
+        |║ BWA reference genome FM-index database                                                          ║
+        |╟───────────────┬─────────────────────────────────────────────────────────────────────────────────╢
         |${dbTextRow('Reference', json.bwa_db.reference)}
+        |${dbTextRow('Reference MD5', json.bwa_db.reference_md5)}
         |${dbTextRow('Created', json.bwa_db.create_time)}
-        |╠═══════════╧═══════════════════════════════════════════════════════════════════════════════╣
-        |║ Kraken 2 database                                                                         ║
-        |╟───────────┬───────────────────────────────────────────────────────────────────────────────╢
+        |╠═══════════════╧═════════════════════════════════════════════════════════════════════════════════╣
+        |║ Kraken 2 database                                                                               ║
+        |╟───────────────┬─────────────────────────────────────────────────────────────────────────────────╢
         |${dbTextRow('Source', json.kraken2_db.url)}
         |${dbTextRow('Saved', json.kraken2_db.save_time)}
-        |╠═══════════╧═══════════════════════════════════════════════════════════════════════════════╣
-        |║ PopPUNK database                                                                          ║
-        |╟───────────┬───────────────────────────────────────────────────────────────────────────────╢
+        |╠═══════════════╧═════════════════════════════════════════════════════════════════════════════════╣
+        |║ PopPUNK database                                                                                ║
+        |╟───────────────┬─────────────────────────────────────────────────────────────────────────────────╢
         |${dbTextRow('Source', json.poppunnk_db.url)}
         |${dbTextRow('Saved', json.poppunnk_db.save_time)}
-        |╠═══════════╧═══════════════════════════════════════════════════════════════════════════════╣
-        |║ PopPUNK external clusters file                                                            ║
-        |╟───────────┬───────────────────────────────────────────────────────────────────────────────╢
+        |╠═══════════════╧═════════════════════════════════════════════════════════════════════════════════╣
+        |║ PopPUNK external clusters file                                                                  ║
+        |╟───────────────┬─────────────────────────────────────────────────────────────────────────────────╢
         |${dbTextRow('Source', json.poppunk_ext.url)}
         |${dbTextRow('Saved', json.poppunk_ext.save_time)}
-        |╠═══════════╧═══════════════════════════════════════════════════════════════════════════════╣
-        |║ SeroBA database                                                                           ║
-        |╟───────────┬───────────────────────────────────────────────────────────────────────────────╢
-        |${dbTextRow('Source', json.seroba_db.git)}
+        |╠═══════════════╧═════════════════════════════════════════════════════════════════════════════════╣
+        |║ SeroBA database                                                                                 ║
+        |╟───────────────┬─────────────────────────────────────────────────────────────────────────────────╢
+        |${dbTextRow('Source', json.seroba_db.url)}
         |${dbTextRow('Kmer size', json.seroba_db.kmer)}
         |${dbTextRow('Created', json.seroba_db.create_time)}
-        |╚═══════════╧═══════════════════════════════════════════════════════════════════════════════╝
+        |╠═══════════════╧═════════════════════════════════════════════════════════════════════════════════╣
+        |║ ARIBA database                                                                                  ║
+        |╟───────────────┬─────────────────────────────────────────────────────────────────────────────────╢
+        |${dbTextRow('Reference', json.ariba_db.reference)}
+        |${dbTextRow('Reference MD5', json.ariba_db.reference_md5)}
+        |${dbTextRow('Metadata', json.ariba_db.metadata)}
+        |${dbTextRow('Metadata MD5', json.ariba_db.metadata_md5)}
+        |${dbTextRow('Created', json.ariba_db.create_time)}
+        |╚═══════════════╧═════════════════════════════════════════════════════════════════════════════════╝
         |""".stripMargin()
 
     def getVersion = { tool ->
@@ -203,15 +228,14 @@ process PARSE {
     }
 
     def toolTextRow = { leftContent, rightContent ->
-        textRow(30, 56, leftContent, getVersion(rightContent))
+        textRow(30, 62, leftContent, getVersion(rightContent))
     }
 
     toolText = """\
-        |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Tool Versions ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-        |╔════════════════════════════════╤══════════════════════════════════════════════════════════╗
-        |${textRow(30, 56, 'Tool', 'Version')}
-        |╠════════════════════════════════╪══════════════════════════════════════════════════════════╣
-        |${toolTextRow('Git', 'git')}
+        |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Tool Versions ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+        |╔════════════════════════════════╤════════════════════════════════════════════════════════════════╗
+        |${textRow(30, 62, 'Tool', 'Version')}
+        |╠════════════════════════════════╪════════════════════════════════════════════════════════════════╣
         |${toolTextRow('Python', 'python')}
         |${toolTextRow('fastp', 'fastp')}
         |${toolTextRow('Unicycler', 'unicycler')}
@@ -220,14 +244,13 @@ process PARSE {
         |${toolTextRow('BWA', 'bwa')}
         |${toolTextRow('SAMtools', 'samtools')}
         |${toolTextRow('BCFtools', 'bcftools')}
-        |${toolTextRow('Het-SNP Counter', 'het_snp_count')}
         |${toolTextRow('PopPUNK', 'poppunk')}
         |${toolTextRow('CDC PBP AMR Predictor', 'spn_pbp_amr')}
-        |${toolTextRow('AMRsearch', 'amrsearch')}
+        |${toolTextRow('ARIBA', 'ariba')}
         |${toolTextRow('mlst', 'mlst')}
         |${toolTextRow('Kraken 2', 'kraken2')}
         |${toolTextRow('SeroBA', 'seroba')}
-        |╚════════════════════════════════╧══════════════════════════════════════════════════════════╝
+        |╚════════════════════════════════╧════════════════════════════════════════════════════════════════╝
         |""".stripMargin()
 
     def getImage = { tool ->
@@ -239,16 +262,15 @@ process PARSE {
     }
 
     def imageTextRow = { leftContent, rightContent ->
-        textRow(30, 56, leftContent, getImage(rightContent))
+        textRow(30, 62, leftContent, getImage(rightContent))
     }
 
     imageText = """\
-        |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Container Images ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-        |╔════════════════════════════════╤══════════════════════════════════════════════════════════╗
-        |${textRow(30, 56, 'Environment For', 'Image')}
-        |╠════════════════════════════════╪══════════════════════════════════════════════════════════╣
+        |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Container Images ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+        |╔════════════════════════════════╤════════════════════════════════════════════════════════════════╗
+        |${textRow(30, 62, 'Environment For', 'Image')}
+        |╠════════════════════════════════╪════════════════════════════════════════════════════════════════╣
         |${imageTextRow('Bash', 'bash')}
-        |${imageTextRow('Git', 'git')}
         |${imageTextRow('Python', 'python')}
         |${imageTextRow('fastp', 'fastp')}
         |${imageTextRow('Unicycler', 'unicycler')}
@@ -259,11 +281,11 @@ process PARSE {
         |${imageTextRow('BCFtools', 'bcftools')}
         |${imageTextRow('PopPUNK', 'poppunk')}
         |${imageTextRow('CDC PBP AMR Predictor', 'spn_pbp_amr')}
-        |${imageTextRow('AMRsearch', 'amrsearch')}
+        |${imageTextRow('ARIBA', 'ariba')}
         |${imageTextRow('mlst', 'mlst')}
         |${imageTextRow('Kraken 2', 'kraken2')}
         |${imageTextRow('SeroBA', 'seroba')}
-        |╚════════════════════════════════╧══════════════════════════════════════════════════════════╝
+        |╚════════════════════════════════╧════════════════════════════════════════════════════════════════╝
         |""".stripMargin()
 }
 
@@ -280,9 +302,9 @@ process PRINT {
     exec:
     log.info(
         """
-        |╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
-        |╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍ Version Information ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
-        |╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+        |╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+        |╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍ Version Information ╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
+        |╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍
         |
         |${coreText}
         |${dbText}
@@ -296,92 +318,97 @@ process PRINT {
 process SAVE {
     label 'farm_local'
     
+    publishDir "${params.output}", mode: "copy"
+
     input:
     val coreText
     val dbText
     val toolText
     val imageText
 
+    output:
+    path "info.txt", emit: info
+
     exec:
     File readsDir = new File(params.reads)
     File outputDir = new File(params.output)
-    outputDir.mkdirs()
 
     def textRow = { leftSpace, rightSpace, leftContent, rightContent ->
         String.format("║ %-${leftSpace}s │ %-${rightSpace}s ║", leftContent, rightContent)
     }
 
     def ioTextRow = { leftContent, rightContent ->
-        textRow(8, 78, leftContent, rightContent)
+        textRow(8, 84, leftContent, rightContent)
     }
 
     String ioText = """\
-    |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Input and Output ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-    |╔══════════╤════════════════════════════════════════════════════════════════════════════════╗
+    |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Input and Output ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+    |╔══════════╤══════════════════════════════════════════════════════════════════════════════════════╗
     |${ioTextRow('Type', 'Path')}
-    |╠══════════╪════════════════════════════════════════════════════════════════════════════════╣
+    |╠══════════╪══════════════════════════════════════════════════════════════════════════════════════╣
     |${ioTextRow('Input', readsDir.canonicalPath)}
     |${ioTextRow('Output', outputDir.canonicalPath)}
-    |╚══════════╧════════════════════════════════════════════════════════════════════════════════╝
+    |╚══════════╧══════════════════════════════════════════════════════════════════════════════════════╝
     |""".stripMargin()
 
     def assemblerTextRow = { leftContent, rightContent ->
-        textRow(25, 61, leftContent, rightContent)
+        textRow(25, 67, leftContent, rightContent)
     }
 
     String assemblerText = """\
-    |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Assembler Options ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-    |╔═══════════════════════════╤═══════════════════════════════════════════════════════════════╗
+    |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Assembler Options ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+    |╔═══════════════════════════╤═════════════════════════════════════════════════════════════════════╗
     |${assemblerTextRow('Option', 'Value')}
-    |╠═══════════════════════════╪═══════════════════════════════════════════════════════════════╣
+    |╠═══════════════════════════╪═════════════════════════════════════════════════════════════════════╣
     |${assemblerTextRow('Assembler', params.assembler.capitalize())}
     |${assemblerTextRow('Minimum contig length', params.min_contig_length)}
-    |╚═══════════════════════════╧═══════════════════════════════════════════════════════════════╝
+    |╚═══════════════════════════╧═════════════════════════════════════════════════════════════════════╝
     |""".stripMargin()
 
     def qcTextRow = { leftContent, rightContent ->
-        textRow(60, 26, leftContent, rightContent)
+        textRow(60, 32, leftContent, rightContent)
     }
 
     String qcText = """\
-    |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ QC Parameters ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-    |╔═══════════════════════════════════════════════════════════════════════════════════════════╗
-    |║ Read QC                                                                                   ║
-    |╟──────────────────────────────────────────────────────────────┬────────────────────────────╢
-    |${qcTextRow('Minimum bases in processed reads', String.format("%.0f", params.length_low * params.depth))}
-    |╠══════════════════════════════════════════════════════════════╧════════════════════════════╣
-    |║ Taxonomy QC                                                                               ║
-    |╟──────────────────────────────────────────────────────────────┬────────────────────────────╢
+    |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ QC Parameters ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+    |╔═════════════════════════════════════════════════════════════════════════════════════════════════╗
+    |║ Read QC                                                                                         ║
+    |╟──────────────────────────────────────────────────────────────┬──────────────────────────────────╢
+    |${qcTextRow('Minimum bases in processed reads', String.format("%.0f", Math.ceil(params.length_low * params.depth)))}
+    |╠══════════════════════════════════════════════════════════════╧══════════════════════════════════╣
+    |║ Taxonomy QC                                                                                     ║
+    |╟──────────────────────────────────────────────────────────────┬──────────────────────────────────╢
     |${qcTextRow('Minimum S. pneumoniae percentage in reads', params.spneumo_percentage)}
-    |╠══════════════════════════════════════════════════════════════╧════════════════════════════╣
-    |║ Mapping QC                                                                                ║
-    |╟──────────────────────────────────────────────────────────────┬────────────────────────────╢
+    |${qcTextRow('Maximum non-Streptococcus genus percentage in reads', params.non_strep_percentage)}
+    |╠══════════════════════════════════════════════════════════════╧══════════════════════════════════╣
+    |║ Mapping QC                                                                                      ║
+    |╟──────────────────────────────────────────────────────────────┬──────────────────────────────────╢
     |${qcTextRow('Minimum reference coverage percentage by the reads', params.ref_coverage)}
     |${qcTextRow('Maximum non-cluster heterozygous SNP (Het-SNP) site count', params.het_snp_site)}
-    |╠══════════════════════════════════════════════════════════════╧════════════════════════════╣
-    |║ Assembly QC                                                                               ║
-    |╟──────────────────────────────────────────────────────────────┬────────────────────────────╢
+    |╠══════════════════════════════════════════════════════════════╧══════════════════════════════════╣
+    |║ Assembly QC                                                                                     ║
+    |╟──────────────────────────────────────────────────────────────┬──────────────────────────────────╢
     |${qcTextRow('Maximum contig count in assembly', params.contigs)}
     |${qcTextRow('Minimum assembly length', params.length_low)}
     |${qcTextRow('Maximum assembly length', params.length_high)}
     |${qcTextRow('Minimum sequencing depth', params.depth)}
-    |╚══════════════════════════════════════════════════════════════╧════════════════════════════╝
+    |╚══════════════════════════════════════════════════════════════╧══════════════════════════════════╝
     |""".stripMargin()
 
     def containerEngineTextRow = { leftContent, rightContent ->
-        textRow(25, 61, leftContent, rightContent)
+        textRow(25, 67, leftContent, rightContent)
     }
 
     String containerEngineText = """\
-    |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Container Engine Options ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-    |╔═══════════════════════════╤═══════════════════════════════════════════════════════════════╗
+    |┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈ Container Engine Options ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+    |╔═══════════════════════════╤═════════════════════════════════════════════════════════════════════╗
     |${containerEngineTextRow('Option', 'Value')}
-    |╠═══════════════════════════╪═══════════════════════════════════════════════════════════════╣
+    |╠═══════════════════════════╪═════════════════════════════════════════════════════════════════════╣
     |${containerEngineTextRow('Container Engine', workflow.containerEngine.capitalize())}
-    |╚═══════════════════════════╧═══════════════════════════════════════════════════════════════╝
+    |╚═══════════════════════════╧═════════════════════════════════════════════════════════════════════╝
     |""".stripMargin()
 
-    File output = new File("${params.output}/info.txt")
+    File output = new File("${task.workDir}/info.txt")
     output.write(
         """\
         |${coreText}
@@ -398,19 +425,6 @@ process SAVE {
 
 // Below processes get tool versions within container images by running their containers
 
-process GIT_VERSION {
-    label 'git_container'
-    label 'farm_low'
-
-    output:
-    env VERSION
-
-    shell:
-    $/
-    VERSION=$(git -v | sed -r "s/.*\s(.+)/\1/")
-    /$
-}
-
 process PYTHON_VERSION {
     label 'python_container'
     label 'farm_low'
@@ -420,7 +434,7 @@ process PYTHON_VERSION {
 
     shell:
     $/
-    VERSION=$(python --version | sed -r "s/.*\s(.+)/\1/")
+    VERSION=$(python3 --version | sed -r "s/.*\s(.+)/\1/")
     /$
 }
 
@@ -564,5 +578,18 @@ process SEROBA_VERSION {
     shell:
     $/
     VERSION=$(seroba version)
+    /$
+}
+
+process ARIBA_VERSION {
+    label 'ariba_container'
+    label 'farm_low'
+
+    output:
+    env VERSION
+
+    shell:
+    $/
+    VERSION=$(ariba version | grep ARIBA | sed -r "s/.*:\s(.+)/\1/")
     /$
 }

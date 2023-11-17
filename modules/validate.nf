@@ -5,27 +5,27 @@ validParams = [
     version: 'boolean',
     reads: 'path_exist',
     output: 'path',
+    db: 'path',
     assembler: 'assembler',
     min_contig_length: 'int',
     assembly_publish: 'publish_mode',
-    seroba_remote: 'url_git',
-    seroba_local: 'path',
+    seroba_db_remote: 'url_targz',
     seroba_kmer: 'int',
     kraken2_db_remote: 'url_targz',
-    kraken2_db_local: 'path',
     kraken2_memory_mapping: 'boolean',
     ref_genome: 'path_fasta',
-    ref_genome_bwa_db_local: 'path',
     poppunk_db_remote: 'url_targz',
     poppunk_ext_remote: 'url_csv',
-    poppunk_local: 'path',
     spneumo_percentage: 'int_float',
+    non_strep_percentage: 'int_float',
     ref_coverage: 'int_float',
     het_snp_site: 'int',
     contigs: 'int',
     length_low: 'int',
     length_high: 'int',
     depth: 'int_float',
+    ariba_ref: 'path_fasta',
+    ariba_metadata: 'path_tsv',
     lite: 'boolean'
 ]
 
@@ -50,8 +50,8 @@ void validate(Map params) {
         validParams.put("singularity_cachedir", "path")
     }
 
-    // Add params.maxretries when workflow.profile == 'lsf' 
-    if (workflow.profile == 'lsf' ) {
+    // Add params.maxretries when workflow.profile contains 'lsf' 
+    if (workflow.profile.split(',').contains('lsf')) {
         validParams.put("maxretries", "int")
     }
 
@@ -141,10 +141,13 @@ void validate(Map params) {
                     invalidValues[key] = [value, 'path to a fasta file (file does not have an filename extension of .fasta or .fa)']
                 }
                 break
-
-            case 'url_git':
-                if (!(value ==~ /^(https?:\/\/)?(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)\.git$/)) {
-                    invalidValues[key] = [value, 'URL that points a Git remote repository (valid URL ending with .git)']
+            
+            case 'path_tsv':
+                File tsv = new File(value)
+                if (!tsv.exists()) {
+                    invalidValues[key] = [value, 'path to a TSV file (file does not exist)']
+                } else if (!(value ==~ /.+\.tsv$/)) {
+                    invalidValues[key] = [value, 'path to a TSV file (file does not have an filename extension of .tsv)']
                 }
                 break
 

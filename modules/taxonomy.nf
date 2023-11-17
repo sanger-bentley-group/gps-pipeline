@@ -1,21 +1,26 @@
 // Return Kraken 2 database path, download if necessary
-process GET_KRAKEN_DB {
+process GET_KRAKEN2_DB {
     label 'bash_container'
     label 'farm_low'
+    label 'farm_scratchless'
+    label 'farm_slow'
 
     input:
     val remote
-    path local
+    path db
 
     output:
-    path local
+    path kraken2_db, emit: path
 
     script:
+    kraken2_db="${db}/kraken2"
+    json='done_kraken.json'
     """
     DB_REMOTE="$remote"
-    DB_LOCAL="$local"
+    DB_LOCAL="$kraken2_db"
+    JSON_FILE="$json"
 
-    source get_kraken_db.sh
+    source check-download_kraken2_db.sh
     """
 }
 
@@ -27,7 +32,7 @@ process TAXONOMY {
     tag "$sample_id"
 
     input:
-    path kraken_db
+    path kraken2_db
     val kraken2_memory_mapping
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
 
@@ -35,21 +40,21 @@ process TAXONOMY {
     tuple val(sample_id), path(report), emit: report
 
     script:
-    report='kraken_report.txt'
+    report='kraken2_report.txt'
 
     if (kraken2_memory_mapping === true)
         """
-        kraken2 --threads `nproc` --use-names --memory-mapping --db "$kraken_db" --paired "$read1" "$read2" --report "$report" --output -
+        kraken2 --threads "`nproc`" --use-names --memory-mapping --db "$kraken2_db" --paired "$read1" "$read2" --report "$report" --output -
         """
     else if (kraken2_memory_mapping === false)
         """
-        kraken2 --threads `nproc` --use-names --db "$kraken_db" --paired "$read1" "$read2" --report "$report" --output -
+        kraken2 --threads "`nproc`" --use-names --db "$kraken2_db" --paired "$read1" "$read2" --report "$report" --output -
         """
     else
         error "The value for --kraken2_memory_mapping is not valid."
 }
 
-// Extract taxonomy QC information and determine QC result based on kraken_report.txt
+// Extract taxonomy QC information and determine QC result based on kraken2_report.txt
 process TAXONOMY_QC {
     label 'bash_container'
     label 'farm_low'
@@ -57,18 +62,22 @@ process TAXONOMY_QC {
     tag "$sample_id"
 
     input:
-    tuple val(sample_id), path(kraken_report)
+    tuple val(sample_id), path(kraken2_report)
     val(qc_spneumo_percentage)
+    val(qc_top_non_strep_genus_percentage)
 
     output:
-    tuple val(sample_id), env(PERCENTAGE), emit: percentage
     tuple val(sample_id), env(TAXONOMY_QC), emit: result
+    tuple val(sample_id), path(taxonomy_qc_report), emit: report
 
     script:
+    taxonomy_qc_report='taxonomy_qc_report.csv'
     """
-    KRAKEN_REPORT="$kraken_report"
+    KRAKEN2_REPORT="$kraken2_report"
     QC_SPNEUMO_PERCENTAGE="$qc_spneumo_percentage"
+    QC_TOP_NON_STREP_GENUS_PERCENTAGE="$qc_top_non_strep_genus_percentage"
+    TAXONOMY_QC_REPORT="$taxonomy_qc_report"
 
-    source taxonomy_qc.sh
+    source get_taxonomy_qc.sh
     """
 }
