@@ -1,0 +1,29 @@
+#! /bin/sh
+
+pipelineDir=$(dirname -- "$(readlink -f -- "$0")")
+URL="https://gps-project.cog.sanger.ac.uk/gup_test_input.tar.gz"
+TARGET="test_input.tar.gz"
+
+cd $pipelineDir
+
+if command -v curl > /dev/null 2>&1; then
+    GET="curl -fsSL '$URL' -o '$TARGET'"
+elif command -v wget > /dev/null 2>&1; then
+    GET="wget '$URL' -O '$TARGET' >/dev/null 2>&1"
+else
+    echo "ERROR: Cannot find 'curl' nor 'wget' utility --  please install one of them"
+    echo ""
+    echo "Alternatively you can try to download and extract content of this file:"
+    echo "$URL"
+    exit 1
+fi
+
+echo "Downloading... Please wait ..."
+eval $GET && tar -xf $TARGET && rm -f $TARGET; status=$?
+
+if [ $status -ne 0 ]; then
+    echo "ERROR: Cannot download the test input -- make sure you can connect to the internet"
+    exit 1
+else 
+    echo "Download completed."
+fi
