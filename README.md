@@ -73,8 +73,8 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
     ```
     or 
     
-    Download and unzip the [latest release](https://github.com/HarryHung/gps-unified-pipeline/releases)
-2. Go into the local copy of the repository and the pipeline is ready to use without installation
+    Download and unzip/extract the [latest release](https://github.com/HarryHung/gps-unified-pipeline/releases)
+2. Go into the local directory of the pipeline and it is ready to use without installation (the directory name might be different)
     ```
     cd gps-unified-pipeline
     ```
@@ -95,7 +95,7 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 > ⚠️ If this is the first run and initialisation was not performed, an Internet connection is required.
 <!-- -->
 > ℹ️ By default, Docker is used as the container engine and all the processes are executed by the local machine. See [Profile](#profile) for details on running the pipeline with Singularity or on a HPC cluster.
-- You can run the pipeline without options. It will attempt to get the raw reads from the default location (i.e. `input` directory inside the `gps-unified-pipeline` local repository)
+- You can run the pipeline without options. It will attempt to get the raw reads from the default location (i.e. `input` directory inside the `gps-unified-pipeline` local directory)
   ```
   ./run_pipeline
   ```
@@ -103,8 +103,9 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   ```
   ./run_pipeline --reads /path/to/raw-reads-directory
   ```
-- For a test run, you could use the included test reads in the `test_input` directory
+- For a test run, you could obtain a small test dataset by running the included `download_test_input` script. The dataset will be saved to the `test_input` directory inside the pipeline local directory. You can then run the pipeline on the test data
   ```
+  ./download_test_input
   ./run_pipeline --reads test_input
   ```
   - `9870_5#52` will fail the Taxonomy QC and hence Overall QC, therefore without analysis results
@@ -141,12 +142,12 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 - If the run has been completed and you do not intend to use the `-resume` option or those intermediate files, you can remove the intermediate files using one of the following ways:
   - Run the included `clean_pipeline` script
     - It runs the commands in manual removal for you
-    - It removes the `work` directory and log files within the `gps-unified-pipeline` local repository
+    - It removes the `work` directory and log files within the `gps-unified-pipeline` local directory
     ```
     ./clean_pipeline
     ```
   - Manual removal 
-    - Remove the `work` directory and log files within the `gps-unified-pipeline` local repository
+    - Remove the `work` directory and log files within the `gps-unified-pipeline` local directory
     ```
     rm -rf work
     rm -rf .nextflow.log*
@@ -169,9 +170,9 @@ The pipeline is compatible with [Launchpad](https://help.tower.nf/23.2/launch/la
   ```
   ./run_pipeline [option] [value]
   ```
-> ℹ️ To permanently change the value of an option, edit the `nextflow.config` file inside the `gps-unified-pipeline` local repository.
+> ℹ️ To permanently change the value of an option, edit the `nextflow.config` file inside the `gps-unified-pipeline` local directory.
 <!-- -->
-> ℹ️ `$projectDir` is a [Nextflow built-in implicit variables](https://www.nextflow.io/docs/latest/script.html?highlight=projectdir#implicit-variables), it is defined as the directory where the `gps-unified-pipeline` local repository is stored.
+> ℹ️ `$projectDir` is a [Nextflow built-in implicit variables](https://www.nextflow.io/docs/latest/script.html?highlight=projectdir#implicit-variables), it is defined as the local directory of `gps-unified-pipeline`.
 <!-- -->
 > ℹ️ Pipeline options are not built-in Nextflow options, they are lead with `--` instead of `-`
 
@@ -256,7 +257,7 @@ The pipeline is compatible with [Launchpad](https://help.tower.nf/23.2/launch/la
   | `--lite` | `true` or `false`<br>(Default: `false`) | ⚠️ Enable this option breaks Nextflow resume function.<br>Reduce storage requirement by removing intermediate `.sam` and `.bam` files once they are no longer needed while the pipeline is still running.<br>The quantity of reduction of storage requirement cannot be guaranteed.<br> Can be enabled by including `--lite` without value. |
 
 # Output
-- By default, the pipeline outputs the results into the `output` directory inside the `gps-unified-pipeline` local repository
+- By default, the pipeline outputs the results into the `output` directory inside the `gps-unified-pipeline` local directory
 - It can be changed by adding the option `--output`
   ```
   ./run_pipeline --output /path/to/output-directory
