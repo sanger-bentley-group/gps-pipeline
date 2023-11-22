@@ -29,6 +29,7 @@ process GENERATE_OVERALL_REPORT {
     input:
     path '*'
     path ariba_metadata
+    path resistance_to_mic
 
     output:
     path "$overall_report", emit: report
@@ -37,6 +38,6 @@ process GENERATE_OVERALL_REPORT {
     input_pattern='*_report.csv'
     overall_report='results.csv'
     """
-    generate_overall_report.py '$input_pattern' $ariba_metadata $overall_report
+    generate_overall_report.py '$input_pattern' $ariba_metadata $resistance_to_mic $overall_report
     """
 }
