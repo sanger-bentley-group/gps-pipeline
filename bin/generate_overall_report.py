@@ -103,7 +103,7 @@ def add_inferred_mic(df_output, df_resistance_to_mic):
         if res_col_name in df_output:
             res_col_index = df_output.columns.get_loc(res_col_name)
             mic_series = df_output[res_col_name].map(resistance_to_mic, na_action='ignore')
-            df_output.insert(res_col_index + 1, f'{drug}_MIC', mic_series)
+            df_output.insert(res_col_index, f'{drug}_MIC', mic_series)
 
     return df_output
 
