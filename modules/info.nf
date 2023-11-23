@@ -34,6 +34,7 @@ process DATABASES {
     path seroba_db_path
     path poppunk_db_path
     path poppunk_ext_path
+    path resistance_to_mic
 
     output:
     path(json), emit: json
@@ -59,6 +60,7 @@ process DATABASES {
     POPPUNK_JSON="$poppunk_json"
     POPPUNK_EXT_PATH="$poppunk_ext_path"
     POPPUNK_EXT_JSON="$poppunk_ext_json"
+    RESISTANCE_TO_MIC="$resistance_to_mic"
     JSON_FILE="$json"
 
     source save_databases_info.sh
@@ -216,6 +218,11 @@ process PARSE {
         |${dbTextRow('Metadata', json.ariba_db.metadata)}
         |${dbTextRow('Metadata MD5', json.ariba_db.metadata_md5)}
         |${dbTextRow('Created', json.ariba_db.create_time)}
+        |╠═══════════════╧═════════════════════════════════════════════════════════════════════════════════╣
+        |║ Resistance phenotypes to MIC (minimum inhibitory concentration) lookup table                    ║
+        |╟───────────────┬─────────────────────────────────────────────────────────────────────────────────╢
+        |${dbTextRow('Table', json.resistance_to_mic.table)}
+        |${dbTextRow('Table MD5', json.resistance_to_mic.table_md5)}
         |╚═══════════════╧═════════════════════════════════════════════════════════════════════════════════╝
         |""".stripMargin()
 

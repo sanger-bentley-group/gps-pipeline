@@ -3,6 +3,7 @@ include { IMAGES; DATABASES; TOOLS; COMBINE_INFO; PARSE; PRINT; SAVE; PYTHON_VER
 // Alternative workflow that prints versions of pipeline and tools
 workflow PRINT_VERSION {
     take:
+        resistance_to_mic
         pipeline_version
 
     main:
@@ -13,6 +14,7 @@ workflow PRINT_VERSION {
             "${params.db}/seroba",
             "${params.db}/poppunk",
             "${params.db}/poppunk_ext",
+            resistance_to_mic,
             pipeline_version
         ) \
         | PARSE \
@@ -23,6 +25,7 @@ workflow PRINT_VERSION {
 workflow SAVE_INFO {
     take:
         databases_info
+        resistance_to_mic
         pipeline_version
 
     main:
@@ -33,6 +36,7 @@ workflow SAVE_INFO {
             databases_info.seroba_db_path,
             databases_info.poppunk_db_path,
             databases_info.poppunk_ext_path,
+            resistance_to_mic,
             pipeline_version
         ) \
        | PARSE \
@@ -48,6 +52,7 @@ workflow GET_VERSION {
         seroba_db_path
         poppunk_db_path
         poppunk_ext_path
+        resistance_to_mic
         pipeline_version
 
     main:
@@ -59,7 +64,8 @@ workflow GET_VERSION {
             kraken2_db_path,
             seroba_db_path,
             poppunk_db_path,
-            poppunk_ext_path
+            poppunk_ext_path,
+            resistance_to_mic
         )
 
         nextflow_version = "$nextflow.version"
