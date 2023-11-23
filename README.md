@@ -241,8 +241,8 @@ The pipeline is compatible with [Launchpad](https://help.tower.nf/23.2/launch/la
 ## Other AMR
   | Option | Values | Description |
   | --- | ---| --- |
-  | `--ariba_ref` | Any valid path to a `.fa` or `.fasta` file<br />(Default: `"$projectDir/data/ariba_ref_sequences.fasta"`) | Path to the reference sequences for ARIBA. |
-  | `--ariba_metadata` | Any valid path to a `tsv` file<br />(Default: `"$projectDir/data/ariba_metadata.tsv"`) | Path to the metadata file for ARIBA. |
+  | `--ariba_ref` | Any valid path to a `.fa` or `.fasta` file<br />(Default: `"$projectDir/data/ariba_ref_sequences.fasta"`) | Path to the reference sequences for preparing ARIBA database. |
+  | `--ariba_metadata` | Any valid path to a `tsv` file<br />(Default: `"$projectDir/data/ariba_metadata.tsv"`) | Path to the metadata file for preparing ARIBA database. |
   | `--resistance_to_mic` | Any valid path to a `tsv` file<br />(Default: `"$projectDir/data/resistance_to_MIC.tsv"`) | Path to the resistance phenotypes to MIC (minimum inhibitory concentration) lookup table. |
 
 ## Singularity
