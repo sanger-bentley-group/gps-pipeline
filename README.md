@@ -235,8 +235,8 @@ The pipeline is compatible with [Launchpad](https://help.tower.nf/23.2/launch/la
 ## Lineage
   | Option | Values | Description |
   | --- | ---| --- |
-  | `--poppunk_db_remote` | Any valid URL to a PopPUNK database in `.tar.gz` or `.tgz` format<br />(Default: [GPS v6](https://gps-project.cog.sanger.ac.uk/GPS_v6.tar.gz)) | URL to a PopPUNK database. |
-  | `--poppunk_ext_remote` | Any valid URL to a PopPUNK external clusters file in `.csv` format<br />(Default: [GPS v6 GPSC Designation](https://gps-project.cog.sanger.ac.uk/GPS_v6_external_clusters.csv)) | URL to a PopPUNK external clusters file. |
+  | `--poppunk_db_remote` | Any valid URL to a PopPUNK database in `.tar.gz` or `.tgz` format<br />(Default: [GPS v8 - Reference Only](https://gps-project.cog.sanger.ac.uk/GPS_v8_ref.tar.gz)) | URL to a PopPUNK database. |
+  | `--poppunk_ext_remote` | Any valid URL to a PopPUNK external clusters file in `.csv` format<br />(Default: [GPS v8 GPSC Designation](https://gps-project.cog.sanger.ac.uk/GPS_v8_external_clusters.csv)) | URL to a PopPUNK external clusters file. |
 
 ## Other AMR
   | Option | Values | Description |
