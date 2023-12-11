@@ -1,11 +1,11 @@
-# GPS Unified Pipeline <!-- omit in toc -->
+# GPS Pipeline <!-- omit in toc -->
 
 [![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-23.10.0-23aa62.svg)](https://www.nextflow.io/)
 [![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)
 [![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/singularity/)
-[![Launch on Nextflow Tower](https://img.shields.io/badge/Launch%20%F0%9F%9A%80-Nextflow%20Tower-%234256e7)](https://tower.nf/launch?pipeline=https://github.com/harryhung/gps-unified-pipeline)
+[![Launch on Nextflow Tower](https://img.shields.io/badge/Launch%20%F0%9F%9A%80-Nextflow%20Tower-%234256e7)](https://tower.nf/launch?pipeline=https://github.com/sanger-bentley-group/gps-pipeline)
 
-The GPS Unified Pipeline is a Nextflow pipeline designed for processing raw reads (FASTQ files) of *Streptococcus pneumoniae* samples. After preprocessing, the pipeline performs initial assessment based on the total bases in reads. Passed samples will be further assess based on assembly, mapping, and taxonomy. If the sample passes all quality controls (QC), the pipeline also provides the sample's serotype, multi-locus sequence typing (MLST), lineage (based on the [Global Pneumococcal Sequence Cluster (GPSC)](https://www.pneumogen.net/gps/GPSC_lineages.html)), and antimicrobial resistance (AMR) against multiple antimicrobials.
+The GPS Pipeline is a Nextflow pipeline designed for processing raw reads (FASTQ files) of *Streptococcus pneumoniae* samples. After preprocessing, the pipeline performs initial assessment based on the total bases in reads. Passed samples will be further assess based on assembly, mapping, and taxonomy. If the sample passes all quality controls (QC), the pipeline also provides the sample's serotype, multi-locus sequence typing (MLST), lineage (based on the [Global Pneumococcal Sequence Cluster (GPSC)](https://www.pneumogen.net/gps/GPSC_lineages.html)), and antimicrobial resistance (AMR) against multiple antimicrobials.
 
 The pipeline is designed to be easy to set up and use, and is suitable for use on local machines and high-performance computing (HPC) clusters alike. Additionally, the pipeline only downloads essential files to enable the analysis, and no data is uploaded from the local environment, making it an ideal option for cases where the FASTQ files being analysed is confidential. After initialisation or the first successful complete run, the pipeline can be used offline unless you have changed the selection of any database or container image.
 
@@ -69,14 +69,14 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 ## Setup 
 1. Clone the repository (if Git is installed on your system)
     ```
-    git clone https://github.com/HarryHung/gps-unified-pipeline.git
+    git clone https://github.com/sanger-bentley-group/gps-pipeline.git
     ```
     or 
     
-    Download and unzip/extract the [latest release](https://github.com/HarryHung/gps-unified-pipeline/releases)
+    Download and unzip/extract the [latest release](https://github.com/sanger-bentley-group/gps-pipeline/releases)
 2. Go into the local directory of the pipeline and it is ready to use without installation (the directory name might be different)
     ```
-    cd gps-unified-pipeline
+    cd gps-pipeline
     ```
 3. (Optional) You could perform an initialisation to download all required additional files and container images, so the pipeline can be used at any time with or without the Internet afterwards.
     > ⚠️ Docker or Singularity must be running, and an Internet connection is required.
@@ -95,7 +95,7 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 > ⚠️ If this is the first run and initialisation was not performed, an Internet connection is required.
 <!-- -->
 > ℹ️ By default, Docker is used as the container engine and all the processes are executed by the local machine. See [Profile](#profile) for details on running the pipeline with Singularity or on a HPC cluster.
-- You can run the pipeline without options. It will attempt to get the raw reads from the default location (i.e. `input` directory inside the `gps-unified-pipeline` local directory)
+- You can run the pipeline without options. It will attempt to get the raw reads from the default location (i.e. `input` directory inside the `gps-pipeline` local directory)
   ```
   ./run_pipeline
   ```
@@ -142,12 +142,12 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 - If the run has been completed and you do not intend to use the `-resume` option or those intermediate files, you can remove the intermediate files using one of the following ways:
   - Run the included `clean_pipeline` script
     - It runs the commands in manual removal for you
-    - It removes the `work` directory and log files within the `gps-unified-pipeline` local directory
+    - It removes the `work` directory and log files within the `gps-pipeline` local directory
     ```
     ./clean_pipeline
     ```
   - Manual removal 
-    - Remove the `work` directory and log files within the `gps-unified-pipeline` local directory
+    - Remove the `work` directory and log files within the `gps-pipeline` local directory
     ```
     rm -rf work
     rm -rf .nextflow.log*
@@ -170,9 +170,9 @@ The pipeline is compatible with [Launchpad](https://help.tower.nf/23.2/launch/la
   ```
   ./run_pipeline [option] [value]
   ```
-> ℹ️ To permanently change the value of an option, edit the `nextflow.config` file inside the `gps-unified-pipeline` local directory.
+> ℹ️ To permanently change the value of an option, edit the `nextflow.config` file inside the `gps-pipeline` local directory.
 <!-- -->
-> ℹ️ `$projectDir` is a [Nextflow built-in implicit variables](https://www.nextflow.io/docs/latest/script.html?highlight=projectdir#implicit-variables), it is defined as the local directory of `gps-unified-pipeline`.
+> ℹ️ `$projectDir` is a [Nextflow built-in implicit variables](https://www.nextflow.io/docs/latest/script.html?highlight=projectdir#implicit-variables), it is defined as the local directory of `gps-pipeline`.
 <!-- -->
 > ℹ️ Pipeline options are not built-in Nextflow options, they are lead with `--` instead of `-`
 
@@ -257,7 +257,7 @@ The pipeline is compatible with [Launchpad](https://help.tower.nf/23.2/launch/la
   | `--lite` | `true` or `false`<br>(Default: `false`) | ⚠️ Enable this option breaks Nextflow resume function.<br>Reduce storage requirement by removing intermediate `.sam` and `.bam` files once they are no longer needed while the pipeline is still running.<br>The quantity of reduction of storage requirement cannot be guaranteed.<br> Can be enabled by including `--lite` without value. |
 
 # Output
-- By default, the pipeline outputs the results into the `output` directory inside the `gps-unified-pipeline` local directory
+- By default, the pipeline outputs the results into the `output` directory inside the `gps-pipeline` local directory
 - It can be changed by adding the option `--output`
   ```
   ./run_pipeline --output /path/to/output-directory

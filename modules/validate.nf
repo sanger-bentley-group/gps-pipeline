@@ -167,7 +167,7 @@ void validate(Map params) {
             default:
                 log.error("""
                     |Unknown value type \"${validParams[key]}\"
-                    |Please submit an issue at \"https://github.com/HarryHung/gps-unified-pipeline/issues\"}
+                    |Please submit an issue at \"https://github.com/sanger-bentley-group/gps-pipeline/issues\"}
                     """.stripMargin())
                 System.exit(1)
         }
