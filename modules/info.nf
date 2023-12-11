@@ -170,7 +170,7 @@ process PARSE {
         |╔═══════════════════════════╤═════════════════════════════════════════════════════════════════════╗
         |${coreTextRow('Software', 'Version')}
         |╠═══════════════════════════╪═════════════════════════════════════════════════════════════════════╣
-        |${coreTextRow('GPS Unified Pipeline', json.pipeline.version)}
+        |${coreTextRow('GPS Pipeline', json.pipeline.version)}
         |${coreTextRow('Nextflow', json.nextflow.version)}
         |╚═══════════════════════════╧═════════════════════════════════════════════════════════════════════╝
         |""".stripMargin()

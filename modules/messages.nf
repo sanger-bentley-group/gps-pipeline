@@ -5,12 +5,13 @@ void startMessage(String pipelineVersion) {
         |
         |╔══════════════════════════════════════════════════════════════════════════════════════════╗
         |║                                                                                          ║░
-        |║   ____ ____  ____    _   _       _  __ _          _   ____  _            _ _             ║░
-        |║  / ___|  _ \/ ___|  | | | |_ __ (_)/ _(_) ___  __| | |  _ \(_)_ __   ___| (_)_ __   ___  ║░
-        |║ | |  _| |_) \___ \  | | | | '_ \| | |_| |/ _ \/ _` | | |_) | | '_ \ / _ | | | '_ \ / _ \ ║░
-        |║ | |_| |  __/ ___) | | |_| | | | | |  _| |  __| (_| | |  __/| | |_) |  __| | | | | |  __/ ║░
-        |║  \____|_|   |____/   \___/|_| |_|_|_| |_|\___|\__,_| |_|   |_| .__/ \___|_|_|_| |_|\___| ║░
-        |${String.format('║  v %-57s |_|                         ║░', pipelineVersion)}
+        |║    ██████╗ ██████╗ ███████╗    ██████╗ ██╗██████╗ ███████╗██╗     ██╗███╗   ██╗███████╗  ║░
+        |║   ██╔════╝ ██╔══██╗██╔════╝    ██╔══██╗██║██╔══██╗██╔════╝██║     ██║████╗  ██║██╔════╝  ║░
+        |║   ██║  ███╗██████╔╝███████╗    ██████╔╝██║██████╔╝█████╗  ██║     ██║██╔██╗ ██║█████╗    ║░
+        |║   ██║   ██║██╔═══╝ ╚════██║    ██╔═══╝ ██║██╔═══╝ ██╔══╝  ██║     ██║██║╚██╗██║██╔══╝    ║░
+        |║   ╚██████╔╝██║     ███████║    ██║     ██║██║     ███████╗███████╗██║██║ ╚████║███████╗  ║░
+        |║    ╚═════╝ ╚═╝     ╚══════╝    ╚═╝     ╚═╝╚═╝     ╚══════╝╚══════╝╚═╝╚═╝  ╚═══╝╚══════╝  ║░
+        |${String.format('║  v %-86s║░', pipelineVersion)}
         |╚══════════════════════════════════════════════════════════════════════════════════════════╝░
         |  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
        /$.stripMargin()
@@ -92,7 +93,7 @@ void endMessage(String selectedWorkflow) {
                 """.stripMargin()
             failMessage = '''
                 |The pipeline has failed.
-                |If you think it is caused by a bug, submit an issue at \"https://github.com/HarryHung/gps-unified-pipeline/issues\".
+                |If you think it is caused by a bug, submit an issue at \"https://github.com/sanger-bentley-group/gps-pipeline/issues\".
                 '''.stripMargin()
             break
         case 'init':
@@ -111,7 +112,7 @@ void endMessage(String selectedWorkflow) {
                 '''.stripMargin()
             failMessage = '''
                 |Failed to get version information on pipeline, tools or databases.
-                |If you think it is caused by a bug, submit an issue at \"https://github.com/HarryHung/gps-unified-pipeline/issues\"
+                |If you think it is caused by a bug, submit an issue at \"https://github.com/sanger-bentley-group/gps-pipeline/issues\"
                 '''.stripMargin()
             break
     }
