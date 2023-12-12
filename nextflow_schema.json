@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
     "$id": "https://raw.githubusercontent.com/./master/nextflow_schema.json",
-    "title": "GPS Unified Pipeline Parameters",
+    "title": "GPS Pipeline Parameters",
     "description": "",
     "type": "object",
     "definitions": {
@@ -26,11 +26,6 @@
                     "description": "Path to the directory saving databases used by the pipeline",
                     "format": "directory-path"
                 },
-                "singularity_cachedir": {
-                    "type": "string",
-                    "description": "Path to the directory where Singularity images should be saved to.",
-                    "format": "directory-path"
-                },
                 "assembly_publish": {
                     "type": "string",
                     "description": "Method used by Nextflow to publish the generated assemblies.",
@@ -46,7 +41,6 @@
                 "reads",
                 "output",
                 "db",
-                "singularity_cachedir",
                 "assembly_publish"
             ]
         },
@@ -60,6 +54,13 @@
                     "type": "number",
                     "description": "Minimum S. pneumoniae percentage in reads to pass Taxonomy QC.",
                     "hidden": true,
+                    "minimum": 0,
+                    "maximum": 100
+                },
+                "non_strep_percentage": {
+                    "type": "number",
+                    "hidden": true,
+                    "description": "Maximum non-Streptococcus genus percentage in reads to pass Taxonomy QC.",
                     "minimum": 0,
                     "maximum": 100
                 },
@@ -103,6 +104,7 @@
             },
             "required": [
                 "spneumo_percentage",
+                "non_strep_percentage",
                 "ref_coverage",
                 "het_snp_site",
                 "contigs",
@@ -249,12 +251,35 @@
                     "pattern": "/.+\\.tsv$",
                     "format": "file-path",
                     "mimetype": "text/tab-separated-values"
+                },
+                "resistance_to_mic": {
+                    "type": "string",
+                    "hidden": true,
+                    "description": "Path to the resistance phenotypes to MIC (minimum inhibitory concentration) lookup table.",
+                    "pattern": "/.+\\.tsv$",
+                    "format": "file-path",
+                    "mimetype": "text/tab-separated-values"
                 }
             },
             "required": [
                 "ariba_ref",
-                "ariba_metadata"
+                "ariba_metadata",
+                "resistance_to_mic"
             ]
+        },
+        "singularity": {
+            "title": "Singularity",
+            "type": "object",
+            "description": "Only valid when Singularity is used as the container engine",
+            "default": "",
+            "properties": {
+                "singularity_cachedir": {
+                    "type": "string",
+                    "description": "Path to the directory where Singularity images should be saved to.",
+                    "format": "directory-path",
+                    "hidden": true
+                }
+            }
         }
     },
     "allOf": [
@@ -281,6 +306,9 @@
         },
         {
             "$ref": "#/definitions/other_amr"
+        },
+        {
+            "$ref": "#/definitions/singularity"
         }
     ]
 }
