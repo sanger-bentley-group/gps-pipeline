@@ -275,7 +275,7 @@ The pipeline is compatible with [Launchpad](https://help.tower.nf/23.2/launch/la
 - The following fields can be found in the output `results.csv`
   > ℹ️ The output fields in Other AMR / Virulence type depends on the provided ARIBA reference sequences and metadata file, and resistance phenotypes to MIC lookup table, the below table is based on the defaults.
   <!-- -->
-  > ℹ️ Minimum inhibitory concentration (MIC) of an antimicrobial is only provided if it is included in the resistance phenotypes to MIC lookup table
+  > ℹ️ Minimum inhibitory concentration (MIC) of an antimicrobial in "Other AMR" type is only provided if it is included in the resistance phenotypes to MIC lookup table. The default lookup table is based on 2014 CLSI guidelines.
     <!-- -->
   > ℹ️ For resistance phenotypes: S = Sensitive/Susceptible; I = Intermediate; R = Resistant
     <!-- -->
