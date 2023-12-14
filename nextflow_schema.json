@@ -26,6 +26,11 @@
                     "description": "Path to the directory saving databases used by the pipeline",
                     "format": "directory-path"
                 },
+                "singularity_cachedir": {
+                    "type": "string",
+                    "description": "(Only required when Singularity is used) Path to the directory where Singularity images should be saved to.",
+                    "format": "directory-path"
+                },
                 "assembly_publish": {
                     "type": "string",
                     "description": "Method used by Nextflow to publish the generated assemblies.",
@@ -266,20 +271,6 @@
                 "ariba_metadata",
                 "resistance_to_mic"
             ]
-        },
-        "singularity": {
-            "title": "Singularity",
-            "type": "object",
-            "description": "Only valid when Singularity is used as the container engine",
-            "default": "",
-            "properties": {
-                "singularity_cachedir": {
-                    "type": "string",
-                    "description": "Path to the directory where Singularity images should be saved to.",
-                    "format": "directory-path",
-                    "hidden": true
-                }
-            }
         }
     },
     "allOf": [
@@ -306,9 +297,6 @@
         },
         {
             "$ref": "#/definitions/other_amr"
-        },
-        {
-            "$ref": "#/definitions/singularity"
         }
     ]
 }
