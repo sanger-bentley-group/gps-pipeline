@@ -41,11 +41,11 @@ workflow {
         INIT()
     } else if (params.version) {
         workflowSelectMessage('version')
-        PRINT_VERSION(pipelineVersion)
+        PRINT_VERSION(params.resistance_to_mic, pipelineVersion)
     } else {
         workflowSelectMessage('pipeline')
         PIPELINE()
-        SAVE_INFO(PIPELINE.out.databases_info, pipelineVersion)
+        SAVE_INFO(PIPELINE.out.databases_info, params.resistance_to_mic, pipelineVersion)
     }
 }
 

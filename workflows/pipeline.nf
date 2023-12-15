@@ -163,8 +163,8 @@ workflow PIPELINE {
         .map { [it[0], it[1..-1].minus(null)] } // Map Sample_ID to index 0 and all reports (with null entries removed) as a list to index 1
     )
 
-    // Generate overall report by concatenating sample reports
-    GENERATE_OVERALL_REPORT(GENERATE_SAMPLE_REPORT.out.report.collect(), params.ariba_metadata)
+    // Generate overall report based on sample reports, ARIBA metadata, resistance to MIC lookup table
+    GENERATE_OVERALL_REPORT(GENERATE_SAMPLE_REPORT.out.report.collect(), params.ariba_metadata, params.resistance_to_mic)
 
     // Pass databases information to SAVE_INFO sub-workflow
     DATABASES_INFO = GET_REF_GENOME_BWA_DB.out.path.map { [["bwa_db_path", it]] }

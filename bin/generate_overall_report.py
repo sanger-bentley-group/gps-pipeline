@@ -24,33 +24,34 @@ COLUMNS_BY_CATEGORY = {
 
 
 # Check argv and save to global variables
-if len(sys.argv) != 4:
-    sys.exit('Usage: generate_overall_report.py INPUT_PATTERN ARIBA_METADATA OUTPUT_FILE')
+if len(sys.argv) != 5:
+    sys.exit('Usage: generate_overall_report.py INPUT_PATTERN ARIBA_METADATA RESISTANCE_TO_MIC OUTPUT_FILE')
 INPUT_PATTERN = sys.argv[1]
 ARIBA_METADATA = sys.argv[2]
-OUTPUT_FILE = sys.argv[3]
+RESISTANCE_TO_MIC = sys.argv[3]
+OUTPUT_FILE = sys.argv[4]
 
 
 def main():
-    output_columns = get_output_columns()
-    df_output = get_df_output(output_columns)
+    ariba_targets = set(pd.read_csv(ARIBA_METADATA, sep='\t')['target'].unique())
+    df_resistance_to_mic = pd.read_csv(RESISTANCE_TO_MIC, sep='\t', index_col='drug')
+
+    output_columns = get_output_columns(COLUMNS_BY_CATEGORY, ariba_targets)
+    df_output = get_df_output(INPUT_PATTERN, output_columns, df_resistance_to_mic)
 
     # Saving df_output to OUTPUT_FILE in csv format
     df_output.to_csv(OUTPUT_FILE, index=False, na_rep='_')
 
 
 # Get output columns based on COLUMNS_BY_CATEGORY and ARIBA metadata
-def get_output_columns():
-    output_columns = list(chain.from_iterable(COLUMNS_BY_CATEGORY.values()))
-    add_ariba_columns(output_columns)
+def get_output_columns(columns_by_category, ariba_targets):
+    output_columns = list(chain.from_iterable(columns_by_category.values()))
+    add_ariba_columns(output_columns, ariba_targets)
     return output_columns
 
 
 # Based on ARIBA metadata, add additional output columns
-def add_ariba_columns(output_columns):
-    # Get all targets in ARIBA metadata
-    ariba_targets = set(pd.read_csv(ARIBA_METADATA, sep='\t')['target'].unique())
-
+def add_ariba_columns(output_columns, ariba_targets):
     # Adding special cases if certain targets exist
     if 'TET' in ariba_targets:
         ariba_targets.add('DOX')
@@ -72,14 +73,14 @@ def add_ariba_columns(output_columns):
         output_columns.extend([f'{pili}', f'{pili}_Determinant'])
 
 
-# Generating df_output based on all sample reports with columns in the order of output_columns
-def get_df_output(output_columns):
+# Generating df_output based on all sample reports with columns in the order of output_columns, add inferred MIC range
+def get_df_output(input_pattern, output_columns, df_resistance_to_mic):
     # Generate an empty dataframe as df_manifest based on output_columns
     df_manifest = pd.DataFrame(columns=output_columns)
 
     # Generate a dataframe for each sample report and then concat df_manifest and all dataframes into df_output 
     dfs = [df_manifest]
-    reports = glob.glob(INPUT_PATTERN)
+    reports = glob.glob(input_pattern)
     for report in reports:
         df = pd.read_csv(report, dtype=str)
         dfs.append(df)
@@ -87,6 +88,22 @@ def get_df_output(output_columns):
 
     # Ensure column order in df_output is the same as output_columns
     df_output = df_output[output_columns]
+
+    df_output = add_inferred_mic(df_output, df_resistance_to_mic)
+
+    return df_output
+
+#  Add inferred MIC (minimum inhibitory concentration) based on resistance phenotypes if the drug exists in the lookup table
+def add_inferred_mic(df_output, df_resistance_to_mic):
+    all_resistance_to_mic = df_resistance_to_mic.to_dict('index')
+    
+    for drug, resistance_to_mic in all_resistance_to_mic.items():
+        res_col_name = f'{drug}_Res'
+
+        if res_col_name in df_output:
+            res_col_index = df_output.columns.get_loc(res_col_name)
+            mic_series = df_output[res_col_name].map(resistance_to_mic, na_action='ignore')
+            df_output.insert(res_col_index, f'{drug}_MIC', mic_series)
 
     return df_output
 

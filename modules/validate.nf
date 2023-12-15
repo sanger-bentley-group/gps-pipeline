@@ -26,6 +26,7 @@ validParams = [
     depth: 'int_float',
     ariba_ref: 'path_fasta',
     ariba_metadata: 'path_tsv',
+    resistance_to_mic: 'path_tsv',
     lite: 'boolean'
 ]
 
