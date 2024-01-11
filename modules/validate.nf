@@ -51,11 +51,6 @@ void validate(Map params) {
         validParams.put("singularity_cachedir", "path")
     }
 
-    // Add params.maxretries when workflow.profile contains 'lsf' 
-    if (workflow.profile.split(',').contains('lsf')) {
-        validParams.put("maxretries", "int")
-    }
-
     // For initalisation, skip input and output directories checks
     // For version, skip all file paths related checks
     skippedParams = []
