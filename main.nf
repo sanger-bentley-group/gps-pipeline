@@ -1,7 +1,7 @@
 #!/usr/bin/env nextflow
 
 // Version of this release
-pipelineVersion = '1.0.0-rc2'
+pipelineVersion = '1.0.0-rc3'
 
 // Import workflow modules
 include { PIPELINE } from "$projectDir/workflows/pipeline"
@@ -41,11 +41,11 @@ workflow {
         INIT()
     } else if (params.version) {
         workflowSelectMessage('version')
-        PRINT_VERSION(pipelineVersion)
+        PRINT_VERSION(params.resistance_to_mic, pipelineVersion)
     } else {
         workflowSelectMessage('pipeline')
         PIPELINE()
-        SAVE_INFO(PIPELINE.out.databases_info, pipelineVersion)
+        SAVE_INFO(PIPELINE.out.databases_info, params.resistance_to_mic, pipelineVersion)
     }
 }
 

@@ -26,6 +26,7 @@ validParams = [
     depth: 'int_float',
     ariba_ref: 'path_fasta',
     ariba_metadata: 'path_tsv',
+    resistance_to_mic: 'path_tsv',
     lite: 'boolean'
 ]
 
@@ -48,11 +49,6 @@ void validate(Map params) {
     // Add params.singularity_cachedir when workflow.containerEngine == 'singularity'
     if (workflow.containerEngine == 'singularity') {
         validParams.put("singularity_cachedir", "path")
-    }
-
-    // Add params.maxretries when workflow.profile contains 'lsf' 
-    if (workflow.profile.split(',').contains('lsf')) {
-        validParams.put("maxretries", "int")
     }
 
     // For initalisation, skip input and output directories checks
@@ -167,7 +163,7 @@ void validate(Map params) {
             default:
                 log.error("""
                     |Unknown value type \"${validParams[key]}\"
-                    |Please submit an issue at \"https://github.com/HarryHung/gps-unified-pipeline/issues\"}
+                    |Please submit an issue at \"https://github.com/sanger-bentley-group/gps-pipeline/issues\"}
                     """.stripMargin())
                 System.exit(1)
         }

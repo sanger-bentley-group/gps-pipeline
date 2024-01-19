@@ -58,6 +58,12 @@ add_url_db () {
     jq -n --arg url "$URL" --arg save_time "$SAVE_TIME" '. = {"url": $url, "save_time": $save_time}'
 }
 
+add_resistance_to_mic () {
+    TABLE="$RESISTANCE_TO_MIC"
+    TABLE_MD5=$(md5sum "$RESISTANCE_TO_MIC" | awk '{ print $1 }')
+    jq -n --arg table "$TABLE" --arg table_md5 "$TABLE_MD5" '. = {"table": $table, "table_md5": $table_md5}'
+}
+
 jq -n \
     --argjson bwa_db "$(add_bwa_db)" \
     --argjson ariba_db "$(add_ariba_db)" \
@@ -65,4 +71,5 @@ jq -n \
     --argjson kraken2_db "$(add_url_db "${KRAKEN2_DB_PATH}/${KRAKEN2_JSON}")" \
     --argjson poppunnk_db "$(add_url_db "${POPPUNK_DB_PATH}/${POPPUNK_JSON}")" \
     --argjson poppunk_ext "$(add_url_db "${POPPUNK_EXT_PATH}/${POPPUNK_EXT_JSON}")" \
+    --argjson resistance_to_mic "$(add_resistance_to_mic)"\
     '$ARGS.named' > "$JSON_FILE"

@@ -1,11 +1,11 @@
-# GPS Unified Pipeline <!-- omit in toc -->
+# GPS Pipeline <!-- omit in toc -->
 
 [![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-23.10.0-23aa62.svg)](https://www.nextflow.io/)
 [![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)
 [![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/singularity/)
-[![Launch on Nextflow Tower](https://img.shields.io/badge/Launch%20%F0%9F%9A%80-Nextflow%20Tower-%234256e7)](https://tower.nf/launch?pipeline=https://github.com/harryhung/gps-unified-pipeline)
+[![Launch on Nextflow Tower](https://img.shields.io/badge/Launch%20%F0%9F%9A%80-Nextflow%20Tower-%234256e7)](https://tower.nf/launch?pipeline=https://github.com/sanger-bentley-group/gps-pipeline)
 
-The GPS Unified Pipeline is a Nextflow pipeline designed for processing raw reads (FASTQ files) of *Streptococcus pneumoniae* samples. After preprocessing, the pipeline performs initial assessment based on the total bases in reads. Passed samples will be further assess based on assembly, mapping, and taxonomy. If the sample passes all quality controls (QC), the pipeline also provides the sample's serotype, multi-locus sequence typing (MLST), lineage (based on the [Global Pneumococcal Sequence Cluster (GPSC)](https://www.pneumogen.net/gps/GPSC_lineages.html)), and antimicrobial resistance (AMR) against multiple antimicrobials.
+The GPS Pipeline is a Nextflow pipeline designed for processing raw reads (FASTQ files) of *Streptococcus pneumoniae* samples. After preprocessing, the pipeline performs initial assessment based on the total bases in reads. Passed samples will be further assess based on assembly, mapping, and taxonomy. If the sample passes all quality controls (QC), the pipeline also provides the sample's serotype, multi-locus sequence typing (MLST), lineage (based on the [Global Pneumococcal Sequence Cluster (GPSC)](https://www.pneumogen.net/gps/GPSC_lineages.html)), and antimicrobial resistance (AMR) against multiple antimicrobials.
 
 The pipeline is designed to be easy to set up and use, and is suitable for use on local machines and high-performance computing (HPC) clusters alike. Additionally, the pipeline only downloads essential files to enable the analysis, and no data is uploaded from the local environment, making it an ideal option for cases where the FASTQ files being analysed is confidential. After initialisation or the first successful complete run, the pipeline can be used offline unless you have changed the selection of any database or container image.
 
@@ -69,14 +69,14 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 ## Setup 
 1. Clone the repository (if Git is installed on your system)
     ```
-    git clone https://github.com/HarryHung/gps-unified-pipeline.git
+    git clone https://github.com/sanger-bentley-group/gps-pipeline.git
     ```
     or 
     
-    Download and unzip/extract the [latest release](https://github.com/HarryHung/gps-unified-pipeline/releases)
+    Download and unzip/extract the [latest release](https://github.com/sanger-bentley-group/gps-pipeline/releases)
 2. Go into the local directory of the pipeline and it is ready to use without installation (the directory name might be different)
     ```
-    cd gps-unified-pipeline
+    cd gps-pipeline
     ```
 3. (Optional) You could perform an initialisation to download all required additional files and container images, so the pipeline can be used at any time with or without the Internet afterwards.
     > ⚠️ Docker or Singularity must be running, and an Internet connection is required.
@@ -95,7 +95,7 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 > ⚠️ If this is the first run and initialisation was not performed, an Internet connection is required.
 <!-- -->
 > ℹ️ By default, Docker is used as the container engine and all the processes are executed by the local machine. See [Profile](#profile) for details on running the pipeline with Singularity or on a HPC cluster.
-- You can run the pipeline without options. It will attempt to get the raw reads from the default location (i.e. `input` directory inside the `gps-unified-pipeline` local directory)
+- You can run the pipeline without options. It will attempt to get the raw reads from the default location (i.e. `input` directory inside the `gps-pipeline` local directory)
   ```
   ./run_pipeline
   ```
@@ -142,12 +142,12 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 - If the run has been completed and you do not intend to use the `-resume` option or those intermediate files, you can remove the intermediate files using one of the following ways:
   - Run the included `clean_pipeline` script
     - It runs the commands in manual removal for you
-    - It removes the `work` directory and log files within the `gps-unified-pipeline` local directory
+    - It removes the `work` directory and log files within the `gps-pipeline` local directory
     ```
     ./clean_pipeline
     ```
   - Manual removal 
-    - Remove the `work` directory and log files within the `gps-unified-pipeline` local directory
+    - Remove the `work` directory and log files within the `gps-pipeline` local directory
     ```
     rm -rf work
     rm -rf .nextflow.log*
@@ -170,9 +170,9 @@ The pipeline is compatible with [Launchpad](https://help.tower.nf/23.2/launch/la
   ```
   ./run_pipeline [option] [value]
   ```
-> ℹ️ To permanently change the value of an option, edit the `nextflow.config` file inside the `gps-unified-pipeline` local directory.
+> ℹ️ To permanently change the value of an option, edit the `nextflow.config` file inside the `gps-pipeline` local directory.
 <!-- -->
-> ℹ️ `$projectDir` is a [Nextflow built-in implicit variables](https://www.nextflow.io/docs/latest/script.html?highlight=projectdir#implicit-variables), it is defined as the local directory of `gps-unified-pipeline`.
+> ℹ️ `$projectDir` is a [Nextflow built-in implicit variables](https://www.nextflow.io/docs/latest/script.html?highlight=projectdir#implicit-variables), it is defined as the local directory of `gps-pipeline`.
 <!-- -->
 > ℹ️ Pipeline options are not built-in Nextflow options, they are lead with `--` instead of `-`
 
@@ -235,14 +235,15 @@ The pipeline is compatible with [Launchpad](https://help.tower.nf/23.2/launch/la
 ## Lineage
   | Option | Values | Description |
   | --- | ---| --- |
-  | `--poppunk_db_remote` | Any valid URL to a PopPUNK database in `.tar.gz` or `.tgz` format<br />(Default: [GPS v6](https://gps-project.cog.sanger.ac.uk/GPS_v6.tar.gz)) | URL to a PopPUNK database. |
-  | `--poppunk_ext_remote` | Any valid URL to a PopPUNK external clusters file in `.csv` format<br />(Default: [GPS v6 GPSC Designation](https://gps-project.cog.sanger.ac.uk/GPS_v6_external_clusters.csv)) | URL to a PopPUNK external clusters file. |
+  | `--poppunk_db_remote` | Any valid URL to a PopPUNK database in `.tar.gz` or `.tgz` format<br />(Default: [GPS v8 - Reference Only](https://gps-project.cog.sanger.ac.uk/GPS_v8_ref.tar.gz)) | URL to a PopPUNK database. |
+  | `--poppunk_ext_remote` | Any valid URL to a PopPUNK external clusters file in `.csv` format<br />(Default: [GPS v8 GPSC Designation](https://gps-project.cog.sanger.ac.uk/GPS_v8_external_clusters.csv)) | URL to a PopPUNK external clusters file. |
 
 ## Other AMR
   | Option | Values | Description |
   | --- | ---| --- |
-  | `--ariba_ref` | Any valid path to a `.fa` or `.fasta` file<br />(Default: `"$projectDir/data/ariba_ref_sequences.fasta"`) | Path to the reference sequences for ARIBA. |
-  | `--ariba_metadata` | Any valid path to a `tsv` file<br />(Default: `"$projectDir/data/ariba_metadata.tsv"`) | Path to the metadata file for ARIBA. |
+  | `--ariba_ref` | Any valid path to a `.fa` or `.fasta` file<br />(Default: `"$projectDir/data/ariba_ref_sequences.fasta"`) | Path to the reference sequences for preparing ARIBA database. |
+  | `--ariba_metadata` | Any valid path to a `tsv` file<br />(Default: `"$projectDir/data/ariba_metadata.tsv"`) | Path to the metadata file for preparing ARIBA database. |
+  | `--resistance_to_mic` | Any valid path to a `tsv` file<br />(Default: `"$projectDir/data/resistance_to_MIC.tsv"`) | Path to the resistance phenotypes to MIC (minimum inhibitory concentration) lookup table. |
 
 ## Singularity
   > ℹ️ This section is only valid when Singularity is used as the container engine
@@ -257,7 +258,7 @@ The pipeline is compatible with [Launchpad](https://help.tower.nf/23.2/launch/la
   | `--lite` | `true` or `false`<br>(Default: `false`) | ⚠️ Enable this option breaks Nextflow resume function.<br>Reduce storage requirement by removing intermediate `.sam` and `.bam` files once they are no longer needed while the pipeline is still running.<br>The quantity of reduction of storage requirement cannot be guaranteed.<br> Can be enabled by including `--lite` without value. |
 
 # Output
-- By default, the pipeline outputs the results into the `output` directory inside the `gps-unified-pipeline` local directory
+- By default, the pipeline outputs the results into the `output` directory inside the `gps-pipeline` local directory
 - It can be changed by adding the option `--output`
   ```
   ./run_pipeline --output /path/to/output-directory
@@ -272,7 +273,9 @@ The pipeline is compatible with [Launchpad](https://help.tower.nf/23.2/launch/la
 
 ## Details of `results.csv`
 - The following fields can be found in the output `results.csv`
-  > ℹ️  The output fields in Other AMR / Virulence type depends on the provided ARIBA database, the below table is based on the default ARIBA database
+  > ℹ️ The output fields in Other AMR / Virulence type depends on the provided ARIBA reference sequences and metadata file, and resistance phenotypes to MIC lookup table, the below table is based on the defaults.
+  <!-- -->
+  > ℹ️ The inferred Minimum Inhibitory Concentration (MIC) range of an antimicrobial in "Other AMR" type is only provided if it is included in the resistance phenotypes to MIC lookup table. The default lookup table is based on 2014 CLSI guidelines.
     <!-- -->
   > ℹ️ For resistance phenotypes: S = Sensitive/Susceptible; I = Intermediate; R = Resistant
     <!-- -->
@@ -313,52 +316,61 @@ The pipeline is compatible with [Launchpad](https://help.tower.nf/23.2/launch/la
   | `pbp2b` | PBP AMR | Allele ID of pbp2b |
   | `pbp2x` | PBP AMR | Allele ID of pbp2x |
   | `AMO_MIC` | PBP AMR | Estimated minimum inhibitory concentration (MIC) of amoxicillin (AMO) |
-  | `AMO_Res` | PBP AMR | Resistance phenotype against AMO |
+  | `AMO_Res` | PBP AMR | Inferred resistance phenotype against AMO |
   | `CFT_MIC` | PBP AMR | Estimated MIC of ceftriaxone (CFT) |
-  | `CFT_Res(Meningital)` | PBP AMR | Resistance phenotype against CFT in meningital form |
-  | `CFT_Res(Non-meningital)` | PBP AMR | Resistance phenotype against CFT in non-meningital form |
+  | `CFT_Res(Meningital)` | PBP AMR | Inferred resistance phenotype against CFT in meningital form |
+  | `CFT_Res(Non-meningital)` | PBP AMR | Inferred resistance phenotype against CFT in non-meningital form |
   | `TAX_MIC` | PBP AMR | Estimated MIC of cefotaxime (TAX) |
-  | `TAX_Res(Meningital)` | PBP AMR | Resistance phenotype against TAX in meningital form |
-  | `TAX_Res(Non-meningital)` | PBP AMR | Resistance phenotype against TAX in non-meningital form |
+  | `TAX_Res(Meningital)` | PBP AMR | Inferred resistance phenotype against TAX in meningital form |
+  | `TAX_Res(Non-meningital)` | PBP AMR | Inferred resistance phenotype against TAX in non-meningital form |
   | `CFX_MIC` | PBP AMR | Estimated MIC of cefuroxime (CFX) |
-  | `CFX_Res` | PBP AMR | Resistance phenotype against CFX |
+  | `CFX_Res` | PBP AMR | Inferred resistance phenotype against CFX |
   | `MER_MIC` | PBP AMR | Estimated MIC of meropenem (MER) |
-  | `MER_Res` | PBP AMR | Resistance phenotype against MER |
+  | `MER_Res` | PBP AMR | Inferred resistance phenotype against MER |
   | `PEN_MIC` | PBP AMR | Estimated MIC of penicillin (PEN) |
-  | `PEN_Res(Meningital)` | PBP AMR | Resistance phenotype against PEN in meningital form |
-  | `PEN_Res(Non-meningital)` | PBP AMR | Resistance phenotype against PEN in non-meningital form |
-  | `CHL_Res` | Other AMR | Resistance phenotype against Chloramphenicol (CHL) |
-  | `CHL_Determinant` | Other AMR | Known determinants that inferred the CHL resistance |
-  | `CLI_Res` | Other AMR | Resistance phenotype against Clindamycin (CLI) |
-  | `CLI_Determinant` | Other AMR | Known determinants that inferred the CLI resistance |
-  | `COT_Res` | Other AMR | Resistance phenotype against Co-Trimoxazole (COT) |
-  | `COT_Determinant` | Other AMR | Known determinants that inferred the COT resistance |
-  | `DOX_Res` | Other AMR | Resistance phenotype against Doxycycline (DOX) |
-  | `DOX_Determinant` | Other AMR | Known determinants that inferred the DOX resistance |
-  | `ERY_Res` | Other AMR | Resistance phenotype against Erythromycin (ERY) |
-  | `ERY_Determinant` | Other AMR | Known determinants that inferred the ERY resistance |
-  | `ERY_CLI_Res` | Other AMR | Resistance phenotype against Erythromycin (ERY) and Clindamycin (CLI) |
-  | `ERY_CLI_Determinant` | Other AMR | Known determinants that inferred the ERY and CLI resistance |
-  | `FQ_Res` | Other AMR | Resistance phenotype against Fluoroquinolones (FQ) |
-  | `FQ_Determinant` | Other AMR | Known determinants that inferred the FQ resistance |
-  | `KAN_Res` | Other AMR | Resistance phenotype against Kanamycin (KAN) |
-  | `KAN_Determinant` | Other AMR | Known determinants that inferred the KAN resistance |
-  | `LFX_Res` | Other AMR | Resistance phenotype against Levofloxacin (LFX) |
-  | `LFX_Determinant` | Other AMR | Known determinants that inferred the LFX resistance |
-  | `RIF_Res` | Other AMR | Resistance phenotype against Rifampin (RIF) |
-  | `RIF_Determinant` | Other AMR | Known determinants that inferred the RIF resistance |
-  | `SMX_Res` | Other AMR | Resistance phenotype against Sulfamethoxazole (SMX) |
-  | `SMX_Determinant` | Other AMR | Known determinants that inferred the SMX resistance |
-  | `TET_Res` | Other AMR | Resistance phenotype against Tetracycline (TET) |
-  | `TET_Determinant` | Other AMR | Known determinants that inferred the TET resistance |
-  | `TMP_Res` | Other AMR | Resistance phenotype against Trimethoprim (TMP) |
-  | `TMP_Determinant` | Other AMR | Known determinants that inferred the TMP resistance |
-  | `VAN_Res` | Other AMR | Resistance phenotype against Vancomycin (VAN) |
-  | `VAN_Determinant` | Other AMR | Known determinants that inferred the VAN resistance |
+  | `PEN_Res(Meningital)` | PBP AMR | Inferred resistance phenotype against PEN in meningital form |
+  | `PEN_Res(Non-meningital)` | PBP AMR | Inferred resistance phenotype against PEN in non-meningital form |
+  | `CHL_MIC` | Other AMR | Inferred MIC of Chloramphenicol (CHL) |
+  | `CHL_Res` | Other AMR | Estimated resistance phenotype against CHL |
+  | `CHL_Determinant` | Other AMR | Known determinants that estimated the CHL resistance phenotype |
+  | `CLI_MIC` | Other AMR | Inferred MIC of Clindamycin (CLI) |
+  | `CLI_Res` | Other AMR | Estimated resistance phenotype against CLI |
+  | `CLI_Determinant` | Other AMR | Known determinants that estimated the CLI resistance phenotype |
+  | `COT_MIC` | Other AMR | Inferred MIC of Co-Trimoxazole (COT) |
+  | `COT_Res` | Other AMR | Estimated resistance phenotype against COT |
+  | `COT_Determinant` | Other AMR | Known determinants that estimated the COT resistance phenotype |
+  | `DOX_MIC` | Other AMR | Inferred MIC of Doxycycline (DOX) |
+  | `DOX_Res` | Other AMR | Estimated resistance phenotype against DOX |
+  | `DOX_Determinant` | Other AMR | Known determinants that estimated the DOX resistance phenotype |
+  | `ERY_MIC` | Other AMR | Inferred MIC of Erythromycin (ERY) |
+  | `ERY_Res` | Other AMR | Estimated resistance phenotype against ERY |
+  | `ERY_Determinant` | Other AMR | Known determinants that estimated the ERY resistance phenotype |
+  | `ERY_CLI_Res` | Other AMR | Estimated resistance phenotype against Erythromycin (ERY) and Clindamycin (CLI) |
+  | `ERY_CLI_Determinant` | Other AMR | Known determinants that estimated the ERY and CLI resistance phenotype |
+  | `FQ_Res` | Other AMR | Estimated resistance phenotype against Fluoroquinolones (FQ) |
+  | `FQ_Determinant` | Other AMR | Known determinants that estimated the FQ resistance phenotype |
+  | `KAN_Res` | Other AMR | Estimated resistance phenotype against Kanamycin (KAN) |
+  | `KAN_Determinant` | Other AMR | Known determinants that estimated the KAN resistance phenotype |
+  | `LFX_MIC` | Other AMR | Inferred MIC of Levofloxacin (LFX) |
+  | `LFX_Res` | Other AMR | Estimated resistance phenotype against LFX |
+  | `LFX_Determinant` | Other AMR | Known determinants that estimated the LFX resistance phenotype |
+  | `RIF_MIC` | Other AMR | Inferred MIC of Rifampin (RIF) |
+  | `RIF_Res` | Other AMR | Estimated resistance phenotype against RIF |
+  | `RIF_Determinant` | Other AMR | Known determinants that estimated the RIF resistance phenotype |
+  | `SMX_Res` | Other AMR | Estimated resistance phenotype against Sulfamethoxazole (SMX) |
+  | `SMX_Determinant` | Other AMR | Known determinants that estimated the SMX resistance phenotype |
+  | `TET_MIC` | Other AMR | Inferred MIC of Tetracycline (TET) |
+  | `TET_Res` | Other AMR | Estimated resistance phenotype against TET |
+  | `TET_Determinant` | Other AMR | Known determinants that estimated the TET resistance phenotype |
+  | `TMP_Res` | Other AMR | Estimated resistance phenotype against Trimethoprim (TMP) |
+  | `TMP_Determinant` | Other AMR | Known determinants that estimated the TMP resistance phenotype |
+  | `VAN_MIC` | Other AMR | Inferred MIC of Vancomycin (VAN) |
+  | `VAN_Res` | Other AMR | Estimated resistance phenotype against VAN |
+  | `VAN_Determinant` | Other AMR | Known determinants that estimated the VAN resistance phenotype |
   | `PILI1` | Virulence | Expression of PILI-1 |
-  | `PILI1_Determinant` | Virulence | Known determinants that inferred the PILI-1 expression |
+  | `PILI1_Determinant` | Virulence | Known determinants that estimated the PILI-1 expression |
   | `PILI2` | Virulence | Expression of PILI-2 |
-  | `PILI2_Determinant` | Virulence | Known determinants that inferred the PILI-2 expression |
+  | `PILI2_Determinant` | Virulence | Known determinants that estimated the PILI-2 expression |
 
 &nbsp;
 # Credits
