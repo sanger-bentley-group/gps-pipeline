@@ -1,3 +1,28 @@
+// Basic file validation of input files
+process FILE_VALIDATION {
+    label 'bash_container'
+    label 'farm_low'
+
+    tag "$sample_id"
+
+    input:
+    tuple val(sample_id), path(reads)
+
+    output:
+    tuple val(sample_id), env(FILE_VALIDITY), emit: result
+
+    script:
+    read_one="${reads[0]}"
+    read_two="${reads[1]}"
+    """
+    READ_ONE="$read_one"
+    READ_TWO="$read_two"
+
+    source validate_file.sh
+    """
+}
+
+
 // Run fastp to preprocess the FASTQs
 process PREPROCESS {
     label 'fastp_container'

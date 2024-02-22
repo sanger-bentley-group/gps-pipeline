@@ -1,5 +1,5 @@
 // Import process modules
-include { PREPROCESS; READ_QC } from "$projectDir/modules/preprocess"
+include { FILE_VALIDATION; PREPROCESS; READ_QC } from "$projectDir/modules/preprocess"
 include { ASSEMBLY_UNICYCLER; ASSEMBLY_SHOVILL; ASSEMBLY_ASSESS; ASSEMBLY_QC } from "$projectDir/modules/assembly"
 include { GET_REF_GENOME_BWA_DB; MAPPING; SAM_TO_SORTED_BAM; SNP_CALL; HET_SNP_COUNT; MAPPING_QC } from "$projectDir/modules/mapping"
 include { GET_KRAKEN2_DB; TAXONOMY; TAXONOMY_QC } from "$projectDir/modules/taxonomy"
@@ -32,9 +32,18 @@ workflow PIPELINE {
     // Get read pairs into Channel raw_read_pairs_ch
     raw_read_pairs_ch = Channel.fromFilePairs("$params.reads/*_{,R}{1,2}{,_001}.{fq,fastq}{,.gz}", checkIfExists: true)
 
-    // Preprocess read pairs
+    // Basic input files validation
+    // Output into Channel FILE_VALIDATION.out.result
+    FILE_VALIDATION(raw_read_pairs_ch)
+
+    // From Channel raw_read_pairs_ch, only output valid reads of samples based on Channel FILE_VALIDATION.out.result
+    VALID_READS_ch = FILE_VALIDATION.out.result.join(raw_read_pairs_ch, failOnDuplicate: true, failOnMismatch: true)
+                        .filter { it[1] == 'PASS' }
+                        .map { it[0, 2..-1] }
+
+    // Preprocess valid read pairs
     // Output into Channels PREPROCESS.out.processed_reads & PREPROCESS.out.json
-    PREPROCESS(raw_read_pairs_ch)
+    PREPROCESS(VALID_READS_ch)
 
     // From Channel PREPROCESS.out.json, provide Read QC status
     // Output into Channels READ_QC.out.bases, READ_QC.out.result, READ_QC.out.report
@@ -102,10 +111,12 @@ workflow PIPELINE {
     // Output into Channels TAXONOMY_QC.out.result & TAXONOMY_QC.out.report
     TAXONOMY_QC(TAXONOMY.out.report, params.spneumo_percentage, params.non_strep_percentage)
 
-    // Merge Channels READ_QC.out.result & ASSEMBLY_QC.out.result & MAPPING_QC.out.result & TAXONOMY_QC.out.result to provide Overall QC Status
+    // Merge Channels FILE_VALIDATION.out.result & READ_QC.out.result & ASSEMBLY_QC.out.result & MAPPING_QC.out.result & TAXONOMY_QC.out.result to provide Overall QC Status
     // Output into Channel OVERALL_QC.out.result & OVERALL_QC.out.report
     OVERALL_QC(
-        READ_QC.out.result
+        raw_read_pairs_ch.map{ it[0] }
+        .join(FILE_VALIDATION.out.result, failOnDuplicate: true, failOnMismatch: true)
+        .join(READ_QC.out.result, failOnDuplicate: true, remainder: true)
         .join(ASSEMBLY_QC.out.result, failOnDuplicate: true, remainder: true)
         .join(MAPPING_QC.out.result, failOnDuplicate: true, remainder: true)
         .join(TAXONOMY_QC.out.result, failOnDuplicate: true, remainder: true)
@@ -150,11 +161,12 @@ workflow PIPELINE {
 
     // Generate sample reports by merging outputs from all result-generating modules
     GENERATE_SAMPLE_REPORT(
-        READ_QC.out.report
+        raw_read_pairs_ch.map{ it[0] }
+        .join(READ_QC.out.report, failOnDuplicate: true, remainder: true)
         .join(ASSEMBLY_QC.out.report, failOnDuplicate: true, remainder: true)
         .join(MAPPING_QC.out.report, failOnDuplicate: true, remainder: true)
         .join(TAXONOMY_QC.out.report, failOnDuplicate: true, remainder: true)
-        .join(OVERALL_QC.out.report, failOnDuplicate: true, remainder: true)
+        .join(OVERALL_QC.out.report, failOnDuplicate: true, failOnMismatch: true)
         .join(SEROTYPE.out.report, failOnDuplicate: true, remainder: true)
         .join(MLST.out.report, failOnDuplicate: true, remainder: true)
         .join(PARSE_PBP_RESISTANCE.out.report, failOnDuplicate: true, remainder: true)
