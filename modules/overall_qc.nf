@@ -6,7 +6,7 @@ process OVERALL_QC {
     tag "$sample_id"
 
     input:
-    tuple val(sample_id), val(read_qc), val(assembly_qc), val(mapping_qc), val(taxonomy_qc)
+    tuple val(sample_id), val(file_validity), val(read_qc), val(assembly_qc), val(mapping_qc), val(taxonomy_qc)
 
     output:
     tuple val(sample_id), env(OVERALL_QC), emit: result
@@ -15,6 +15,7 @@ process OVERALL_QC {
     script:
     overall_qc_report='overall_qc_report.csv'
     """
+    FILE_VALIDITY="$file_validity"
     READ_QC="$read_qc"
     ASSEMBLY_QC="$assembly_qc"
     MAPPING_QC="$mapping_qc"

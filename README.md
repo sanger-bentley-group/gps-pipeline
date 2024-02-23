@@ -1,6 +1,6 @@
 # GPS Pipeline <!-- omit in toc -->
 
-[![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-23.10.0-23aa62.svg)](https://www.nextflow.io/)
+[![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-23.10.1-23aa62.svg)](https://www.nextflow.io/)
 [![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)
 [![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/singularity/)
 [![Launch on Nextflow Tower](https://img.shields.io/badge/Launch%20%F0%9F%9A%80-Nextflow%20Tower-%234256e7)](https://tower.nf/launch?pipeline=https://github.com/sanger-bentley-group/gps-pipeline)
@@ -280,6 +280,8 @@ The pipeline is compatible with [Launchpad](https://help.tower.nf/23.2/launch/la
   > ℹ️ For resistance phenotypes: S = Sensitive/Susceptible; I = Intermediate; R = Resistant
     <!-- -->
   > ℹ️ For virulence genes: POS = Positive; NEG = Negative
+  <!-- -->
+  > ⚠️ If the result of `Overall_QC` of a sample is `READ_ONE_CORRUPTED`, `READ_TWO_CORRUPTED` or both, the specific read file is found to be corrupted (i.e. incomplete/damaged Gzip file, mis-match(s) in read length and quality-score length). You might want to reacquire the read file from its source, or discard the sample if the source file is corrupted as well. 
   <!-- -->
   > ⚠️ If the result of `Overall_QC` of a sample is `ASSEMBLER FAILURE`, the assembler has crashed when trying to assembly the reads. You might want to re-run the sample with [another assembler](#assembly), or discard the sample if it is a low quality one.
   <!-- -->
