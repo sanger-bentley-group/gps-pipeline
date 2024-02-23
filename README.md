@@ -281,6 +281,8 @@ The pipeline is compatible with [Launchpad](https://help.tower.nf/23.2/launch/la
     <!-- -->
   > ℹ️ For virulence genes: POS = Positive; NEG = Negative
   <!-- -->
+  > ⚠️ If the result of `Overall_QC` of a sample is `READ_ONE_CORRUPTED`, `READ_TWO_CORRUPTED` or both, the specific read file is found to be corrupted (i.e. incomplete/damaged Gzip file, mis-match(s) in read length and quality-score length). You might want to reacquire the read file from its source, or discard the sample if the source file is corrupted as well. 
+  <!-- -->
   > ⚠️ If the result of `Overall_QC` of a sample is `ASSEMBLER FAILURE`, the assembler has crashed when trying to assembly the reads. You might want to re-run the sample with [another assembler](#assembly), or discard the sample if it is a low quality one.
   <!-- -->
   > ⚠️ If the result of `Serotype` of a sample is `SEROBA FAILURE`, SeroBA has crashed when trying to serotype the sample.
