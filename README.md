@@ -213,6 +213,7 @@ The pipeline is compatible with [Launchpad](https://help.tower.nf/23.2/launch/la
   | Option | Values | Description |
   | --- | ---| --- |
   | `--assembler` | `"shovill"` or `"unicycler"`<br />(Default: `"shovill"`)| Using which SPAdes-based assembler to assemble the reads. |
+  | `--assembler_thread` | Any integer value<br />(Default: `0`) | Number of threads used by the assembler. `0` means all available. |
   | `--min_contig_length` | Any integer value<br />(Default: `500`) | Minimum legnth of contig to be included in the assembly. |
 
 ## Mapping

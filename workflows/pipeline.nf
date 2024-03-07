@@ -58,11 +58,11 @@ workflow PIPELINE {
     // Output into Channel ASSEMBLY_ch, and hardlink (default) the assemblies to $params.output directory
     switch (params.assembler) {
         case 'shovill':
-            ASSEMBLY_ch = ASSEMBLY_SHOVILL(READ_QC_PASSED_READS_ch, params.min_contig_length)
+            ASSEMBLY_ch = ASSEMBLY_SHOVILL(READ_QC_PASSED_READS_ch, params.min_contig_length, params.assembler_thread)
             break
 
         case 'unicycler':
-            ASSEMBLY_ch = ASSEMBLY_UNICYCLER(READ_QC_PASSED_READS_ch, params.min_contig_length)
+            ASSEMBLY_ch = ASSEMBLY_UNICYCLER(READ_QC_PASSED_READS_ch, params.min_contig_lengt, params.assembler_threadh)
             break
     }
 
