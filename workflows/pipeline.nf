@@ -62,7 +62,7 @@ workflow PIPELINE {
             break
 
         case 'unicycler':
-            ASSEMBLY_ch = ASSEMBLY_UNICYCLER(READ_QC_PASSED_READS_ch, params.min_contig_lengt, params.assembler_threadh)
+            ASSEMBLY_ch = ASSEMBLY_UNICYCLER(READ_QC_PASSED_READS_ch, params.min_contig_length, params.assembler_thread)
             break
     }
 
