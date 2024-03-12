@@ -22,7 +22,7 @@ process ASSEMBLY_UNICYCLER {
     fasta="${sample_id}.contigs.fasta"
     thread="$assembler_thread"
 
-    if ( thread == 0 )
+    if ( thread.toInteger() == 0 )
         """
         unicycler -1 "$read1" -2 "$read2" -s "$unpaired" -o results -t "`nproc`" --min_fasta_length "$min_contig_length"
         mv results/assembly.fasta "${fasta}"
@@ -58,7 +58,7 @@ process ASSEMBLY_SHOVILL {
     fasta="${sample_id}.contigs.fasta"
     thread="$assembler_thread"
     
-    if ( thread == 0 )
+    if ( thread.toInteger() == 0 )
         """
         shovill --R1 "$read1" --R2 "$read2" --outdir results --cpus "`nproc`" --minlen "$min_contig_length" --force
         mv results/contigs.fa "${fasta}"
