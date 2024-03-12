@@ -40,7 +40,7 @@ void validate(Map params) {
             |(Only one of --init, --version, --help should be used at one time)
             '''.stripMargin())
         System.exit(1)
-}
+    }
 
     // Skip validation when help option is used
     if (params.help) {
