@@ -210,9 +210,12 @@ The pipeline is compatible with [Launchpad](https://help.tower.nf/23.2/launch/la
   | `--depth` | Any integer or float value<br />(Default: `20.00`) | Minimum sequencing depth to pass Assembly QC. |
   
 ## Assembly
+> ℹ️ The output of SPAdes-based assembler is deterministic for a given count of threads. Hence, using `--assembler_thread` with a specific value can guarantee the generated assemblies will be reproducible for others using the same value.
+<!-- -->
   | Option | Values | Description |
   | --- | ---| --- |
   | `--assembler` | `"shovill"` or `"unicycler"`<br />(Default: `"shovill"`)| Using which SPAdes-based assembler to assemble the reads. |
+  | `--assembler_thread` | Any integer value<br />(Default: `0`) | Number of threads used by the assembler. `0` means all available. |
   | `--min_contig_length` | Any integer value<br />(Default: `500`) | Minimum legnth of contig to be included in the assembly. |
 
 ## Mapping

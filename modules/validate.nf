@@ -8,6 +8,7 @@ validParams = [
     db: 'path',
     assembler: 'assembler',
     min_contig_length: 'int',
+    assembler_thread: 'int',
     assembly_publish: 'publish_mode',
     seroba_db_remote: 'url_targz',
     seroba_kmer: 'int',
@@ -39,7 +40,7 @@ void validate(Map params) {
             |(Only one of --init, --version, --help should be used at one time)
             '''.stripMargin())
         System.exit(1)
-}
+    }
 
     // Skip validation when help option is used
     if (params.help) {

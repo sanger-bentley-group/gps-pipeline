@@ -368,6 +368,7 @@ process SAVE {
     |${assemblerTextRow('Option', 'Value')}
     |╠═══════════════════════════╪═════════════════════════════════════════════════════════════════════╣
     |${assemblerTextRow('Assembler', params.assembler.capitalize())}
+    |${assemblerTextRow('Assembler Thread', params.assembler_thread == 0 ? "0 (All Available)" : params.assembler_thread)}
     |${assemblerTextRow('Minimum contig length', params.min_contig_length)}
     |╚═══════════════════════════╧═════════════════════════════════════════════════════════════════════╝
     |""".stripMargin()

@@ -13,16 +13,25 @@ process ASSEMBLY_UNICYCLER {
     input:
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
     val min_contig_length
+    val assembler_thread
 
     output:
     tuple val(sample_id), path(fasta)
 
     script:
     fasta="${sample_id}.contigs.fasta"
-    """
-    unicycler -1 "$read1" -2 "$read2" -s "$unpaired" -o results -t "`nproc`" --min_fasta_length "$min_contig_length"
-    mv results/assembly.fasta "${fasta}"
-    """
+    thread="$assembler_thread"
+
+    if ( thread.toInteger() == 0 )
+        """
+        unicycler -1 "$read1" -2 "$read2" -s "$unpaired" -o results -t "`nproc`" --min_fasta_length "$min_contig_length"
+        mv results/assembly.fasta "${fasta}"
+        """
+    else   
+        """
+        unicycler -1 "$read1" -2 "$read2" -s "$unpaired" -o results -t "$thread" --min_fasta_length "$min_contig_length"
+        mv results/assembly.fasta "${fasta}"
+        """
 }
 
 // Run Shovill to get assembly
@@ -40,16 +49,25 @@ process ASSEMBLY_SHOVILL {
     input:
     tuple val(sample_id), path(read1), path(read2), path(unpaired)
     val min_contig_length
+    val assembler_thread
 
     output:
     tuple val(sample_id), path(fasta)
 
     script:
     fasta="${sample_id}.contigs.fasta"
-    """
-    shovill --R1 "$read1" --R2 "$read2" --outdir results --cpus "`nproc`" --minlen "$min_contig_length" --force
-    mv results/contigs.fa "${fasta}"
-    """
+    thread="$assembler_thread"
+    
+    if ( thread.toInteger() == 0 )
+        """
+        shovill --R1 "$read1" --R2 "$read2" --outdir results --cpus "`nproc`" --minlen "$min_contig_length" --force
+        mv results/contigs.fa "${fasta}"
+        """
+    else
+        """
+        shovill --R1 "$read1" --R2 "$read2" --outdir results --cpus "$thread" --minlen "$min_contig_length" --force
+        mv results/contigs.fa "${fasta}"
+        """
 }
 
 // Run quast to assess assembly quality

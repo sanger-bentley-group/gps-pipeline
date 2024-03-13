@@ -133,6 +133,11 @@
                         "unicycler"
                     ]
                 },
+                "assembler_thread": {
+                    "type": "integer",
+                    "description": "Number of threads used by the assembler. 0 means all available.",
+                    "hidden": true
+                },
                 "min_contig_length": {
                     "type": "integer",
                     "description": "Minimum legnth of contig to be included in the assembly.",
@@ -142,7 +147,8 @@
             },
             "required": [
                 "assembler",
-                "min_contig_length"
+                "min_contig_length",
+                "assembler_thread"
             ]
         },
         "mapping": {
