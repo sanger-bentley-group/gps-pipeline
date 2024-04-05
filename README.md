@@ -464,7 +464,7 @@ This project uses open-source components. You can find the homepage or source co
 [resistanceDatabase](https://github.com/kumarnaren/resistanceDatabase)
 - Narender Kumar ([@kumarnaren](https://github.com/kumarnaren))
 - License (GPL-3.0): https://github.com/kumarnaren/resistanceDatabase/blob/main/LICENSE
-- `sequences.fasta` is renamed to `ariba_ref_sequences.fasta` and used as-is
+- `sequences.fasta` is renamed to `ariba_ref_sequences.fasta` and modified
 - `metadata.tsv` is renamed to `ariba_metadata.tsv` and modified
 - The files are used as the default inputs of `GET_ARIBA_DB` process of the `amr.nf` module
 
