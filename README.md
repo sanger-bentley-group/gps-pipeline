@@ -15,7 +15,9 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 # Table of contents <!-- omit in toc -->
 - [Workflow](#workflow)
 - [Usage](#usage)
-  - [Requirement](#requirement)
+  - [Requirements](#requirements)
+    - [Software](#software)
+    - [Hardware](#hardware)
   - [Accepted Inputs](#accepted-inputs)
   - [Setup](#setup)
   - [Run](#run)
@@ -47,12 +49,26 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 
 &nbsp;
 # Usage
-## Requirement
-- A POSIX-compatible system (e.g. Linux, macOS, Windows with [WSL](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux)) with Bash 3.2 or later
-- Java 11 or later (up to 21) ([OpenJDK](https://openjdk.org/)/[Oracle Java](https://www.oracle.com/java/))
-- [Docker](https://www.docker.com/) or [Singularity](https://sylabs.io/singularity/)/[Apptainer](https://apptainer.org/)
-  - For Linux, [Singularity](https://sylabs.io/singularity/)/[Apptainer](https://apptainer.org/) or [Docker Engine](https://docs.docker.com/engine/) is recommended over [Docker Desktop for Linux](https://docs.docker.com/desktop/). The latter is known to cause permission issues when running the pipeline on Linux. 
-- It is recommended to have at least 16GB of RAM and 50GB of free storage
+## Requirements
+### Software 
+  - A POSIX-compatible operating system (e.g. Linux, macOS, Windows with [WSL](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux)) with Bash 3.2 or later
+    - [Installation guide for WSL on Windows](https://learn.microsoft.com/en-us/windows/wsl/install) by Microsoft
+  - Java 11 or later (up to 21) ([OpenJDK](https://openjdk.org/)/[Oracle Java](https://www.oracle.com/java/))
+    - [Installation guide for OpenJDK](https://www.freecodecamp.org/news/install-openjdk-free-java-multi-os-guide/) by freeCodeCamp
+  - [Docker](https://www.docker.com/) or [Singularity](https://sylabs.io/singularity/)/[Apptainer](https://apptainer.org/)
+    - Installation guides:
+      - For Linux
+        > ℹ️ For Linux, [Docker Engine](https://docs.docker.com/engine/) or [Singularity](https://sylabs.io/singularity/)/[Apptainer](https://apptainer.org/) is recommended over [Docker Desktop](https://docs.docker.com/desktop/). The latter is known to cause permission issues when running the pipeline on Linux. 
+        - [Docker Engine on Linux](https://docs.docker.com/engine/install/) by Docker
+        - [Apptainer on Linux](https://apptainer.org/docs/admin/main/installation.html) by Apptainer
+      - For macOS
+        - [Docker Desktop on macOS](https://docs.docker.com/desktop/install/mac-install/) by Docker
+          > ℹ️ After installation, you might need to [allow Docker to access more system resources](https://docs.docker.com/desktop/settings/mac/), especially CPU and Memory, to match the hardware requirement of the pipeline
+      - For Windows with WSL
+        - [Docker Desktop on Windows with WSL](https://docs.docker.com/desktop/wsl/) by Docker
+
+### Hardware 
+It is recommended to have at least 16GB of RAM and 50GB of free storage
   > ℹ️ Details on storage
   > - The pipeline core files use ~5MB
   > - All default databases use ~8GB in total
@@ -464,7 +480,7 @@ This project uses open-source components. You can find the homepage or source co
 [resistanceDatabase](https://github.com/kumarnaren/resistanceDatabase)
 - Narender Kumar ([@kumarnaren](https://github.com/kumarnaren))
 - License (GPL-3.0): https://github.com/kumarnaren/resistanceDatabase/blob/main/LICENSE
-- `sequences.fasta` is renamed to `ariba_ref_sequences.fasta` and used as-is
+- `sequences.fasta` is renamed to `ariba_ref_sequences.fasta` and modified
 - `metadata.tsv` is renamed to `ariba_metadata.tsv` and modified
 - The files are used as the default inputs of `GET_ARIBA_DB` process of the `amr.nf` module
 
