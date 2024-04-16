@@ -1,11 +1,11 @@
 # Run PopPUNK to assign GPSCs to samples
 
-# Add "prefix_" to all sample names in qfile to avoid poppunk_assign crashing due to sample name already exists in database
-# Remove "prefix_" from all sample names in the result
+# Assign sequential names (gps_pipeline_poppunk_query_<number>) to all sample names in qfile to avoid poppunk_assign crashing due to sample name already exists in database
+# Reassign original names back to all sample in the result
 
 # Save results of individual sample into .csv with its name as filename 
 
-awk -F '\t' '{ print "gps_pipeline_poppunk_query_" NR "\t" $2 }' "$QFILE" > safe_qfile.txt
+awk -F '\t' '{ print "gps_pipeline_poppunk_query_" FNR "\t" $2 }' "$QFILE" > safe_qfile.txt
 
 poppunk_assign --db "${POPPUNK_DIR}/${DB_NAME}" --external-clustering "${EXT_CLUSTERS_DIR}/${EXT_CLUSTERS_FILE}" --query safe_qfile.txt --output output --threads "$(nproc)"
 
