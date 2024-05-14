@@ -4,7 +4,7 @@ process GET_DOCKER_COMPOSE {
     label 'farm_low'
 
     input:
-    path nextflowConfig
+    path containersList
 
     output:
     path compose, emit: compose
@@ -12,7 +12,7 @@ process GET_DOCKER_COMPOSE {
     script:
     compose='docker-compose.yml'
     """
-    NEXTFLOW_CONFIG="$nextflowConfig"
+    CONTAINERS_LIST="$containersList"
     COMPOSE="$compose"
     
     source create_docker_compose.sh
