@@ -14,7 +14,7 @@ include { validate } from "$projectDir/modules/validate"
 include { singularityPreflight } from "$projectDir/modules/singularity"
 
 // Safeguard Nextflow minimum version, in case user is not using the included executable
-nextflowMinVersion = '23.04' 
+nextflowMinVersion = '23.10' 
 if( !nextflow.version.matches("${nextflowMinVersion}+") ) {
     log.error("The pipeline requires Nextflow version ${nextflowMinVersion} or greater -- You are running version $nextflow.version") 
     System.exit(1)
