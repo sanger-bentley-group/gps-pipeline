@@ -1,4 +1,4 @@
-// Return a docker compose file that includes all images used in nextflow.config
+// Return a docker compose file that includes all images used in the workflow
 process GET_DOCKER_COMPOSE {
     label 'bash_container'
     label 'farm_low'
