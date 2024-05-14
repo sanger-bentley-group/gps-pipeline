@@ -1,7 +1,7 @@
-# Extract containers information from nextflow.config and save into a JSON file
+# Save containers information of workflow into a JSON file
 
 find_image () {
-    grep -E "container\s?=" -B 1 "$NEXTFLOW_CONFIG" | grep -v -- "^--$" | paste - - | sort -u | grep "$1" | sed -r "s/.+container\s?=\s?'(.+)'/\1/"
+    sort -u "$PROCESSES_CONTAINERS_LIST" | grep "$1" | sed -r "s/.+\t(.+)/\1/"
 }
 
 BASH=$(find_image bash)

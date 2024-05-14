@@ -1,13 +1,13 @@
 // Import for PARSE process
 import groovy.json.JsonSlurper
 
-// Extract containers information from nextflow.config and save into a JSON file
+// Extract containers information of workflow and save into a JSON file
 process IMAGES {
     label 'bash_container'
     label 'farm_low'
 
     input:
-    path nextflowConfig
+    path processesContainersList
 
     output:
     path(json), emit: json
@@ -15,7 +15,7 @@ process IMAGES {
     script:
     json='images.json'
     """
-    NEXTFLOW_CONFIG="$nextflowConfig"
+    PROCESSES_CONTAINERS_LIST="$processesContainersList"
     JSON_FILE="$json"
 
     source save_images_info.sh
