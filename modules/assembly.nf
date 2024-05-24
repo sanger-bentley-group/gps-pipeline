@@ -24,12 +24,22 @@ process ASSEMBLY_UNICYCLER {
 
     if ( thread.toInteger() == 0 )
         """
-        unicycler -1 "$read1" -2 "$read2" -s "$unpaired" -o results -t "`nproc`" --min_fasta_length "$min_contig_length"
+        if [ -s "$unpaired" ]; then 
+            unicycler -1 "$read1" -2 "$read2" -s "$unpaired" -o results -t "`nproc`" --min_fasta_length "$min_contig_length"
+        else 
+            unicycler -1 "$read1" -2 "$read2" -o results -t "`nproc`" --min_fasta_length "$min_contig_length"
+        fi
+
         mv results/assembly.fasta "${fasta}"
         """
     else   
         """
-        unicycler -1 "$read1" -2 "$read2" -s "$unpaired" -o results -t "$thread" --min_fasta_length "$min_contig_length"
+        if [ -s "$unpaired" ]; then 
+            unicycler -1 "$read1" -2 "$read2" -s "$unpaired" -o results -t "$thread" --min_fasta_length "$min_contig_length"
+        else 
+            unicycler -1 "$read1" -2 "$read2" -o results -t "$thread" --min_fasta_length "$min_contig_length"
+        fi
+
         mv results/assembly.fasta "${fasta}"
         """
 }
