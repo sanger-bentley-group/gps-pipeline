@@ -75,8 +75,8 @@ process TOOLS {
     input:
     val python_version
     val fastp_version
-    val unicycler_version
-    val shovill_version
+    tuple  val(unicycler_version), val(unicycler_nproc_value)
+    tuple  val(shovill_version), val(shovill_nproc_value)
     val quast_version
     val bwa_version
     val samtools_version
@@ -96,7 +96,9 @@ process TOOLS {
     PYTHON_VERSION="$python_version"
     FASTP_VERSION="$fastp_version"
     UNICYCLER_VERSION="$unicycler_version"
+    UNICYCLER_NPROC_VALUE="$unicycler_nproc_value"
     SHOVILL_VERSION="$shovill_version"
+    SHOVILL_NPROC_VALUE="$shovill_nproc_value"
     QUAST_VERSION="$quast_version"
     BWA_VERSION="$bwa_version"
     SAMTOOLS_VERSION="$samtools_version"
@@ -153,11 +155,18 @@ process PARSE {
     val dbText
     val toolText
     val imageText
+    val nprocValue
 
     exec:
     def jsonSlurper = new JsonSlurper()
 
     def json = jsonSlurper.parse(new File("${json_file}"))
+
+    if (params.assembler == 'unicycler') {
+        nprocValue = json.unicycler.nproc_value
+    } else if (params.assembler == 'shovill') {
+        nprocValue = json.shovill.nproc_value
+    }
 
     def textRow = { leftSpace, rightSpace, leftContent, rightContent ->
         String.format("║ %-${leftSpace}s │ %-${rightSpace}s ║", leftContent, rightContent)
@@ -305,6 +314,7 @@ process PRINT {
     val dbText
     val toolText
     val imageText
+    val nprocValue
 
     exec:
     log.info(
@@ -332,6 +342,7 @@ process SAVE {
     val dbText
     val toolText
     val imageText
+    val nprocValue
 
     output:
     path "info.txt", emit: info
@@ -368,7 +379,7 @@ process SAVE {
     |${assemblerTextRow('Option', 'Value')}
     |╠═══════════════════════════╪═════════════════════════════════════════════════════════════════════╣
     |${assemblerTextRow('Assembler', params.assembler.capitalize())}
-    |${assemblerTextRow('Assembler Thread', params.assembler_thread == 0 ? "0 (All Available)" : params.assembler_thread)}
+    |${assemblerTextRow('Assembler Thread', params.assembler_thread == 0 ? "${nprocValue} (All Available)" : params.assembler_thread)}
     |${assemblerTextRow('Minimum contig length', params.min_contig_length)}
     |╚═══════════════════════════╧═════════════════════════════════════════════════════════════════════╝
     |""".stripMargin()
@@ -464,11 +475,12 @@ process UNICYCLER_VERSION {
     label 'farm_low'
 
     output:
-    env VERSION
+    tuple env(VERSION), env(THREAD)
 
     shell:
     $/
     VERSION=$(unicycler --version | sed -r "s/.*\sv(.+)/\1/")
+    THREAD=$(nproc)
     /$
 }
 
@@ -477,11 +489,12 @@ process SHOVILL_VERSION {
     label 'farm_low'
 
     output:
-    env VERSION
+    tuple env(VERSION), env(THREAD)
 
     shell:
     $/
     VERSION=$(shovill -v | sed -r "s/.*\s(.+)/\1/")
+    THREAD=$(nproc)
     /$
 }
 
