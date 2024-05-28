@@ -21,17 +21,16 @@ process ASSEMBLY_UNICYCLER {
     script:
     fasta="${sample_id}.contigs.fasta"
     thread="$assembler_thread"
+    """
+    READ1=$read1
+    READ2=$read2
+    UNPAIRED=$unpaired
+    MIN_CONTIG_LENGTH=$min_contig_length
+    FASTA=$fasta
+    THREAD=$thread
 
-    if ( thread.toInteger() == 0 )
-        """
-        unicycler -1 "$read1" -2 "$read2" -s "$unpaired" -o results -t "`nproc`" --min_fasta_length "$min_contig_length"
-        mv results/assembly.fasta "${fasta}"
-        """
-    else   
-        """
-        unicycler -1 "$read1" -2 "$read2" -s "$unpaired" -o results -t "$thread" --min_fasta_length "$min_contig_length"
-        mv results/assembly.fasta "${fasta}"
-        """
+    source get_assembly_unicycler.sh
+    """
 }
 
 // Run Shovill to get assembly
@@ -57,17 +56,15 @@ process ASSEMBLY_SHOVILL {
     script:
     fasta="${sample_id}.contigs.fasta"
     thread="$assembler_thread"
-    
-    if ( thread.toInteger() == 0 )
-        """
-        shovill --R1 "$read1" --R2 "$read2" --outdir results --cpus "`nproc`" --minlen "$min_contig_length" --force
-        mv results/contigs.fa "${fasta}"
-        """
-    else
-        """
-        shovill --R1 "$read1" --R2 "$read2" --outdir results --cpus "$thread" --minlen "$min_contig_length" --force
-        mv results/contigs.fa "${fasta}"
-        """
+    """
+    READ1=$read1
+    READ2=$read2
+    MIN_CONTIG_LENGTH=$min_contig_length
+    FASTA=$fasta
+    THREAD=$thread
+
+    source get_assembly_shovill.sh
+    """
 }
 
 // Run quast to assess assembly quality
