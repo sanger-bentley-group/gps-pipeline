@@ -24,9 +24,14 @@ workflow INIT {
     GET_POPPUNK_DB(params.poppunk_db_remote, params.db)
     GET_POPPUNK_EXT_CLUSTERS(params.poppunk_ext_remote, params.db)
 
-    // Pull all Docker images mentioned in nextflow.config if using Docker
+    // Pull all Docker images used in the workflow if using Docker
     if (workflow.containerEngine === 'docker') {
-        GET_DOCKER_COMPOSE(Channel.fromPath("${workflow.configFiles[0]}"))
+        GET_DOCKER_COMPOSE(
+            Channel.fromList(workflow.container.collect { it.value })
+                .unique()
+                .collectFile(name: 'containersList.txt', newLine: true)
+        )
+        
         PULL_IMAGES(GET_DOCKER_COMPOSE.out.compose)
     }
 }

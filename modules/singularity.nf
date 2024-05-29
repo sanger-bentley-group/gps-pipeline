@@ -1,16 +1,9 @@
 // Check if Singularity images are already pulled, otherwise pull non-existing images one by one
-void singularityPreflight(Path configPath, String singularityCacheDir) {
+void singularityPreflight(LinkedHashMap workflowContainer, String singularityCacheDir) {
     log.info("Checking if all the Singularity images are available at ${singularityCacheDir}\n")
 
     // Get names of all images
-    File configFile = configPath.toFile()
-    containers = [] as Set
-    configFile.eachLine { line ->
-        matcher = line =~ /\s+container\s?=\s?'(.+)'/
-        if (matcher.matches()) {
-            containers.add(matcher.group(1))
-        }
-    }
+    containers = workflowContainer.collect { it.value } as Set
 
     // Create the directory for saving images if not yet existed
     File cacheDir = new File(singularityCacheDir)

@@ -1,9 +1,9 @@
 # GPS Pipeline <!-- omit in toc -->
 
-[![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-23.10.1-23aa62.svg)](https://www.nextflow.io/)
+[![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-24.04.2-23aa62.svg)](https://www.nextflow.io/)
 [![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)
 [![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/singularity/)
-[![Launch on Nextflow Tower](https://img.shields.io/badge/Launch%20%F0%9F%9A%80-Nextflow%20Tower-%234256e7)](https://tower.nf/launch?pipeline=https://github.com/sanger-bentley-group/gps-pipeline)
+[![Launch on Seqera Platform](https://img.shields.io/badge/Launch%20%F0%9F%9A%80-Seqera%20Platform-%234256e7)](https://cloud.seqera.io/quicklaunch?pipeline=https://github.com/sanger-bentley-group/gps-pipeline)
 
 The GPS Pipeline is a Nextflow pipeline designed for processing raw reads (FASTQ files) of *Streptococcus pneumoniae* samples. After preprocessing, the pipeline performs initial assessment based on the total bases in reads. Passed samples will be further assess based on assembly, mapping, and taxonomy. If the sample passes all quality controls (QC), the pipeline also provides the sample's serotype, multi-locus sequence typing (MLST), lineage (based on the [Global Pneumococcal Sequence Cluster (GPSC)](https://www.pneumogen.net/gps/GPSC_lineages.html)), and antimicrobial resistance (AMR) against multiple antimicrobials.
 
@@ -24,7 +24,7 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
   - [Profile](#profile)
   - [Resume](#resume)
   - [Clean Up](#clean-up)
-  - [Nextflow Tower (Optional)](#nextflow-tower-optional)
+  - [Seqera Platform (Optional)](#seqera-platform-optional)
 - [Pipeline Options](#pipeline-options)
   - [Alternative Workflows](#alternative-workflows)
   - [Input and Output](#input-and-output)
@@ -53,7 +53,7 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
 ### Software 
   - A POSIX-compatible operating system (e.g. Linux, macOS, Windows with [WSL](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux)) with Bash 3.2 or later
     - [Installation guide for WSL on Windows](https://learn.microsoft.com/en-us/windows/wsl/install) by Microsoft
-  - Java 11 or later (up to 21) ([OpenJDK](https://openjdk.org/)/[Oracle Java](https://www.oracle.com/java/))
+  - Java 11 or later (up to 22) ([OpenJDK](https://openjdk.org/)/[Oracle Java](https://www.oracle.com/java/))
     - [Installation guide for OpenJDK](https://www.freecodecamp.org/news/install-openjdk-free-java-multi-os-guide/) by freeCodeCamp
   - [Docker](https://www.docker.com/) or [Singularity](https://sylabs.io/singularity/)/[Apptainer](https://apptainer.org/)
     - Installation guides:
@@ -176,8 +176,8 @@ It is recommended to have at least 16GB of RAM and 50GB of free storage
     ./nextflow clean
     ```
 
-## Nextflow Tower (Optional)
-The pipeline is compatible with [Launchpad](https://help.tower.nf/23.2/launch/launchpad/) of [Nextflow tower](https://tower.nf/) and [Nextflow `-with-tower` option](https://help.tower.nf/23.2/getting-started/deployment-options/#nextflow-with-tower). For more information, please refer to the [Nextflow Tower documentation](https://help.tower.nf/).
+## Seqera Platform (Optional)
+The pipeline is compatible with [Launchpad](https://docs.seqera.io/platform/latest/launch/launchpad) of [Seqera Platform](https://seqera.io/platform/) (previously known as Nextflow Tower) and [Nextflow `-with-tower` option](https://docs.seqera.io/platform/latest/getting-started/deployment-options#nextflow--with-tower). For more information, please refer to the [Seqera Platform documentation](https://docs.seqera.io/platform/).
 
 &nbsp;
 # Pipeline Options

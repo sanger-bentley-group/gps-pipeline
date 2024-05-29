@@ -56,7 +56,11 @@ workflow GET_VERSION {
         pipeline_version
 
     main:
-        IMAGES(Channel.fromPath("${workflow.configFiles[0]}"))
+        IMAGES(
+            Channel.fromList(workflow.container.collect { "${it.key}\t${it.value}" })
+                .unique()
+                .collectFile(name: 'processesContainersList.tsv', newLine: true)
+        )            
 
         DATABASES(
             bwa_db_path,
