@@ -114,10 +114,10 @@ def find_hit(target_dict):
                         hit_dict[target].add(f'{ref_group} {LOW_COVERAGE}')
                         continue
 
-                # folP ref_group specific criteria: ref_ctg_effect (effect of change between reference and contig) is one of those lead to amino acid changes and the change occurs within nt 166-201 (covering changes affecting aa 56 - 67)
+                # folP ref_group specific criteria: ref_ctg_effect (effect of change between reference and contig) is one of those lead to disruption and the change occurs within nt 166-201 (covering changes affecting aa 56 - 67)
                 if ref_group.lower() == "folp":
                     df_ref_group_hit = df_ref_group[
-                        (df_ref_group["ref_ctg_effect"].str.lower().isin(['fshift', 'trunc', 'indels', 'ins', 'del', 'multiple', 'nonsyn'])) &
+                        (df_ref_group["ref_ctg_effect"].str.lower().isin(['fshift', 'trunc', 'indels', 'ins', 'del', 'multiple'])) &
                         (df_ref_group["ref_start"].apply(pd.to_numeric, errors='coerce').between(166, 201) | df_ref_group["ref_end"].apply(pd.to_numeric, errors='coerce').between(166, 201))
                     ]
                     for ref_start, ref_end, ref_name, ref_ctg_effect in df_ref_group_hit[['ref_start', 'ref_end', 'ref_name', 'ref_ctg_effect']].itertuples(index=False, name=None):
