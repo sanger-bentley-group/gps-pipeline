@@ -59,7 +59,8 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
     - Installation guides:
       - For Linux
         > ℹ️ For Linux, [Docker Engine](https://docs.docker.com/engine/) or [Singularity](https://sylabs.io/singularity/)/[Apptainer](https://apptainer.org/) is recommended. [Docker Desktop for Linux](https://docs.docker.com/desktop/) is known to [cause permission issues](https://github.com/docker/desktop-linux/issues/81) on Linux, which could prevent the pipeline from working. 
-        - [Docker Engine on Linux](https://docs.docker.com/engine/install/) by Docker (Make sure you also install `docker-compose-plugin` as per the guide)
+        - [Docker Engine on Linux](https://docs.docker.com/engine/install/) by Docker
+          > ℹ️ Make sure you also install `docker-compose-plugin` as per the guide
         - [Apptainer on Linux](https://apptainer.org/docs/admin/main/installation.html) by Apptainer
       - For macOS
         - [Docker Desktop on macOS](https://docs.docker.com/desktop/install/mac-install/) by Docker
