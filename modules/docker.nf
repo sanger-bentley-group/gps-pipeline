@@ -26,6 +26,6 @@ process PULL_IMAGES {
 
     script:
     """
-    docker-compose --file "$compose" pull
+    docker compose --file "$compose" pull
     """
 }
