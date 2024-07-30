@@ -69,10 +69,10 @@ The development of this pipeline is part of the GPS Project ([Global Pneumococca
         - [Docker Desktop on Windows with WSL](https://docs.docker.com/desktop/wsl/) by Docker
 
 ### Hardware 
-It is recommended to have at least 16GB of RAM and 50GB of free storage
+It is recommended to have at least 16GB of RAM and 100GB of free storage
   > ℹ️ Details on storage
   > - The pipeline core files use ~5MB
-  > - All default databases use ~8GB in total
+  > - All default databases use ~19GB in total
   > - All Docker images use ~13GB in total; alternatively, Singularity images use ~4.5GB in total
   > - The pipeline generates ~1.8GB intermediate files for each sample on average<br>(These files can be removed when the pipeline run is completed, please refer to [Clean Up](#clean-up))<br>
   (To further reduce storage requirement by sacrificing the ability to resume the pipeline, please refer to [Experimental](#experimental))
@@ -255,8 +255,8 @@ The pipeline is compatible with [Launchpad](https://docs.seqera.io/platform/late
 ## Lineage
   | Option | Values | Description |
   | --- | ---| --- |
-  | `--poppunk_db_remote` | Any valid URL to a PopPUNK database in `.tar.gz` or `.tgz` format<br />(Default: [GPS v8 - Reference Only](https://gps-project.cog.sanger.ac.uk/GPS_v8_ref.tar.gz)) | URL to a PopPUNK database. |
-  | `--poppunk_ext_remote` | Any valid URL to a PopPUNK external clusters file in `.csv` format<br />(Default: [GPS v8 GPSC Designation](https://gps-project.cog.sanger.ac.uk/GPS_v8_external_clusters.csv)) | URL to a PopPUNK external clusters file. |
+  | `--poppunk_db_remote` | Any valid URL to a PopPUNK database in `.tar.gz` or `.tgz` format<br />(Default: [GPS v9](https://gps-project.cog.sanger.ac.uk/GPS_v9.tar.gz)) | URL to a PopPUNK database. |
+  | `--poppunk_ext_remote` | Any valid URL to a PopPUNK external clusters file in `.csv` format<br />(Default: [GPS v9 GPSC Designation](https://gps-project.cog.sanger.ac.uk/GPS_v9_external_clusters.csv)) | URL to a PopPUNK external clusters file. |
 
 ## Other AMR
   | Option | Values | Description |
