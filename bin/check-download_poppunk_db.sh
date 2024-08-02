@@ -14,8 +14,7 @@ if  [ ! -f "${DB_LOCAL}/${JSON_FILE}" ] || \
     [ ! -f "${DB_PATH}/${DB_NAME}_fit.npz" ] || \
     [ ! -f "${DB_PATH}/${DB_NAME}_fit.pkl" ] || \
     [ ! -f "${DB_PATH}/${DB_NAME}_graph.gt" ] || \
-    [ ! -f "${DB_PATH}/${DB_NAME}_clusters.csv" ] || \
-    [ ! -f "${DB_PATH}/${DB_NAME}.refs" ]; then
+    [ ! -f "${DB_PATH}/${DB_NAME}_clusters.csv" ]; then
 
     rm -rf "${DB_LOCAL}"
 
